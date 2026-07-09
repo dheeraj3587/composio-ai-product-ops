@@ -55,7 +55,7 @@
       "https://developers.hubspot.com/mcp"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "hubspot",
     "primary_docs_url": "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/authentication/overview",
     "rate_limit_note": "No rate-limit details present in the provided evidence.",
@@ -334,7 +334,7 @@
       "https://developer.zendesk.com/documentation/api-basics/best-practices/best-practices-for-avoiding-rate-limiting/"
     ],
     "confidence": 0.92,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "zendesk",
     "primary_docs_url": "https://developer.zendesk.com/api-reference/introduction/security-and-auth/",
     "rate_limit_note": "Rate limits apply and are documented in the API introduction; specific quotas not fully detailed in provided evidence.",
@@ -366,7 +366,7 @@
       "https://github.com/intercom/intercom-mcp-server"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "intercom",
     "primary_docs_url": "https://developers.intercom.com/docs/build-an-integration/learn-more/authentication",
     "rate_limit_note": "Rate limits enforced (HTTP 429); exact quotas not specified in provided evidence; backoff recommended.",
@@ -800,7 +800,7 @@
       "https://github.com/discord/discord-api-docs"
     ],
     "confidence": 0.92,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "discord",
     "primary_docs_url": "https://docs.discord.com/developers/topics/oauth2",
     "rate_limit_note": "Rate limiting documented in API reference (global/per-route)",
@@ -1081,7 +1081,7 @@
       "https://aeroleads.com/blog/getting-started-with-mailchimp-api-developer-documentation/"
     ],
     "confidence": 0.92,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "mailchimp",
     "primary_docs_url": "https://mailchimp.com/developer/marketing/guides/authentication/",
     "rate_limit_note": "Not specified in provided evidence",
@@ -1264,7 +1264,7 @@
       "https://shopify.dev/docs/apps/build/storefront-mcp"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "shopify",
     "primary_docs_url": "https://shopify.dev/docs/api/usage/authentication",
     "rate_limit_note": "Rate limits apply across APIs (mentioned in docs index; specifics not in provided excerpts)",
@@ -1897,7 +1897,7 @@
       "https://vercel.com/docs/agent-resources/vercel-mcp"
     ],
     "confidence": 0.92,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "vercel",
     "primary_docs_url": "https://vercel.com/docs/rest-api",
     "rate_limit_note": "Not specified in provided evidence",
@@ -1960,7 +1960,7 @@
       "https://github.com/cloudflare/mcp-server-cloudflare"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "cloudflare",
     "primary_docs_url": "https://developers.cloudflare.com/api",
     "rate_limit_note": "Rate limits exist; specific details are mentioned in the documentation index but not quantified in the text.",
@@ -2215,7 +2215,7 @@
       "https://support.airtable.com/docs/using-the-airtable-mcp-server"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "airtable",
     "primary_docs_url": "https://airtable.com/developers",
     "rate_limit_note": "Call limitations vary by plan type; records are returned in pages of up to 100.",
@@ -2310,7 +2310,7 @@
       "https://developers.asana.com/docs/mcp-clients"
     ],
     "confidence": 0.92,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "asana",
     "primary_docs_url": "https://developers.asana.com/docs/authentication",
     "rate_limit_note": "Rate limits are mentioned in the documentation index, though specific thresholds are not detailed in the provided text.",

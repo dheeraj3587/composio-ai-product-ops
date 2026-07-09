@@ -1,11 +1,11 @@
 {
   "handcheck": {
     "method": "Human cross-check vs official docs on api_type + auth_methods + access_model (both auth sides normalized to canonical labels before comparison). Misses shown, not hidden.",
-    "n": 17,
+    "n": 27,
     "api_type_accuracy": 1.0,
-    "auth_accuracy": 0.824,
+    "auth_accuracy": 0.852,
     "access_accuracy": 1.0,
-    "accuracy": 0.941,
+    "accuracy": 0.951,
     "misses": [
       {
         "slug": "dealcloud",
@@ -48,6 +48,20 @@
           "OAuth2"
         ],
         "notes": "REST; self-serve app + OAuth."
+      },
+      {
+        "slug": "cloudflare",
+        "app": "Cloudflare",
+        "field": "auth_methods",
+        "current": [
+          "API Key",
+          "OAuth2"
+        ],
+        "truth": [
+          "API Key",
+          "Bearer Token"
+        ],
+        "notes": "Cloudflare API docs: users create API tokens in the dashboard and call the REST API with Authorization: Bearer API_TOKEN."
       }
     ],
     "checked": [
@@ -169,10 +183,80 @@
         "api_ok": true,
         "auth_ok": true,
         "access_ok": true
+      },
+      {
+        "slug": "hubspot",
+        "app": "HubSpot",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "shopify",
+        "app": "Shopify",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "zendesk",
+        "app": "Zendesk",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "intercom",
+        "app": "Intercom",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "mailchimp",
+        "app": "Mailchimp",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "discord",
+        "app": "Discord",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "cloudflare",
+        "app": "Cloudflare",
+        "api_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "vercel",
+        "app": "Vercel",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "airtable",
+        "app": "Airtable",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "asana",
+        "app": "Asana",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
       }
     ],
-    "generated": "2026-07-09",
-    "note": "The 3 auth misses above were subsequently folded back into the matrix via corrections.py (evidence URLs appended). Accuracy shown is as-measured at hand-check time — the number was not re-scored against the corrected data."
+    "generated": "2026-07-10",
+    "note": "Three historic auth misses (DealCloud, Notion, Slack) were subsequently folded back into the matrix via corrections.py. Cloudflare remains a measured auth discrepancy. Accuracy is reported as measured at hand-check time, with all four misses shown rather than hidden."
   },
   "patterns": {
     "n": 100,
@@ -314,8 +398,8 @@
   "n_results": 100,
   "headline_accuracy": {
     "hand_checked_accuracy": {
-      "value": 0.941,
-      "n": 17,
+      "value": 0.951,
+      "n": 27,
       "label": "Hand-checked accuracy (ground truth)"
     },
     "automated_agreement": {
@@ -327,14 +411,15 @@
   "generated": "2026-07-10",
   "accuracy_movement": {
     "method": "Field-level accuracy (api_type + auth_methods + access_model) vs hand-verified truth, comparing the first-pass snapshot to the post-verification results. Both sides canonicalized before comparison, so the delta reflects factual corrections only — label normalization (e.g. 'OAuth 2.0' -> 'OAuth2') is counted separately, not as accuracy.",
-    "n": 17,
-    "first_pass_accuracy": 0.784,
-    "post_verification_accuracy": 0.941,
+    "n": 27,
+    "first_pass_accuracy": 0.84,
+    "post_verification_accuracy": 0.951,
     "improved_apps": [
       "copper",
       "plain",
       "whatsapp-business",
-      "linkedin-ads"
+      "linkedin-ads",
+      "airtable"
     ],
     "regressed_apps": [],
     "per_app": [
@@ -420,6 +505,56 @@
       },
       {
         "slug": "amazon-selling-partner",
+        "first_pass": "3/3",
+        "post_verification": "3/3"
+      },
+      {
+        "slug": "hubspot",
+        "first_pass": "3/3",
+        "post_verification": "3/3"
+      },
+      {
+        "slug": "shopify",
+        "first_pass": "3/3",
+        "post_verification": "3/3"
+      },
+      {
+        "slug": "zendesk",
+        "first_pass": "3/3",
+        "post_verification": "3/3"
+      },
+      {
+        "slug": "intercom",
+        "first_pass": "3/3",
+        "post_verification": "3/3"
+      },
+      {
+        "slug": "mailchimp",
+        "first_pass": "3/3",
+        "post_verification": "3/3"
+      },
+      {
+        "slug": "discord",
+        "first_pass": "3/3",
+        "post_verification": "3/3"
+      },
+      {
+        "slug": "cloudflare",
+        "first_pass": "2/3",
+        "post_verification": "2/3"
+      },
+      {
+        "slug": "vercel",
+        "first_pass": "3/3",
+        "post_verification": "3/3"
+      },
+      {
+        "slug": "airtable",
+        "first_pass": "2/3",
+        "post_verification": "3/3"
+      },
+      {
+        "slug": "asana",
         "first_pass": "3/3",
         "post_verification": "3/3"
       }

@@ -28,9 +28,10 @@ AUTH_FOLDED_AFTER_HANDCHECK = {
 }
 
 HANDCHECK_NOTE = (
-    "The 3 auth misses above were subsequently folded back into the matrix via "
-    "corrections.py (evidence URLs appended). Accuracy shown is as-measured at "
-    "hand-check time — the number was not re-scored against the corrected data."
+    "Three historic auth misses (DealCloud, Notion, Slack) were subsequently folded "
+    "back into the matrix via corrections.py. Cloudflare remains a measured auth "
+    "discrepancy. Accuracy is reported as measured at hand-check time, with all four "
+    "misses shown rather than hidden."
 )
 
 ACCURACY_MOVEMENT_NOTE = (
@@ -169,8 +170,8 @@ def _score_record(rec: dict, truth: dict, measured_auth_override: list[str] | No
     correctness, not label formatting. (The original version canonicalized only
     the truth side, which penalized first-pass records for spellings like
     "OAuth 2.0" vs "OAuth2" / "API Token" vs "API Key" and inflated the apparent
-    movement: 8 of 19 first-pass 'misses' were label artifacts, not wrong facts.
-    Honest movement under consistent scoring: 78.4% -> 94.1%, not 62.7% -> 94.1%.)"""
+    movement. The original 17-app sample overstated movement because several
+    first-pass misses were label artifacts, not wrong facts.)"""
     checks = [
         ("auth_methods", verify._auth_agree(normalize.normalize_auth_list(
             measured_auth_override if measured_auth_override is not None else rec.get("auth_methods", [])

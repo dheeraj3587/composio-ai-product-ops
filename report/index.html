@@ -789,7 +789,7 @@
         <div class="flow-step">
           <span class="step-no">Stage 5 · handcheck.py + corrections.py</span>
           <b>Human truth, folded back</b>
-          <p>A human verifies 17 apps against real docs; disagreements from every loop are adjudicated and folded via a documented, re-runnable corrections migration.</p>
+          <p>A human verifies 27 apps against real docs; disagreements from every loop are adjudicated and folded via a documented, re-runnable corrections migration.</p>
         </div>
       </div>
       <div class="proof-grid">
@@ -797,7 +797,7 @@
           <h3>Where a human was needed</h3>
           <ul class="human-list">
             <li><b>Preseed priors (~20 apps):</b> human hypotheses like "Amazon SP-API is gated" — the pipeline re-confirms each against fresh evidence and trusts the evidence over the prior.</li>
-            <li><b>Hand-check (17 apps):</b> field-level verification of api_type + auth + access against official docs; misses are published, not hidden.</li>
+            <li><b>Hand-check (27 apps):</b> field-level verification of api_type + auth + access against official docs; misses are published, not hidden.</li>
             <li><b>Adjudicating loop disagreements:</b> the browser agent over-called WhatsApp and Pinterest as Self-Serve; a human kept them Gated because production access needs review/verification.</li>
             <li><b>MCP evidence sweep:</b> review passes found 30 official MCP servers that the first batch had marked "None"; a false-positive pass also downgraded 3 unsupported "Official" claims — all fixed in <code>corrections.py</code> and guarded by the new MCP probe.</li>
           </ul>

@@ -15,14 +15,13 @@ clear cross-app patterns second, honest verification third.
 ## Headline results (current run)
 
 - **100 / 100 apps** researched, schema-valid, every row backed by a real, resolving evidence URL.
-- **Hand-checked accuracy: 94.1% as measured** (n=17, field-level over api_type + auth + access) —
-  the ground-truth number. The 3 auth misses it caught (DealCloud, Notion, Slack) have since been
-  folded back into the matrix via `corrections.py`, so the shipped rows carry the verified truth.
-- **Accuracy moved 78.4% → 94.1%** on the hand-check sample *because of the verification loops*
-  (4 apps factually corrected: Copper, Plain, WhatsApp Business, LinkedIn Ads; 0 regressed).
-  Scored with both sides label-canonicalized so the delta counts **factual fixes only** — the raw
-  scorer previously reported 62.7% → 94.1%, but 8 of those first-pass "misses" were label-format
-  artifacts ("OAuth 2.0" vs "OAuth2"), which is data hygiene, not accuracy. Misses shown, not hidden.
+- **Hand-checked accuracy: 95.1% as measured** (n=27, field-level over api_type + auth + access) —
+  the ground-truth number. Four measured auth discrepancies are shown openly: DealCloud, Notion,
+  Slack, and Cloudflare. The first three are tracked as historical corrections; Cloudflare remains visible.
+- **Accuracy moved 84.0% → 95.1%** on the 27-app hand-check sample *because of the verification loops*
+  (5 apps factually corrected: Copper, Plain, WhatsApp Business, LinkedIn Ads, Airtable; 0 regressed).
+  Both sides are label-canonicalized, so the delta counts **factual fixes only**; label formatting is
+  data hygiene, not accuracy. Misses are shown, not hidden.
 - **Blind re-search agreement: ~59%** (n≈21) — labeled as *reproducibility, not accuracy*.
 - **Browser-Use Cloud loop:** 12 apps re-checked against live docs; caught **6** first-pass errors
   static fetch missed (e.g. Copper and Plain, which the first pass had wrongly marked "no API").
@@ -76,7 +75,7 @@ research.py (offline CLI = the agent)
      ├─ verify.py            LOOP 1: BLIND re-search from scratch -> agreement + metrics.json
      └─ pipeline.py          orchestration: concurrent, resumable, optional provider sharding
   browser_verify.py          LOOP 2: Browser Use Cloud agent on live docs (isolated .venv-browser)
-  handcheck.py               LOOP 3: human check on ~17 apps -> ground-truth accuracy + movement
+  handcheck.py               LOOP 3: human check on 27 apps -> ground-truth accuracy + movement
   corrections.py             documented, re-runnable migration: auth normalization + per-app fixes
         ↓
 report/index.html + app.js   renders baked-in data.js  (Findings → Matrix → Agent → Verification → Proof)
@@ -109,7 +108,7 @@ balance") are not retried; a tier that returns empty output falls through to the
 2. **Browser Use Cloud** (`browser_verify.py`) — a cloud browser agent independently navigates each
    app's live developer docs and re-derives api_type/auth/access. Independent of the pipeline's own
    search+fetch *and* LLM, so it catches JS-rendered docs and marketing-homepage misses.
-3. **Human hand-check** (`handcheck.py`) — a person verifies api_type + auth + access on ~17 apps
+3. **Human hand-check** (`handcheck.py`) — a person verifies api_type + auth + access on 27 apps
    against real docs. This is the **ground-truth accuracy** number; misses are listed in `metrics.json`.
 
 Two clearly-labeled numbers: **hand-checked accuracy** (ground truth) vs **automated blind re-search
@@ -213,7 +212,7 @@ or point a Vercel project at the repo with **Root Directory = `report`** (no bui
 - **Preseed priors** (`data/preseed.json`, ~20 apps): human hypotheses (e.g. Amazon SP-API is gated;
   DealCloud is "good API, no entry point"). They are **hypotheses only** — the pipeline re-confirms each
   with a fresh search and **trusts evidence over the prior**, logging contradictions.
-- **Hand-check** (~17 apps): a human verifies api_type + auth + access against real docs; hits and
+- **Hand-check** (27 apps): a human verifies api_type + auth + access against real docs; hits and
   misses are shown in the report and `metrics.json`, not hidden.
 - **Browser-verification fold:** the Browser Use Cloud loop flagged disagreements; a human adjudicated
   each against official docs (e.g. WhatsApp/Pinterest kept **Gated** despite the browser calling them
@@ -223,7 +222,7 @@ or point a Vercel project at the repo with **Root Directory = `report`** (no bui
 ## Honest limitations
 
 - `composio_toolkit` via the public catalog is a **heuristic** when the SDK isn't available; the SDK path is authoritative.
-- `existing_mcp` is an automated signal (not part of the formal 17-app hand-check), and it burned us
+- `existing_mcp` is an automated signal (not part of the formal 27-app hand-check), and it burned us
   in **both** directions: the first audit stress-checked the 18 most-doubtful `Official` claims
   (16 held up; Binance → Community, DealCloud → None) but never audited the `None` claims. Two
   follow-up sweeps found 29 false negatives with official vendor MCP pages. Root cause:
