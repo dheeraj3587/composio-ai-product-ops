@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import shutil
+import time as _t
 
 import config
 import pipeline
@@ -53,18 +54,26 @@ def cmd_batch(slugs, limit, workers, model, resume, shard) -> None:
 def cmd_recheck(slugs_csv, model) -> None:
     slugs = [s.strip() for s in slugs_csv.split(",") if s.strip()]
     existing = {r["slug"]: r for r in (config.load_json(config.RESULTS_PATH) or [])}
+    order = {a["slug"]: i for i, a in enumerate(pipeline.load_apps())}
     providers = config.keyed_shard_providers()
+    done = 0
     for i, s in enumerate(slugs):
         lead = providers[i % len(providers)] if len(providers) > 1 else None
-        rec, _ = pipeline.research_app(pipeline.get_app(s), model=model, lead=lead)
+        try:
+            rec, _ = pipeline.research_app(pipeline.get_app(s), model=model, lead=lead)
+        except Exception as e:  # rate limit / transient -> keep existing record, continue
+            print(f"[recheck] {s}: FAILED ({type(e).__name__}) — kept existing record")
+            continue
         d = rec.model_dump(mode="json")
         existing[s] = d
+        done += 1
+        # incremental save so a mid-run failure never discards completed rechecks
+        config.save_json(config.RESULTS_PATH,
+                         sorted(existing.values(), key=lambda r: order.get(r["slug"], 10_000)))
         print(f"[recheck] {s}: {d['api_type']}/{d['access_model']['kind']}/"
-              f"{d['recommended_next_action']} conf={d['confidence']}")
-    order = {a["slug"]: i for i, a in enumerate(pipeline.load_apps())}
-    merged = sorted(existing.values(), key=lambda r: order.get(r["slug"], 10_000))
-    config.save_json(config.RESULTS_PATH, merged)
-    print(f"merged {len(slugs)} rechecked -> {config.RESULTS_PATH} ({len(merged)} total)")
+              f"{d['recommended_next_action']} conf={d['confidence']}  (saved)")
+        _t.sleep(2)  # pace requests to avoid provider rate limits
+    print(f"merged {done}/{len(slugs)} rechecked -> {config.RESULTS_PATH}")
 
 
 def cmd_verify(sample: int, model: str | None) -> None:

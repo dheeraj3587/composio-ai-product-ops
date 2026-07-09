@@ -246,7 +246,7 @@ def llm_json(
         client = get_client(provider)
 
         @retry(retry=retry_if_exception(lambda e: _classify_error(e) == "retry"),
-               stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=20))
+               stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=3, max=30))
         def _call(use_json_mode: bool) -> str:
             kwargs: dict[str, Any] = dict(
                 model=mdl, messages=messages, temperature=temperature, max_tokens=max_tokens)
