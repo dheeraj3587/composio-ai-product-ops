@@ -1,9 +1,9 @@
 """Central configuration: env loading, filesystem paths, and the LLM layer.
 
 LLM = multi-provider, OpenAI-compatible, ORDERED FALLBACK CHAIN. Default:
-  1) Claude Fable 5 (anthropic/claude-fable-5-free) on ZenMux   [primary]
-  2) Grok 4.5        (x-ai/grok-4.5-free)          on ZenMux    [fallback]
-  3) Tencent Hy3     (tencent/hy3:free)            on OpenRouter [last resort]
+  1) Claude Opus 4.7 on AgentRouter                 [primary]
+  2) Claude Fable 5 (anthropic/claude-fable-5-free) on ZenMux   [fallback]
+  3) Tencent Hy3     (tencent/hy3:free)             on OpenRouter [last resort]
 llm_json() tries each tier in order until one succeeds. Kept small and explicit
 so every line is interview-explainable.
 """
@@ -66,9 +66,16 @@ COMPOSIO_API_KEY = os.getenv("COMPOSIO_API_KEY", "")
 
 _APP_URL = os.getenv("APP_PUBLIC_URL", "http://localhost")
 _APP_TITLE = os.getenv("APP_TITLE", "API Integration Readiness Agent")
+LLM_TIMEOUT_SECONDS = float(os.getenv("LLM_TIMEOUT_SECONDS", "75"))
 
-# Provider registry (both are OpenAI-compatible gateways).
+# Provider registry (OpenAI-compatible gateways).
 PROVIDERS = {
+    "agentrouter": {
+        "base_url": os.getenv("AGENTROUTER_BASE_URL", "https://agentrouter.org/v1"),
+        # Reuse Claude Code's AgentRouter key if the explicit OpenAI-compatible
+        # key env is not set. Same secret, different endpoint shape.
+        "api_key": os.getenv("AGENTROUTER_API_KEY") or os.getenv("ANTHROPIC_AUTH_TOKEN", ""),
+    },
     "zenmux": {
         "base_url": os.getenv("ZENMUX_BASE_URL", "https://zenmux.ai/api/v1"),
         "api_key": os.getenv("ZENMUX_API_KEY", ""),
@@ -84,11 +91,11 @@ PROVIDERS = {
     },
 }
 
-# Ordered chain. Default: Claude Fable 5 (ZenMux) -> Grok 4.5 (ZenMux) -> Tencent Hy3 (OpenRouter).
-PRIMARY_PROVIDER = os.getenv("LLM_PROVIDER", "zenmux")
-PRIMARY_MODEL = os.getenv("LLM_MODEL", "anthropic/claude-fable-5-free")
+# Ordered chain. Default: AgentRouter Claude Opus -> ZenMux Claude/Grok -> OpenRouter Tencent Hy3.
+PRIMARY_PROVIDER = os.getenv("LLM_PROVIDER", "agentrouter")
+PRIMARY_MODEL = os.getenv("LLM_MODEL", "claude-opus-4-7")
 FALLBACK_PROVIDER = os.getenv("LLM_FALLBACK_PROVIDER", "zenmux")
-FALLBACK_MODEL = os.getenv("LLM_FALLBACK_MODEL", "x-ai/grok-4.5-free")
+FALLBACK_MODEL = os.getenv("LLM_FALLBACK_MODEL", "anthropic/claude-fable-5-free")
 FALLBACK2_PROVIDER = os.getenv("LLM_FALLBACK2_PROVIDER", "openrouter")
 FALLBACK2_MODEL = os.getenv("LLM_FALLBACK2_MODEL", "tencent/hy3:free")
 OPENROUTER_MODEL = PRIMARY_MODEL  # back-compat alias used in some logs
@@ -96,12 +103,13 @@ OPENROUTER_MODEL = PRIMARY_MODEL  # back-compat alias used in some logs
 # Per-provider model for SHARDING: round-robin the lead provider across apps to
 # spread load across free-tier rate limits (each provider still falls back to the others).
 PROVIDER_MODELS = {
+    "agentrouter": os.getenv("AGENTROUTER_MODEL", "claude-opus-4-7"),
     "zenmux": os.getenv("ZENMUX_MODEL", "x-ai/grok-4.5-free"),
     "openrouter": os.getenv("OPENROUTER_MODEL_ID", "google/gemma-4-31b-it:free"),
     "google": os.getenv("GOOGLE_MODEL", "gemini-2.5-flash"),
 }
 SHARD_PROVIDERS = [p.strip() for p in
-                   os.getenv("LLM_SHARD_PROVIDERS", "zenmux,google,openrouter").split(",") if p.strip()]
+                   os.getenv("LLM_SHARD_PROVIDERS", "agentrouter,zenmux,google,openrouter").split(",") if p.strip()]
 
 
 def keyed_shard_providers() -> list[str]:
@@ -121,6 +129,7 @@ def get_client(provider: str):
         raise RuntimeError(
             f"{provider.upper()}_API_KEY not set. Copy .env.example to .env and fill it in.")
     return OpenAI(base_url=cfg["base_url"], api_key=cfg["api_key"],
+                  timeout=LLM_TIMEOUT_SECONDS,
                   default_headers={"HTTP-Referer": _APP_URL, "X-Title": _APP_TITLE})
 
 

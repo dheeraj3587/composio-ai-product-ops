@@ -43,8 +43,8 @@ research.py (offline CLI = the agent)
 report/index.html + app.js   renders baked-in data.js  (Patterns → Matrix → Agent → Verification → Proof)
 ```
 
-**LLM = ZenMux → OpenRouter fallback chain** (both OpenAI-compatible). Default 3-tier chain:
-`anthropic/claude-fable-5-free` (Claude Fable 5, ZenMux) → `x-ai/grok-4.5-free` (Grok 4.5, ZenMux)
+**LLM = AgentRouter → ZenMux → OpenRouter fallback chain** (all OpenAI-compatible). Default 3-tier chain:
+`claude-opus-4-7` (AgentRouter, OpenAI-compatible `/v1`) → `anthropic/claude-fable-5-free` (ZenMux)
 → `tencent/hy3:free` (Tencent Hy3, OpenRouter) — configurable via
 `LLM_PROVIDER`/`LLM_MODEL`/`LLM_FALLBACK_*`/`LLM_FALLBACK2_*` (or a single `LLM_CHAIN`).
 `llm_json()` tries each tier until one succeeds. No second backend, no Docker, no headless browser in production.
@@ -75,9 +75,10 @@ cp .env.example .env       # then edit .env
 
 | Key | Purpose |
 |-----|---------|
-| `ZENMUX_API_KEY` | primary LLM provider (Claude Fable 5, then Grok 4.5) — required |
+| `AGENTROUTER_API_KEY` | preferred LLM provider for Claude Opus via OpenAI-compatible `https://agentrouter.org/v1`; `ANTHROPIC_AUTH_TOKEN` is also accepted as a fallback env name |
+| `ZENMUX_API_KEY` | fallback LLM provider (Claude Fable 5) |
 | `OPENROUTER_API_KEY` | last-resort fallback provider (Tencent Hy3) — recommended |
-| `LLM_MODEL` / `LLM_FALLBACK_MODEL` / `LLM_FALLBACK2_MODEL` | default `anthropic/claude-fable-5-free` → `x-ai/grok-4.5-free` → `tencent/hy3:free` |
+| `LLM_MODEL` / `LLM_FALLBACK_MODEL` / `LLM_FALLBACK2_MODEL` | default `claude-opus-4-7` → `anthropic/claude-fable-5-free` → `tencent/hy3:free` |
 | `COMPOSIO_API_KEY` | Composio toolkit lookup (recommended; HTTP-catalog fallback if absent) |
 | `TAVILY_API_KEY` / `SERPER_API_KEY` | *optional* better search; keyless DuckDuckGo is the default |
 
