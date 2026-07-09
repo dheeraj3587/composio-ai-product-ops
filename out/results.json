@@ -2858,28 +2858,30 @@
   {
     "app": "Consensus",
     "category": "AI/Meeting-tools",
-    "one_liner": "AI research platform providing programmatic access to peer-reviewed scientific literature and citations.",
+    "one_liner": "Consensus offers an official OAuth MCP server for peer-reviewed paper search; enterprise REST API is gated.",
     "auth_methods": [
-      "API Key"
+      "OAuth2",
+      "Bearer Token"
     ],
     "access_model": {
-      "kind": "Gated",
-      "note": "The official landing page requires users to 'Request access' to build with the API."
+      "kind": "Self-Serve",
+      "note": "Official MCP can be connected directly; free/pro accounts expand results. Enterprise API-key access requires contacting Consensus."
     },
     "api_type": "REST",
-    "api_breadth": "Narrow",
-    "existing_mcp": "None",
+    "api_breadth": "Moderate",
+    "existing_mcp": "Official",
     "composio_toolkit": "No",
     "buildability": "Moderate",
-    "main_blocker": "API access is not self-serve; requires a request for access via the website.",
-    "recommended_next_action": "Needs Outreach",
+    "main_blocker": "Enterprise REST API access is gated, but the official MCP server is usable now via OAuth or bearer token.",
+    "recommended_next_action": "Build Now",
     "evidence_urls": [
+      "https://docs.consensus.app/docs/mcp",
       "https://consensus.app/home/api/"
     ],
-    "confidence": 0.9,
+    "confidence": 0.93,
     "verification_status": "Auto",
     "slug": "consensus",
-    "primary_docs_url": "https://consensus.app/home/api/",
+    "primary_docs_url": "https://docs.consensus.app/docs/mcp",
     "rate_limit_note": "Not specified in provided evidence.",
     "last_verified": "2026-07-09"
   },

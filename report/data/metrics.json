@@ -183,14 +183,14 @@
       "Blocked": 3
     },
     "recommended_next_action": {
-      "Build Now": 78,
+      "Build Now": 79,
       "Partner-Gated": 6,
-      "Needs Outreach": 14,
+      "Needs Outreach": 13,
       "Blocked": 2
     },
     "access_model": {
-      "Self-Serve": 80,
-      "Gated": 20
+      "Self-Serve": 81,
+      "Gated": 19
     },
     "api_type": {
       "REST": 92,
@@ -199,8 +199,8 @@
       "MCP-only": 1
     },
     "existing_mcp": {
-      "Official": 61,
-      "None": 35,
+      "Official": 62,
+      "None": 34,
       "Community": 4
     },
     "composio_toolkit": {
@@ -210,15 +210,15 @@
     "auth_methods_top": [
       [
         "OAuth2",
-        58
+        59
       ],
       [
         "API Key",
-        50
+        49
       ],
       [
         "Bearer Token",
-        22
+        23
       ],
       [
         "Basic Auth",
@@ -277,8 +277,8 @@
         "Gated": 5
       },
       "AI/Meeting-tools": {
-        "Gated": 2,
-        "Self-Serve": 8
+        "Gated": 1,
+        "Self-Serve": 9
       }
     },
     "top_blockers": [
@@ -307,7 +307,7 @@
         1
       ]
     ],
-    "build_now": 78,
+    "build_now": 79,
     "partner_gated": 6,
     "avg_confidence": 0.88
   },

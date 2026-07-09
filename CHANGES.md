@@ -5,7 +5,7 @@ before shipping (evidence URLs curl-checked to HTTP 200, dataset re-validated ag
 locked schema, page re-render asserted). Numbers on the report regenerate from data — no
 hand-edited HTML stats.
 
-## 1. Data: `existing_mcp` false negatives (29 rows) — the big one
+## 1. Data: `existing_mcp` false negatives (30 rows) — the big one
 
 The first batch derived `existing_mcp` from API-reference evidence. API reference pages
 almost never mention MCP, so multiple apps with **official** MCP servers were marked
@@ -13,7 +13,7 @@ almost never mention MCP, so multiple apps with **official** MCP servers were ma
 Vercel, MongoDB Atlas, Jira (Atlassian), HubSpot, Klaviyo, and Shopify; a deeper
 official-doc sweep added Slack, Airtable, Ramp, Twilio, Vonage, DataForSEO, Freshdesk,
 GoHighLevel, Gorgias, Podio, QuickBooks, Salesforce, Snowflake, WooCommerce, Zoho CRM,
-Zoho Cliq, and systeme.io. The original audit stress-checked only "Official" claims
+Zoho Cliq, systeme.io, and Consensus. The original audit stress-checked only "Official" claims
 (false positives), never "None" claims — a one-directional audit.
 
 - Fixed in `corrections.py` → `MCP_OFFICIAL_FIXES` (each row gets the vendor's own MCP
@@ -24,7 +24,7 @@ Zoho Cliq, and systeme.io. The original audit stress-checked only "Official" cla
 - Prevented at the source: `docs_research.gather_mcp_evidence()` now runs a dedicated
   `"<app> official MCP server"` search + fetch per app, and `synthesis.py` instructs the
   model to base `existing_mcp` on that block (absence in API docs proves nothing).
-- Headline stat moved **35 → 61 official MCP** after adding 29 false negatives and removing
+- Headline stat moved **35 → 62 official MCP** after adding 30 false negatives and removing
   3 unsupported official claims.
 
 ## 2. Data: hand-check auth folds + stale auth facts (5 rows)

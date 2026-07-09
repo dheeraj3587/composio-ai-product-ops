@@ -548,6 +548,24 @@ OVERRIDES: dict[str, dict] = {
         ],
         "confidence": 0.9,
     },
+    "consensus": {
+        "one_liner": "Consensus offers an official OAuth MCP server for peer-reviewed paper search; enterprise REST API is gated.",
+        "auth_methods": ["OAuth2", "Bearer Token"],
+        "access_model": {"kind": "Self-Serve",
+                         "note": "Official MCP can be connected directly; free/pro accounts expand results. Enterprise API-key access requires contacting Consensus."},
+        "api_type": "REST",
+        "api_breadth": "Moderate",
+        "existing_mcp": "Official",
+        "buildability": "Moderate",
+        "recommended_next_action": "Build Now",
+        "main_blocker": "Enterprise REST API access is gated, but the official MCP server is usable now via OAuth or bearer token.",
+        "primary_docs_url": "https://docs.consensus.app/docs/mcp",
+        "evidence_urls": [
+            "https://docs.consensus.app/docs/mcp",
+            "https://consensus.app/home/api/",
+        ],
+        "confidence": 0.93,
+    },
     # --- existing_mcp false-positive corrections (verified against vendor docs;
     #     do not count third-party MCP wrappers as first-party official servers) ---
     "binance": {"existing_mcp": "Community"},   # only community/third-party MCPs found, no official
@@ -676,6 +694,7 @@ MCP_OFFICIAL_FIXES: dict[str, str] = {
     "zoho-crm": "https://www.zoho.com/crm/developer/docs/mcp/overview.html",
     "zoho-cliq": "https://www.zoho.com/cliq/help/platform/zoho-cliq-mcp.html",
     "systeme-io": "https://help.systeme.io/article/9489-how-to-use-systeme-ios-mcp",
+    "consensus": "https://docs.consensus.app/docs/mcp",
 }
 
 # Evidence URLs to APPEND (never replace) for rows whose fix is sourced from a

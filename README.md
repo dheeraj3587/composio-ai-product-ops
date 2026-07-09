@@ -27,12 +27,12 @@ clear cross-app patterns second, honest verification third.
 - **Browser-Use Cloud loop:** 12 apps re-checked against live docs; caught **6** first-pass errors
   static fetch missed (e.g. Copper and Plain, which the first pass had wrongly marked "no API").
 - **existing_mcp false-negative sweep:** the first batch derived `existing_mcp` from API-reference
-  pages (which rarely mention MCP) and marked **29 official MCP servers as "None"** across two
+  pages (which rarely mention MCP) and marked **30 official MCP servers as "None"** across two
   review sweeps — including GitHub, Stripe, Cloudflare, Slack, Airtable, Ramp, Twilio, Salesforce,
-  Snowflake, WooCommerce, Zoho CRM, and others. Each fixed row carries the vendor's own MCP page as
+  Snowflake, WooCommerce, Zoho CRM, Consensus, and others. Each fixed row carries the vendor's own MCP page as
   evidence, the corrections are centralized in `corrections.py`, and future runs get a dedicated MCP
   probe in `docs_research.py`. A follow-up false-positive audit also downgraded 3 unsupported
-  `Official` claims, so the final official MCP count moved **35 → 61**.
+  `Official` claims, so the final official MCP count moved **35 → 62**.
 - **Two named patterns:** *"API exists ≠ API is accessible"* (WhatsApp/Meta/LinkedIn/Google Ads have
   APIs but gate access behind review/verification) and *"good API, no entry point"* (DealCloud-style:
   solid API, but keys require being an existing paying customer → Partner-Gated).

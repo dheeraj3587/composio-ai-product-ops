@@ -61,6 +61,7 @@ MCP_OFFICIAL_SEEDS = {
     "zoho-crm": ["https://www.zoho.com/crm/developer/docs/mcp/overview.html"],
     "zoho-cliq": ["https://www.zoho.com/cliq/help/platform/zoho-cliq-mcp.html"],
     "systeme-io": ["https://help.systeme.io/article/9489-how-to-use-systeme-ios-mcp"],
+    "consensus": ["https://docs.consensus.app/docs/mcp"],
     "xero": ["https://github.com/xeroapi/xero-mcp-server"],
     "attio": ["https://docs.attio.com/mcp/overview"],
     "close": ["https://help.close.com/docs/mcp-server"],
