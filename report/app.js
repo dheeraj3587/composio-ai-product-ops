@@ -310,6 +310,10 @@ function renderVerification() {
   const blindText = v.n_verified
     ? `${v.n_verified} apps re-researched from scratch (fresh query, blind to pass 1); agreement ${pct(v.overall_agreement_rate)}. Agreement is reproducibility, not accuracy.`
     : "No blind re-search agreement has been recorded yet.";
+  const bu = metrics.browser_use || {};
+  const browserText = bu.n_checked
+    ? `${bu.n_checked} apps independently checked by a live browser agent (Browser Use Cloud) navigating real docs — found ${bu.n_corrections_found} first-pass errors it caught that static fetch missed${bu.corrected_apps && bu.corrected_apps.length ? " (e.g. " + bu.corrected_apps.slice(0, 4).join(", ") + ")" : ""}.`
+    : "Browser Use Cloud loop not yet recorded for this run.";
   const moveText = (am.first_pass_accuracy != null)
     ? `The loops (browser-use + blind re-search + hand-check) moved hand-checked accuracy from ${pct(am.first_pass_accuracy)} on the first pass to ${pct(am.post_verification_accuracy)} — ${(am.improved_apps || []).length} apps corrected, ${(am.regressed_apps || []).length} regressed.`
     : "";
@@ -317,6 +321,7 @@ function renderVerification() {
   const cards = [
     `<article class="proof"><h3>Hand-Checked Accuracy (ground truth)</h3><p>${esc(handText)}</p></article>`,
     `<article class="proof"><h3>Blind Re-Search Agreement</h3><p>${esc(blindText)}</p></article>`,
+    `<article class="proof"><h3>Browser-Use Verification (live docs)</h3><p>${esc(browserText)}</p></article>`,
   ];
   if (moveText) {
     cards.push(`<article class="proof"><h3>Accuracy Movement</h3><p>${esc(moveText)}</p></article>`);

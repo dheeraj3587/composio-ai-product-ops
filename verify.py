@@ -183,12 +183,36 @@ def run_verification(sample_size: int | None = None, model: str | None = None) -
     return verification
 
 
+def _browser_use_summary() -> dict:
+    """Summarize the Browser Use Cloud verification loop (out/browser_verification.json),
+    if present, so the report can name it as a distinct, real loop."""
+    data = config.load_json(config.OUT_DIR / "browser_verification.json", default=[]) or []
+    if not data:
+        return {}
+    corrected = []
+    for row in data:
+        fp, b = row.get("first_pass", {}), row.get("browser", {})
+        if fp.get("api_type") != b.get("api_type") or fp.get("access_model") != b.get("access_model"):
+            corrected.append(row.get("slug"))
+    return {
+        "method": ("A cloud browser agent (Browser Use Cloud) independently navigated each app's "
+                   "live developer docs and re-derived API type, auth, and access model — a channel "
+                   "independent of the pipeline's own search+fetch and LLM synthesis."),
+        "n_checked": len(data),
+        "n_corrections_found": len(corrected),
+        "corrected_apps": corrected,
+    }
+
+
 def rebuild_metrics() -> dict:
     """Recompute patterns from current results.json and assemble the two labeled numbers."""
     results = config.load_json(config.RESULTS_PATH) or []
     metrics = config.load_json(config.METRICS_PATH, default={}) or {}
     metrics["patterns"] = pipeline.compute_aggregates(results)
     metrics["n_results"] = len(results)
+    bu = _browser_use_summary()
+    if bu:
+        metrics["browser_use"] = bu
     ver = metrics.get("verification", {})
     hc = metrics.get("handcheck", {})
     metrics["headline_accuracy"] = {

@@ -36,7 +36,9 @@ load_dotenv()
 ROOT = Path(__file__).resolve().parent
 RESULTS = ROOT / "out" / "results.json"
 OUT = ROOT / "out" / "browser_verification.json"
-DEFAULT_LLM = "claude-opus-4-5-20251101"
+DEFAULT_LLM = "claude-opus-4-7"  # newest Opus-tier model Browser Use Cloud currently accepts
+                                  # (verified live against the tasks API; gpt-5.5 / opus-4.8
+                                  # are rejected with a 422 as of this writing — not yet onboarded)
 
 
 class AppVerdict(BaseModel):

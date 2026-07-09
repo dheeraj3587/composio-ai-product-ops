@@ -498,5 +498,18 @@
     "generated": "2026-07-09"
   },
   "repo_url": "https://github.com/dheeraj3587/composio-ai-product-ops",
-  "live_url": "https://composio-ai-product-ops.vercel.app"
+  "live_url": "https://composio-ai-product-ops.vercel.app",
+  "browser_use": {
+    "method": "A cloud browser agent (Browser Use Cloud) independently navigated each app's live developer docs and re-derived API type, auth, and access model — a channel independent of the pipeline's own search+fetch and LLM synthesis.",
+    "n_checked": 12,
+    "n_corrections_found": 6,
+    "corrected_apps": [
+      "copper",
+      "plain",
+      "ipayx",
+      "whatsapp-business",
+      "google-ads",
+      "pinterest"
+    ]
+  }
 }
