@@ -5,7 +5,7 @@ An autonomous pipeline that researches the **API integration readiness of 100 ap
 findings**, folds in a hand-checked sample, and renders everything on a **single
 static HTML page**.
 
-> **Live report:** _add your Vercel URL_ · **Repo:** _add your GitHub URL_
+> **Live report:** https://composio-ai-product-ops.vercel.app · **Repo:** https://github.com/dheeraj3587/composio-ai-product-ops
 
 Built for the accuracy-first grading bar: correct facts about auth/access/API surface
 first, clear cross-app patterns second, honest verification third.
@@ -64,7 +64,7 @@ report/index.html + app.js   renders baked-in data.js  (Patterns → Matrix → 
 ## Quickstart
 
 ```bash
-git clone <YOUR-REPO-URL> && cd composio
+git clone https://github.com/dheeraj3587/composio-ai-product-ops.git && cd composio-ai-product-ops
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
