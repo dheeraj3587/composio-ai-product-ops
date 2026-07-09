@@ -67,6 +67,7 @@ def fold() -> dict:
 
     n = api_n = api_hits = auth_hits = access_hits = 0
     misses = []
+    checked = []
     for row in rows:
         slug, truth = row["slug"], row["truth"]
         rec = by_slug.get(slug)
@@ -95,6 +96,9 @@ def fold() -> dict:
         if not ac:
             misses.append({"slug": slug, "app": row.get("app", slug), "field": "access_model",
                            "current": cur_access, "truth": truth.get("access_model"), "notes": truth.get("notes", "")})
+        checked.append({"slug": slug, "app": row.get("app", slug),
+                        "api_ok": (rec.get("api_type") == truth.get("api_type")) if truth.get("api_type") else None,
+                        "auth_ok": bool(aa), "access_ok": bool(ac)})
 
     order = {a["slug"]: i for i, a in enumerate(pipeline.load_apps())}
     config.save_json(config.RESULTS_PATH, sorted(by_slug.values(), key=lambda r: order.get(r["slug"], 10_000)))
@@ -109,6 +113,7 @@ def fold() -> dict:
         "access_accuracy": round(access_hits / n, 3) if n else None,
         "accuracy": round((api_hits + auth_hits + access_hits) / total, 3) if total else None,
         "misses": misses,
+        "checked": checked,
         "generated": dt.date.today().isoformat(),
     }
     metrics = config.load_json(config.METRICS_PATH, default={}) or {}

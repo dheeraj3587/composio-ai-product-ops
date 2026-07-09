@@ -29,6 +29,15 @@ from schema import (
     validate_record,
 )
 
+
+def _clip120(text: str, limit: int = 120) -> str:
+    """Fit within `limit` chars WITHOUT chopping mid-word (cut at the last space)."""
+    text = (text or "").strip()
+    if len(text) <= limit:
+        return text
+    cut = text[: limit - 1].rsplit(" ", 1)[0].rstrip(" ,;:-")
+    return (cut + "\u2026") if cut else text[:limit]
+
 SYSTEM = """You are an API-integration analyst. From the evidence provided, produce a STRICT JSON record about ONE app's API integration readiness.
 
 Hard rules:
@@ -149,10 +158,10 @@ def synthesize(
     record = {
         "app": app_meta["app"],
         "category": app_meta["category"],
-        "one_liner": (
+        "one_liner": _clip120(
             parsed.get("one_liner")
             or f"{app_meta['app']}: readiness assessed from public docs."
-        ).strip()[:120],
+        ),
         "auth_methods": normalize.normalize_auth_list(parsed.get("auth_methods") or []),
         "access_model": {
             "kind": _pick(am.get("kind"), _KIND, "Gated"),

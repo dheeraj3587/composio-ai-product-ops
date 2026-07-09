@@ -50,6 +50,127 @@
         "notes": "REST; self-serve app + OAuth."
       }
     ],
+    "checked": [
+      {
+        "slug": "copper",
+        "app": "Copper",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "plain",
+        "app": "Plain",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "pumble",
+        "app": "Pumble",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "salesforce",
+        "app": "Salesforce",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "meta-ads",
+        "app": "Meta Ads",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "dealcloud",
+        "app": "DealCloud",
+        "api_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "gladly",
+        "app": "Gladly",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "whatsapp-business",
+        "app": "WhatsApp Business",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "google-ads",
+        "app": "Google Ads",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "linkedin-ads",
+        "app": "LinkedIn Ads",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "pinterest",
+        "app": "Pinterest",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "stripe",
+        "app": "Stripe",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "github",
+        "app": "GitHub",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "notion",
+        "app": "Notion",
+        "api_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "slack",
+        "app": "Slack",
+        "api_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "twilio",
+        "app": "Twilio",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "amazon-selling-partner",
+        "app": "Amazon Selling Partner",
+        "api_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      }
+    ],
     "generated": "2026-07-09"
   },
   "patterns": {

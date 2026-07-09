@@ -250,7 +250,7 @@
   {
     "app": "Copper",
     "category": "CRM",
-    "one_liner": "Copper provides a comprehensive REST API for managing CRM entities including leads, people, companies, and opportunities",
+    "one_liner": "Copper provides a comprehensive REST CRM API for leads, people, companies, and opportunities.",
     "auth_methods": [
       "API Key",
       "OAuth2"
@@ -837,7 +837,7 @@
   {
     "app": "WhatsApp Business",
     "category": "Comms",
-    "one_liner": "WhatsApp Business Cloud API is broad REST messaging with free sandbox, but production needs Meta verification + app revi",
+    "one_liner": "WhatsApp Business Cloud API: broad REST messaging with a free sandbox; production needs Meta verification + app review.",
     "auth_methods": [
       "OAuth2",
       "Bearer Token"
@@ -1175,7 +1175,7 @@
   {
     "app": "Threads (Meta)",
     "category": "Ads/Marketing",
-    "one_liner": "Meta's Threads API allows for automated posting, media retrieval, reply management, and insights for creators and brands",
+    "one_liner": "Meta's Threads API supports automated posting, media retrieval, reply management, and insights for creators/brands.",
     "auth_methods": [
       "OAuth2"
     ],
@@ -1478,7 +1478,7 @@
   {
     "app": "Amazon Selling Partner",
     "category": "Commerce",
-    "one_liner": "REST-based API for Amazon sellers to manage catalogs, orders, and fulfillment via a gated developer registration process",
+    "one_liner": "REST API for Amazon sellers to manage catalogs, orders, and fulfillment; gated developer registration required.",
     "auth_methods": [
       "OAuth2"
     ],
@@ -2390,7 +2390,7 @@
   {
     "app": "Smartsheet",
     "category": "Productivity/PM",
-    "one_liner": "Smartsheet provides a comprehensive REST API with SDKs and an official MCP server for productivity and project managemen",
+    "one_liner": "Smartsheet offers a comprehensive REST API with SDKs and an official MCP server for project management.",
     "auth_methods": [
       "API Key",
       "OAuth2"
@@ -2421,7 +2421,7 @@
   {
     "app": "Harvest",
     "category": "Productivity/PM",
-    "one_liner": "Harvest provides a comprehensive REST API for time tracking, invoicing, and project management with OAuth2 and PAT suppo",
+    "one_liner": "Harvest offers a comprehensive REST API for time tracking, invoicing, and projects, with OAuth2 and PAT support.",
     "auth_methods": [
       "OAuth2",
       "Personal Access Token"
@@ -2569,7 +2569,7 @@
   {
     "app": "iPayX",
     "category": "Fintech",
-    "one_liner": "iPayX provides an FX Audit API, though detailed access and endpoint documentation are not fully available in the provide",
+    "one_liner": "iPayX exposes an FX Audit API, but public endpoint documentation is thin and not fully verifiable.",
     "auth_methods": [
       "API Key",
       "Bearer Token"
@@ -2863,7 +2863,7 @@
   {
     "app": "Reducto",
     "category": "AI/Meeting-tools",
-    "one_liner": "Agentic document platform providing APIs for parsing, extraction, classification, splitting, and editing of 30+ file typ",
+    "one_liner": "Agentic document API for parsing, extraction, classification, splitting, and editing across 30+ file types.",
     "auth_methods": [
       "API Key"
     ],
@@ -2924,7 +2924,7 @@
   {
     "app": "higgsfield",
     "category": "AI/Meeting-tools",
-    "one_liner": "Higgsfield offers a REST API with API key authentication for integrating generative AI models, accessible via a self-ser",
+    "one_liner": "Higgsfield offers a self-serve REST API with API-key auth for integrating generative AI models.",
     "auth_methods": [
       "API Key"
     ],

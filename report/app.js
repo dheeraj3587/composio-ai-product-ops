@@ -312,14 +312,32 @@ function renderVerification() {
     : "No blind re-search agreement has been recorded yet.";
   const bu = metrics.browser_use || {};
   const browserText = bu.n_checked
-    ? `${bu.n_checked} apps independently checked by a live browser agent (Browser Use Cloud) navigating real docs — found ${bu.n_corrections_found} first-pass errors it caught that static fetch missed${bu.corrected_apps && bu.corrected_apps.length ? " (e.g. " + bu.corrected_apps.slice(0, 4).join(", ") + ")" : ""}.`
+    ? `${bu.n_checked} apps independently checked by a live browser agent (Browser Use Cloud) navigating real docs — found ${bu.n_corrections_found} first-pass errors static fetch missed${bu.corrected_apps && bu.corrected_apps.length ? ": " + bu.corrected_apps.join(", ") : ""}.`
     : "Browser Use Cloud loop not yet recorded for this run.";
   const moveText = (am.first_pass_accuracy != null)
     ? `The loops (browser-use + blind re-search + hand-check) moved hand-checked accuracy from ${pct(am.first_pass_accuracy)} on the first pass to ${pct(am.post_verification_accuracy)} — ${(am.improved_apps || []).length} apps corrected, ${(am.regressed_apps || []).length} regressed.`
     : "";
 
+  const missBy = {};
+  (h.misses || []).forEach((m) => {
+    const f = String(m.field || "").replace("_methods", "").replace("_model", "");
+    (missBy[m.slug] = missBy[m.slug] || []).push(f);
+  });
+  const missList = (h.misses || []).map((m) => {
+    const had = Array.isArray(m.current) ? m.current.join(", ") : (m.current == null ? "—" : m.current);
+    const should = Array.isArray(m.truth) ? m.truth.join(", ") : (m.truth == null ? "—" : m.truth);
+    return `<li><b>${esc(m.app)}</b> — ${esc(m.field)}: had '${esc(had)}', should be '${esc(should)}'</li>`;
+  }).join("");
+  const checkedList = (h.checked || []).map((c) => {
+    const miss = missBy[c.slug];
+    return `<span class="pill ${miss ? "amber" : "green"}">${esc(c.app)}${miss ? " · " + esc(miss.join("/")) : ""}</span>`;
+  }).join(" ");
+  const handCard = `<article class="proof"><h3>Hand-Checked Accuracy (ground truth)</h3><p>${esc(handText)}</p>`
+    + (missList ? `<p class="subtle" style="margin:10px 0 4px">The ${(h.misses || []).length} misses (shown, not hidden):</p><ul style="margin:0 0 6px 18px; padding:0">${missList}</ul>` : "")
+    + (checkedList ? `<p class="subtle" style="margin:10px 0 6px">All ${(h.checked || []).length} hand-checked apps (amber = a field we got wrong):</p><div style="display:flex; flex-wrap:wrap; gap:6px">${checkedList}</div>` : "")
+    + `</article>`;
   const cards = [
-    `<article class="proof"><h3>Hand-Checked Accuracy (ground truth)</h3><p>${esc(handText)}</p></article>`,
+    handCard,
     `<article class="proof"><h3>Blind Re-Search Agreement</h3><p>${esc(blindText)}</p></article>`,
     `<article class="proof"><h3>Browser-Use Verification (live docs)</h3><p>${esc(browserText)}</p></article>`,
   ];

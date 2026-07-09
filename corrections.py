@@ -207,6 +207,20 @@ OVERRIDES: dict[str, dict] = {
     },
 }
 
+# Full, accurate one-liners (<=120 chars) that REPLACE 9 the old synthesis hard-truncated
+# mid-word via [:120]. Complete sentences, written within the limit.
+ONE_LINERS = {
+    "copper": "Copper provides a comprehensive REST CRM API for leads, people, companies, and opportunities.",
+    "whatsapp-business": "WhatsApp Business Cloud API: broad REST messaging with a free sandbox; production needs Meta verification + app review.",
+    "threads": "Meta's Threads API supports automated posting, media retrieval, reply management, and insights for creators/brands.",
+    "amazon-selling-partner": "REST API for Amazon sellers to manage catalogs, orders, and fulfillment; gated developer registration required.",
+    "smartsheet": "Smartsheet offers a comprehensive REST API with SDKs and an official MCP server for project management.",
+    "harvest": "Harvest offers a comprehensive REST API for time tracking, invoicing, and projects, with OAuth2 and PAT support.",
+    "ipayx": "iPayX exposes an FX Audit API, but public endpoint documentation is thin and not fully verifiable.",
+    "reducto": "Agentic document API for parsing, extraction, classification, splitting, and editing across 30+ file types.",
+    "higgsfield": "Higgsfield offers a self-serve REST API with API-key auth for integrating generative AI models.",
+}
+
 
 def apply() -> None:
     rows = config.load_json(config.RESULTS_PATH) or []
@@ -228,6 +242,9 @@ def apply() -> None:
         if ov:
             for k, v in ov.items():
                 r[k] = v
+        # replace one-liners the OLD synthesis truncated mid-word with full sentences
+        if r["slug"] in ONE_LINERS:
+            r["one_liner"] = ONE_LINERS[r["slug"]]
         # undo the weak-model verify penalty: restore first-pass self-score where an
         # app that has NO manual override was dragged down by the blind re-search pass.
         if r["slug"] not in OVERRIDES and fp.get(r["slug"]) and fp[r["slug"]] > r.get("confidence", 0):
