@@ -53,6 +53,14 @@ def generate_template(n: int = 18) -> dict:
         "rows": rows,
     }
     config.ensure_dirs()
+    # NEVER clobber human-filled ground truth: if handcheck.json already has
+    # filled rows, write the fresh template alongside it instead.
+    existing = config.load_json(config.HANDCHECK_PATH) or {}
+    if any(r.get("filled") for r in existing.get("rows", [])):
+        alt = config.HANDCHECK_PATH.with_name("handcheck.template.json")
+        config.save_json(alt, payload)
+        print(f"handcheck.json already contains filled truth — wrote template to {alt} instead")
+        return payload
     config.save_json(config.HANDCHECK_PATH, payload)
     print(f"wrote {len(rows)} hand-check rows -> {config.HANDCHECK_PATH}")
     return payload
@@ -75,7 +83,11 @@ def fold() -> dict:
             continue
         n += 1
         rec["verification_status"] = "Hand-Checked"
-        cur_auth = rec.get("auth_methods", [])
+        # Canonicalize BOTH sides before comparing. verify._auth_agree squashes
+        # raw strings, so comparing canonical truth against raw record labels
+        # would count pure label-format differences ("OAuth 2.0" vs "OAuth2")
+        # as factual misses.
+        cur_auth = normalize.normalize_auth_list(rec.get("auth_methods", []))
         truth_auth = normalize.normalize_auth_list(truth.get("auth_methods") or [])
         aa = verify._auth_agree(cur_auth, truth_auth)
         cur_access = (rec.get("access_model") or {}).get("kind")
@@ -126,9 +138,16 @@ def fold() -> dict:
 
 
 def _score_record(rec: dict, truth: dict):
-    """Field-level match of a record against hand truth (api_type + auth + access)."""
+    """Field-level match of a record against hand truth (api_type + auth + access).
+
+    Both auth lists are canonicalized first so the score reflects FACTUAL
+    correctness, not label formatting. (The original version canonicalized only
+    the truth side, which penalized first-pass records for spellings like
+    "OAuth 2.0" vs "OAuth2" / "API Token" vs "API Key" and inflated the apparent
+    movement: 8 of 19 first-pass 'misses' were label artifacts, not wrong facts.
+    Honest movement under consistent scoring: 78.4% -> 94.1%, not 62.7% -> 94.1%.)"""
     checks = [
-        ("auth_methods", verify._auth_agree(rec.get("auth_methods", []),
+        ("auth_methods", verify._auth_agree(normalize.normalize_auth_list(rec.get("auth_methods", [])),
                                             normalize.normalize_auth_list(truth.get("auth_methods") or []))),
         ("access_model", (rec.get("access_model", {}) or {}).get("kind") == truth.get("access_model")),
     ]
@@ -169,7 +188,10 @@ def accuracy_movement() -> dict:
 
     mv = {
         "method": ("Field-level accuracy (api_type + auth_methods + access_model) vs hand-verified "
-                   "truth, comparing the first-pass snapshot to the post-verification results."),
+                   "truth, comparing the first-pass snapshot to the post-verification results. "
+                   "Both sides canonicalized before comparison, so the delta reflects factual "
+                   "corrections only — label normalization (e.g. 'OAuth 2.0' -> 'OAuth2') is "
+                   "counted separately, not as accuracy."),
         "n": len(rows),
         "first_pass_accuracy": round(fh / ft, 3) if ft else None,
         "post_verification_accuracy": round(ch / ct, 3) if ct else None,
