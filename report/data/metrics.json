@@ -1,0 +1,260 @@
+{
+  "handcheck": {
+    "method": "Human verification of the two highest-risk fields (auth_methods, access_model) against primary docs; ~5 min/app (Flag E).",
+    "n": 17,
+    "auth_accuracy": null,
+    "access_accuracy": null,
+    "accuracy": 0.725,
+    "misses": [],
+    "generated": "2026-07-09"
+  },
+  "patterns": {
+    "n": 100,
+    "buildability": {
+      "Moderate": 9,
+      "Easy": 77,
+      "Hard": 11,
+      "Blocked": 3
+    },
+    "recommended_next_action": {
+      "Build Now": 78,
+      "Partner-Gated": 6,
+      "Needs Outreach": 13,
+      "Blocked": 3
+    },
+    "access_model": {
+      "Self-Serve": 79,
+      "Gated": 21
+    },
+    "api_type": {
+      "REST": 92,
+      "GraphQL": 4,
+      "None": 3,
+      "SDK": 1
+    },
+    "existing_mcp": {
+      "None": 63,
+      "Official": 36,
+      "Community": 1
+    },
+    "composio_toolkit": {
+      "Yes": 51,
+      "No": 49
+    },
+    "auth_methods_top": [
+      [
+        "API Key",
+        27
+      ],
+      [
+        "OAuth",
+        22
+      ],
+      [
+        "OAuth 2.0",
+        18
+      ],
+      [
+        "Bearer Token",
+        11
+      ],
+      [
+        "OAuth2",
+        6
+      ],
+      [
+        "Basic Auth",
+        4
+      ],
+      [
+        "Personal Access Token",
+        4
+      ],
+      [
+        "API token",
+        3
+      ]
+    ],
+    "access_by_category": {
+      "CRM": {
+        "Self-Serve": 9,
+        "Gated": 1
+      },
+      "Support": {
+        "Self-Serve": 9,
+        "Gated": 1
+      },
+      "Comms": {
+        "Self-Serve": 9,
+        "Gated": 1
+      },
+      "Ads/Marketing": {
+        "Gated": 5,
+        "Self-Serve": 5
+      },
+      "Commerce": {
+        "Self-Serve": 7,
+        "Gated": 3
+      },
+      "Research/Scraping": {
+        "Self-Serve": 7,
+        "Gated": 3
+      },
+      "DevInfra": {
+        "Self-Serve": 10
+      },
+      "Productivity/PM": {
+        "Self-Serve": 10
+      },
+      "Fintech": {
+        "Self-Serve": 6,
+        "Gated": 4
+      },
+      "AI/Meeting-tools": {
+        "Gated": 3,
+        "Self-Serve": 7
+      }
+    },
+    "top_blockers": [
+      [
+        "No usable entry without an existing paid DealCloud site whose admin can issue API keys; no public trial/self-serve path found.",
+        1
+      ],
+      [
+        "No entry without an existing Gladly customer account to mint API tokens",
+        1
+      ],
+      [
+        "API exists but requires Meta business verification + app review before production access.",
+        1
+      ],
+      [
+        "Gated access model plus OAuth (not instant self-serve); developer-token approval not fully detailed in provided excerpts",
+        1
+      ],
+      [
+        "Marketing API requires Meta app authorization; app review and business verification commonly block production use (preseed; not spelled out in fetched text).",
+        1
+      ],
+      [
+        "Marketing API access requires LinkedIn Marketing Developer Platform / partner approval.",
+        1
+      ]
+    ],
+    "build_now": 78,
+    "partner_gated": 6,
+    "avg_confidence": 0.9
+  },
+  "n_results": 100,
+  "headline_accuracy": {
+    "hand_checked_accuracy": {
+      "value": 0.725,
+      "n": 17,
+      "label": "Hand-checked accuracy (ground truth)"
+    },
+    "automated_agreement": {
+      "value": null,
+      "n": null,
+      "label": "Automated blind re-search agreement (not accuracy)"
+    }
+  },
+  "generated": "2026-07-09",
+  "accuracy_movement": {
+    "method": "Field-level accuracy (api_type + auth_methods + access_model) vs hand-verified truth, comparing the first-pass snapshot to the post-verification results.",
+    "n": 17,
+    "first_pass_accuracy": 0.647,
+    "post_verification_accuracy": 0.725,
+    "improved_apps": [
+      "copper",
+      "plain"
+    ],
+    "regressed_apps": [],
+    "per_app": [
+      {
+        "slug": "copper",
+        "first_pass": "0/3",
+        "post_verification": "2/3"
+      },
+      {
+        "slug": "plain",
+        "first_pass": "0/3",
+        "post_verification": "2/3"
+      },
+      {
+        "slug": "pumble",
+        "first_pass": "3/3",
+        "post_verification": "3/3"
+      },
+      {
+        "slug": "salesforce",
+        "first_pass": "2/3",
+        "post_verification": "2/3"
+      },
+      {
+        "slug": "meta-ads",
+        "first_pass": "2/3",
+        "post_verification": "2/3"
+      },
+      {
+        "slug": "dealcloud",
+        "first_pass": "2/3",
+        "post_verification": "2/3"
+      },
+      {
+        "slug": "gladly",
+        "first_pass": "3/3",
+        "post_verification": "3/3"
+      },
+      {
+        "slug": "whatsapp-business",
+        "first_pass": "2/3",
+        "post_verification": "2/3"
+      },
+      {
+        "slug": "google-ads",
+        "first_pass": "2/3",
+        "post_verification": "2/3"
+      },
+      {
+        "slug": "linkedin-ads",
+        "first_pass": "2/3",
+        "post_verification": "2/3"
+      },
+      {
+        "slug": "pinterest",
+        "first_pass": "2/3",
+        "post_verification": "2/3"
+      },
+      {
+        "slug": "stripe",
+        "first_pass": "3/3",
+        "post_verification": "3/3"
+      },
+      {
+        "slug": "github",
+        "first_pass": "2/3",
+        "post_verification": "2/3"
+      },
+      {
+        "slug": "notion",
+        "first_pass": "2/3",
+        "post_verification": "2/3"
+      },
+      {
+        "slug": "slack",
+        "first_pass": "2/3",
+        "post_verification": "2/3"
+      },
+      {
+        "slug": "twilio",
+        "first_pass": "2/3",
+        "post_verification": "2/3"
+      },
+      {
+        "slug": "amazon-selling-partner",
+        "first_pass": "2/3",
+        "post_verification": "2/3"
+      }
+    ]
+  }
+}

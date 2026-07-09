@@ -1,0 +1,306 @@
+[
+  {
+    "slug": "copper",
+    "app": "Copper",
+    "first_pass": {
+      "api_type": "None",
+      "auth_methods": [],
+      "access_model": "Gated",
+      "recommended_next_action": "Blocked",
+      "confidence": 0.35
+    },
+    "browser": {
+      "slug": "copper",
+      "app": "Copper",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "API Key",
+        "OAuth2.0"
+      ],
+      "access_model": "Gated",
+      "evidence_url": "https://developer.copper.com/introduction/authentication.html",
+      "notes": "REST API for CRM data management. Requires being a Copper customer to generate API keys from Settings."
+    }
+  },
+  {
+    "slug": "plain",
+    "app": "Plain",
+    "first_pass": {
+      "api_type": "None",
+      "auth_methods": [],
+      "access_model": "Gated",
+      "recommended_next_action": "Blocked",
+      "confidence": 0.35
+    },
+    "browser": {
+      "slug": "plain",
+      "app": "Plain",
+      "has_public_api": true,
+      "api_type": "GraphQL",
+      "auth_methods": [
+        "API Key"
+      ],
+      "access_model": "Gated",
+      "evidence_url": "https://www.plain.com/docs/graphql/authentication",
+      "notes": "GraphQL API for customer support platform. Requires Plain workspace to generate API keys from Settings > API Keys."
+    }
+  },
+  {
+    "slug": "ipayx",
+    "app": "iPayX",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [],
+      "access_model": "Gated",
+      "recommended_next_action": "Needs Outreach",
+      "confidence": 0.4
+    },
+    "browser": {
+      "slug": "ipayx",
+      "app": "iPayX",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "API Key",
+        "Bearer Token"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://www.ipayx.ai/developers",
+      "notes": "REST API with MCP support for payment protocol. Create account and get API key directly through developer portal."
+    }
+  },
+  {
+    "slug": "pumble",
+    "app": "Pumble",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "API Key"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.45
+    },
+    "browser": {
+      "slug": "pumble",
+      "app": "Pumble",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "API Key"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://pumble.com/help/integrations/automation-workflow-integrations/api-keys-integration/",
+      "notes": "REST API (OpenAPI 3.0) for team messaging. Available on all plans including free tier. Generate keys in Pumble workspace."
+    }
+  },
+  {
+    "slug": "salesforce",
+    "app": "Salesforce",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.55
+    },
+    "browser": {
+      "slug": "salesforce",
+      "app": "Salesforce",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2.0",
+        "Access Token"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm",
+      "notes": "REST API with OAuth 2.0 authentication. Free Developer Edition org available for any developer to get started."
+    }
+  },
+  {
+    "slug": "meta-ads",
+    "app": "Meta Ads",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth",
+        "Access Token"
+      ],
+      "access_model": "Gated",
+      "recommended_next_action": "Needs Outreach",
+      "confidence": 0.58
+    },
+    "browser": {
+      "slug": "meta-ads",
+      "app": "Meta Ads",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2.0",
+        "Access Token"
+      ],
+      "access_model": "Gated",
+      "evidence_url": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/get-started/authentication",
+      "notes": "Marketing API built on Graph API. Requires Meta Developer account, app creation, and business verification for ads_management permissions."
+    }
+  },
+  {
+    "slug": "dealcloud",
+    "app": "DealCloud",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "API Key",
+        "Authorization Token"
+      ],
+      "access_model": "Gated",
+      "recommended_next_action": "Partner-Gated",
+      "confidence": 0.78
+    },
+    "browser": {
+      "slug": "dealcloud",
+      "app": "DealCloud",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "API Key",
+        "Authorization Token"
+      ],
+      "access_model": "Gated",
+      "evidence_url": "https://api.docs.dealcloud.com/docs/apikeys",
+      "notes": "REST API with API Keys and Authorization Token authentication. Access requires existing DealCloud customer with admin permissions to manage API keys."
+    }
+  },
+  {
+    "slug": "gladly",
+    "app": "Gladly",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "API Token"
+      ],
+      "access_model": "Gated",
+      "recommended_next_action": "Partner-Gated",
+      "confidence": 0.85
+    },
+    "browser": {
+      "slug": "gladly",
+      "app": "Gladly",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "Basic Auth",
+        "API Token"
+      ],
+      "access_model": "Gated",
+      "evidence_url": "https://developer.gladly.com/rest/#section/Authentication",
+      "notes": "REST API with Basic Authentication using API tokens. Access requires existing Gladly user with API User permission enabled by administrator."
+    }
+  },
+  {
+    "slug": "whatsapp-business",
+    "app": "WhatsApp Business",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "Access tokens"
+      ],
+      "access_model": "Gated",
+      "recommended_next_action": "Needs Outreach",
+      "confidence": 0.85
+    },
+    "browser": {
+      "slug": "whatsapp-business",
+      "app": "WhatsApp Business",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "System User Access Token",
+        "Business Integration System User Token"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://developers.facebook.com/documentation/business-messaging/whatsapp/access-tokens",
+      "notes": "REST API (Graph API) using OAuth-based access tokens. Developers can self-register via Meta Developer account and get free test access."
+    }
+  },
+  {
+    "slug": "google-ads",
+    "app": "Google Ads",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth 2.0",
+        "Service Account"
+      ],
+      "access_model": "Gated",
+      "recommended_next_action": "Needs Outreach",
+      "confidence": 0.72
+    },
+    "browser": {
+      "slug": "google-ads",
+      "app": "Google Ads",
+      "has_public_api": true,
+      "api_type": "REST/gRPC",
+      "auth_methods": [
+        "OAuth2",
+        "Developer Token"
+      ],
+      "access_model": "Gated",
+      "evidence_url": "https://developers.google.com/google-ads/api/docs/api-policy/developer-token",
+      "notes": "REST and gRPC APIs using OAuth 2.0 plus Developer Token. Production access requires applying for and receiving approval for Basic or Standard access level."
+    }
+  },
+  {
+    "slug": "linkedin-ads",
+    "app": "LinkedIn Ads",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [],
+      "access_model": "Gated",
+      "recommended_next_action": "Needs Outreach",
+      "confidence": 0.72
+    },
+    "browser": {
+      "slug": "linkedin-ads",
+      "app": "LinkedIn Ads",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2"
+      ],
+      "access_model": "Gated",
+      "evidence_url": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access",
+      "notes": "REST API with OAuth 2.0 (3-legged OAuth) authentication. Marketing API access requires applying for specific API products and getting approval."
+    }
+  },
+  {
+    "slug": "pinterest",
+    "app": "Pinterest",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth 2.0"
+      ],
+      "access_model": "Gated",
+      "recommended_next_action": "Needs Outreach",
+      "confidence": 0.88
+    },
+    "browser": {
+      "slug": "pinterest",
+      "app": "Pinterest",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://developers.pinterest.com/docs/getting-started/set-up-authentication-and-authorization/",
+      "notes": "REST API with OAuth 2.0 authentication supporting Authorization Code and Client Credentials grants. Developers can self-register apps and obtain credentials directly."
+    }
+  }
+]

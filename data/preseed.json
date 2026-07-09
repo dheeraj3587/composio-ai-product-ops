@@ -1,0 +1,97 @@
+{
+  "_note": "HYPOTHESES, not facts. Used only to NARROW research. The pipeline MUST re-confirm each with a fresh search + at least one resolving evidence URL (Flag D). If the fresh search contradicts the hypothesis, the SEARCH WINS and the contradiction is logged. Every preseeded app is a priority hand-check target.",
+  "confidence_tiers": {
+    "confirmed": "Verified by live web search on 2026-07-09.",
+    "high": "High-confidence prior; verify fast, do not skip.",
+    "low": "Uncertain prior; pipeline decides from evidence.",
+    "non_api": "Likely no accessible self-serve public API; a valid finding, not a failure."
+  },
+  "patterns": {
+    "api-exists-not-accessible": "A public API exists but access is gated behind business verification / app review.",
+    "good-api-no-entry-point": "Well-built API, but keys require already being a paying customer (no public signup/trial). recommended_next_action=Partner-Gated."
+  },
+  "seeds": [
+    {"slug": "amazon-selling-partner", "tier": "confirmed", "must_reconfirm": true,
+     "hypothesis": {"access_model": "Gated", "recommended_next_action": "Needs Outreach",
+       "main_blocker": "Requires a paid Professional Seller account ($39.99/mo) plus a developer approval process (days to weeks)."},
+     "rationale": "AWS SP-API docs confirm paid seller account + approval queue."},
+
+    {"slug": "dealcloud", "tier": "confirmed", "must_reconfirm": true, "pattern": "good-api-no-entry-point",
+     "hypothesis": {"access_model": "Gated", "api_type": "REST", "api_breadth": "Broad", "recommended_next_action": "Partner-Gated",
+       "main_blocker": "Broad, well-documented REST/OAuth2 API, but keys are only issuable by an admin on an existing paid DealCloud site; no public trial/signup."},
+     "rationale": "api.docs.dealcloud.com shows a strong API; entry point requires existing paid account."},
+
+    {"slug": "pitchbook", "tier": "high", "must_reconfirm": true,
+     "hypothesis": {"access_model": "Gated", "recommended_next_action": "Partner-Gated",
+       "main_blocker": "Enterprise research platform; API is contact-sales / partner-only, no public self-serve tier."}},
+
+    {"slug": "salesforce-commerce-cloud", "tier": "high", "must_reconfirm": true,
+     "hypothesis": {"access_model": "Gated", "recommended_next_action": "Needs Outreach",
+       "main_blocker": "Enterprise commerce platform sold via sales; no self-serve signup (distinct from core Salesforce CRM's free dev org)."}},
+
+    {"slug": "plaid", "tier": "high", "must_reconfirm": true,
+     "hypothesis": {"access_model": "Self-Serve", "recommended_next_action": "Build Now",
+       "main_blocker": "Free/instant sandbox is self-serve, but PRODUCTION access requires a Plaid approval/review process.",
+       "note": "Capture as 'self-serve trial, gated production', not a flat label."}},
+
+    {"slug": "brex", "tier": "high", "must_reconfirm": true,
+     "hypothesis": {"access_model": "Gated", "recommended_next_action": "Needs Outreach",
+       "main_blocker": "API access is tied to being a Brex business customer; not self-serve for a solo developer testing."}},
+
+    {"slug": "ramp", "tier": "high", "must_reconfirm": true,
+     "hypothesis": {"access_model": "Gated", "recommended_next_action": "Needs Outreach",
+       "main_blocker": "API access is tied to being a Ramp business customer; not self-serve for a solo developer testing."}},
+
+    {"slug": "binance", "tier": "high", "must_reconfirm": true,
+     "hypothesis": {"access_model": "Self-Serve", "recommended_next_action": "Build Now", "main_blocker": "",
+       "note": "Easy-win example: API key is self-serve via account signup, no OAuth/partner gate."}},
+
+    {"slug": "ahrefs", "tier": "low", "must_reconfirm": true,
+     "hypothesis": {"access_model": "Gated", "recommended_next_action": "Needs Outreach",
+       "main_blocker": "API access likely requires a paid Ahrefs plan at a certain tier (verify)."}},
+
+    {"slug": "gohighlevel", "tier": "low", "must_reconfirm": true,
+     "hypothesis": {"access_model": "Self-Serve", "recommended_next_action": "Build Now",
+       "main_blocker": "Sub-account API keys are self-serve; public marketplace app listing needs review (public-vs-private app distinction)."}},
+
+    {"slug": "fathom", "tier": "low", "must_reconfirm": true,
+     "hypothesis": {"api_type": "None",
+       "main_blocker": "May be webhook/Zapier-only; unclear whether a fully public REST API exists — verify against docs, do not trust memory."}},
+
+    {"slug": "higgsfield", "tier": "low", "must_reconfirm": true,
+     "hypothesis": {"access_model": "Gated",
+       "main_blocker": "Newer product; plausibly invite/beta-gated (low confidence either way)."}},
+
+    {"slug": "sherlock", "tier": "non_api", "must_reconfirm": true,
+     "hypothesis": {"api_type": "None", "access_model": "Self-Serve", "recommended_next_action": "Blocked",
+       "main_blocker": "Open-source CLI tool (username OSINT), not an API service; nothing to integrate via a hosted API."}},
+
+    {"slug": "mermaid-cli", "tier": "non_api", "must_reconfirm": true,
+     "hypothesis": {"api_type": "None", "access_model": "Self-Serve", "recommended_next_action": "Blocked",
+       "main_blocker": "Open-source CLI/library (diagram rendering), not a hosted API service."}},
+
+    {"slug": "notebooklm", "tier": "non_api", "must_reconfirm": true,
+     "hypothesis": {"api_type": "None", "access_model": "Gated", "recommended_next_action": "Needs Outreach",
+       "main_blocker": "No public NotebookLM API; the closest workaround is the Gemini Enterprise API."}},
+
+    {"slug": "consensus", "tier": "non_api", "must_reconfirm": true,
+     "hypothesis": {"access_model": "Gated", "recommended_next_action": "Needs Outreach",
+       "main_blocker": "'OAuth requested' hint suggests a public API is not yet generally available."}},
+
+    {"slug": "whatsapp-business", "tier": "non_api", "must_reconfirm": true, "pattern": "api-exists-not-accessible",
+     "hypothesis": {"access_model": "Gated", "recommended_next_action": "Needs Outreach",
+       "main_blocker": "API exists but requires Meta business verification + app review before production access."}},
+
+    {"slug": "meta-ads", "tier": "non_api", "must_reconfirm": true, "pattern": "api-exists-not-accessible",
+     "hypothesis": {"access_model": "Gated", "recommended_next_action": "Needs Outreach",
+       "main_blocker": "Marketing API is behind Meta app review + business verification."}},
+
+    {"slug": "linkedin-ads", "tier": "non_api", "must_reconfirm": true, "pattern": "api-exists-not-accessible",
+     "hypothesis": {"access_model": "Gated", "recommended_next_action": "Needs Outreach",
+       "main_blocker": "Marketing API access requires LinkedIn Marketing Developer Platform / partner approval."}},
+
+    {"slug": "google-ads", "tier": "non_api", "must_reconfirm": true, "pattern": "api-exists-not-accessible",
+     "hypothesis": {"access_model": "Gated", "recommended_next_action": "Needs Outreach",
+       "main_blocker": "Requires a developer token approval + OAuth; not instant self-serve."}}
+  ]
+}

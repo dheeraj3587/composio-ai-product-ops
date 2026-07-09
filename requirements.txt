@@ -1,0 +1,14 @@
+# Core pipeline deps (all OpenAI-compatible; LLM calls go to OpenRouter)
+openai>=1.40,<3
+pydantic>=2.7,<3
+python-dotenv>=1.0
+requests>=2.31
+tenacity>=8.2
+
+# Composio SDK for the toolkit lookup. Optional: composio_lookup.py falls back
+# to the public Composio catalog over HTTP if this import is unavailable.
+composio>=0.5
+
+# Optional: only needed if you enable the browser-use fallback for a handful of
+# apps whose docs cannot be fetched any other way (disclosed on the report).
+# browser-use>=0.1
