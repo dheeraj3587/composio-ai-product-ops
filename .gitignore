@@ -20,3 +20,8 @@ out/cache/
 .idea/
 node_modules/
 .vercel
+
+# Scratch / internal tooling (never push)
+_smoke*
+_e2e*
+out/browser_tasks.json
