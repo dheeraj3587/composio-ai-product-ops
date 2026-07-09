@@ -171,7 +171,8 @@
         "access_ok": true
       }
     ],
-    "generated": "2026-07-09"
+    "generated": "2026-07-09",
+    "note": "The 3 auth misses above were subsequently folded back into the matrix via corrections.py (evidence URLs appended). Accuracy shown is as-measured at hand-check time — the number was not re-scored against the corrected data."
   },
   "patterns": {
     "n": 100,
@@ -198,8 +199,8 @@
       "MCP-only": 1
     },
     "existing_mcp": {
-      "None": 63,
-      "Official": 35,
+      "None": 51,
+      "Official": 47,
       "Community": 2
     },
     "composio_toolkit": {
@@ -209,34 +210,34 @@
     "auth_methods_top": [
       [
         "OAuth2",
-        54
+        56
       ],
       [
         "API Key",
-        48
+        47
       ],
       [
         "Bearer Token",
-        24
-      ],
-      [
-        "Other Token",
-        12
+        23
       ],
       [
         "Basic Auth",
         11
       ],
       [
-        "Personal Access Token",
-        6
+        "Other Token",
+        10
       ],
       [
-        "Bot Token",
-        3
+        "Personal Access Token",
+        7
       ],
       [
         "Service Account",
+        3
+      ],
+      [
+        "None / Not Applicable",
         3
       ]
     ],
@@ -325,23 +326,15 @@
   },
   "generated": "2026-07-09",
   "accuracy_movement": {
-    "method": "Field-level accuracy (api_type + auth_methods + access_model) vs hand-verified truth, comparing the first-pass snapshot to the post-verification results.",
+    "method": "Field-level accuracy (api_type + auth_methods + access_model) vs hand-verified truth, comparing the first-pass snapshot to the post-verification results. Both sides canonicalized before comparison, so the delta reflects factual corrections only — label normalization (e.g. 'OAuth 2.0' -> 'OAuth2') is counted separately, not as accuracy.",
     "n": 17,
-    "first_pass_accuracy": 0.627,
+    "first_pass_accuracy": 0.784,
     "post_verification_accuracy": 0.941,
     "improved_apps": [
       "copper",
       "plain",
-      "salesforce",
-      "meta-ads",
-      "gladly",
       "whatsapp-business",
-      "google-ads",
-      "linkedin-ads",
-      "pinterest",
-      "github",
-      "twilio",
-      "amazon-selling-partner"
+      "linkedin-ads"
     ],
     "regressed_apps": [],
     "per_app": [
@@ -362,12 +355,12 @@
       },
       {
         "slug": "salesforce",
-        "first_pass": "2/3",
+        "first_pass": "3/3",
         "post_verification": "3/3"
       },
       {
         "slug": "meta-ads",
-        "first_pass": "2/3",
+        "first_pass": "3/3",
         "post_verification": "3/3"
       },
       {
@@ -377,7 +370,7 @@
       },
       {
         "slug": "gladly",
-        "first_pass": "2/3",
+        "first_pass": "3/3",
         "post_verification": "3/3"
       },
       {
@@ -387,7 +380,7 @@
       },
       {
         "slug": "google-ads",
-        "first_pass": "2/3",
+        "first_pass": "3/3",
         "post_verification": "3/3"
       },
       {
@@ -397,7 +390,7 @@
       },
       {
         "slug": "pinterest",
-        "first_pass": "2/3",
+        "first_pass": "3/3",
         "post_verification": "3/3"
       },
       {
@@ -407,7 +400,7 @@
       },
       {
         "slug": "github",
-        "first_pass": "2/3",
+        "first_pass": "3/3",
         "post_verification": "3/3"
       },
       {
@@ -422,15 +415,16 @@
       },
       {
         "slug": "twilio",
-        "first_pass": "2/3",
+        "first_pass": "3/3",
         "post_verification": "3/3"
       },
       {
         "slug": "amazon-selling-partner",
-        "first_pass": "2/3",
+        "first_pass": "3/3",
         "post_verification": "3/3"
       }
-    ]
+    ],
+    "note": "Scored with both sides canonicalized, so the delta counts factual fixes only. The label-normalization pass (e.g. 'OAuth 2.0' -> 'OAuth2', 8 fields on this sample) is data hygiene and is deliberately NOT counted as accuracy movement. Measured before the 3 hand-check auth folds; the shipped matrix carries those fixes."
   },
   "verification": {
     "method": "Blind re-search from scratch: fresh differently-phrased query, independent fetch EXCLUDING stored evidence URLs, LLM blind to the pass-1 answer. Re-derived fields: auth_methods, access_model.",

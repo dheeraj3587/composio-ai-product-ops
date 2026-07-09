@@ -1,13 +1,21 @@
 #!/usr/bin/env python3
 """One-time correction pass over out/results.json.
 
-Two things:
+Four things:
   1. Normalize every record's auth_methods to the canonical set (normalize.py).
   2. Apply documented per-app overrides sourced from OFFICIAL docs and the
      Browser Use verification loop (each with a real evidence URL). Honest calls:
      WhatsApp Business and Pinterest stay Gated (browser over-called Self-Serve;
      production needs verification/review); weak third-party evidence gets lower
      confidence + an explicit note.
+  3. Fix existing_mcp FALSE NEGATIVES (MCP_OFFICIAL_FIXES): the first batch
+     derived existing_mcp from API-reference pages, which rarely mention MCP,
+     so twelve famous official servers were marked "None". Each fix below was
+     re-verified against the vendor's own MCP page (URL appended as evidence).
+     docs_research.gather_mcp_evidence() now probes for this at research time.
+  4. Fold the three auth misses the human hand-check found (DealCloud, Notion,
+     Slack) back into the matrix. metrics['handcheck'] keeps the pre-fix 94.1%
+     as the honest as-measured number; the shipped rows carry the truth.
 
 Re-validates every record against the locked schema, then saves results.json.
 Run:  python corrections.py
@@ -192,6 +200,25 @@ OVERRIDES: dict[str, dict] = {
     "dealcloud": {  # no DealCloud MCP found; drop the unsupported "MCP preview" claim from the one-liner
         "existing_mcp": "None",
         "one_liner": "Broad REST API with SDKs; API keys require an existing DealCloud site admin (no public signup).",
+        # hand-check fold: docs describe OAuth-style token issuance alongside keys,
+        # not a bespoke "Other Token" (handcheck/handcheck.json truth).
+        "auth_methods": ["API Key", "OAuth2"],
+    },
+    # --- Hand-check auth folds (LOOP 3 truth, handcheck/handcheck.json). The
+    #     hand-check MEASURED these as misses (that stays in metrics.handcheck,
+    #     as-measured, 94.1%); the shipped matrix should still carry the truth. ---
+    "notion": {  # internal integration secret is an API key, not a generic bearer
+        "auth_methods": ["OAuth2", "API Key"],
+    },
+    "slack": {  # apps are created + installed via OAuth; tokens are OAuth artifacts
+        "auth_methods": ["OAuth2"],
+    },
+    # --- Stale auth facts caught in external review ---
+    "airtable": {  # legacy API keys were deprecated (Feb 2024) in favor of PATs + OAuth
+        "auth_methods": ["Personal Access Token", "OAuth2"],
+    },
+    "hubspot": {  # developer API keys were sunset in 2022; private-app tokens + OAuth remain
+        "auth_methods": ["OAuth2", "Bearer Token"],
     },
     # --- Paygent Connect: first pass researched the WRONG product (an LLM-cost SDK at
     #     paygent.to), not the NMI-powered payment gateway. Mark honestly as unconfirmed. ---
@@ -206,6 +233,36 @@ OVERRIDES: dict[str, dict] = {
         "main_blocker": "Could not confirm the NMI-powered Paygent Connect API; docs found (paygent.to) appear to be a different product.",
         "confidence": 0.3,
     },
+}
+
+# --- existing_mcp FALSE-NEGATIVE fixes (verified 2026-07-09 against vendor pages;
+#     every URL below returned HTTP 200 at verification time and is appended to the
+#     row's evidence_urls). Root cause: existing_mcp was derived from API-reference
+#     evidence, which rarely mentions MCP — absence there proves nothing. The
+#     original audit only stress-checked "Official" claims (false positives),
+#     never "None" claims, so these slipped through in one direction. ---
+MCP_OFFICIAL_FIXES: dict[str, str] = {
+    "github": "https://github.com/github/github-mcp-server",
+    "cloudflare": "https://github.com/cloudflare/mcp-server-cloudflare",
+    "stripe": "https://docs.stripe.com/mcp",
+    "linear": "https://linear.app/docs/mcp",
+    "sentry": "https://mcp.sentry.dev",
+    "netlify": "https://docs.netlify.com/build/build-with-ai/netlify-mcp-server/",
+    "vercel": "https://vercel.com/docs/agent-resources/vercel-mcp",
+    "mongodb-atlas": "https://www.mongodb.com/docs/mcp-server/",
+    "jira": "https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/",
+    "hubspot": "https://developers.hubspot.com/mcp",
+    "klaviyo": "https://developers.klaviyo.com/en/docs/klaviyo_mcp_server",
+    "shopify": "https://shopify.dev/docs/apps/build/storefront-mcp",
+}
+
+# Evidence URLs to APPEND (never replace) for rows whose fix is sourced from a
+# specific page not already in the row's evidence list.
+EVIDENCE_APPENDS: dict[str, list[str]] = {
+    "notion": ["https://developers.notion.com/reference/authentication"],
+    "slack": ["https://docs.slack.dev/authentication/"],
+    "airtable": ["https://airtable.com/developers/web/api/authentication"],
+    "hubspot": ["https://developers.hubspot.com/docs/api/private-apps"],
 }
 
 # Full, accurate one-liners (<=120 chars) that REPLACE 9 the old synthesis hard-truncated
@@ -243,6 +300,16 @@ def apply() -> None:
         if ov:
             for k, v in ov.items():
                 r[k] = v
+        # 2b) existing_mcp false-negative fixes (+ their evidence)
+        if r["slug"] in MCP_OFFICIAL_FIXES:
+            r["existing_mcp"] = "Official"
+            url = MCP_OFFICIAL_FIXES[r["slug"]]
+            if url not in r.get("evidence_urls", []):
+                r["evidence_urls"] = list(r.get("evidence_urls", [])) + [url]
+        # 2c) appended (never replacing) evidence for targeted fixes
+        for url in EVIDENCE_APPENDS.get(r["slug"], []):
+            if url not in r.get("evidence_urls", []):
+                r["evidence_urls"] = list(r.get("evidence_urls", [])) + [url]
         # replace one-liners the OLD synthesis truncated mid-word with full sentences
         if r["slug"] in ONE_LINERS:
             r["one_liner"] = ONE_LINERS[r["slug"]]
@@ -257,6 +324,7 @@ def apply() -> None:
 
     config.save_json(config.RESULTS_PATH, rows)
     print(f"normalized auth on {changed_auth} records; applied {len(OVERRIDES)} per-app overrides; "
+          f"{len(MCP_OFFICIAL_FIXES)} existing_mcp false-negative fixes; "
           f"{len(rows)} records re-validated + saved.")
 
 

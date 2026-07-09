@@ -34,8 +34,7 @@
     "one_liner": "HubSpot offers a broad self-serve REST CRM API with OAuth and static/private tokens.",
     "auth_methods": [
       "OAuth2",
-      "Bearer Token",
-      "API Key"
+      "Bearer Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -43,7 +42,7 @@
     },
     "api_type": "REST",
     "api_breadth": "Broad",
-    "existing_mcp": "None",
+    "existing_mcp": "Official",
     "composio_toolkit": "Yes",
     "buildability": "Easy",
     "main_blocker": "",
@@ -52,7 +51,9 @@
       "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/authentication/overview",
       "https://hubspot.com",
       "https://developers.hubspot.com/docs",
-      "https://moldstud.com/articles/p-how-to-set-up-hubspot-api-authentication-a-developers-guide"
+      "https://moldstud.com/articles/p-how-to-set-up-hubspot-api-authentication-a-developers-guide",
+      "https://developers.hubspot.com/mcp",
+      "https://developers.hubspot.com/docs/api/private-apps"
     ],
     "confidence": 0.88,
     "verification_status": "Auto",
@@ -283,7 +284,7 @@
     "one_liner": "Broad REST API with SDKs; API keys require an existing DealCloud site admin (no public signup).",
     "auth_methods": [
       "API Key",
-      "Other Token"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Gated",
@@ -618,9 +619,7 @@
     "category": "Comms",
     "one_liner": "Slack offers broad self-serve REST APIs with OAuth, SDKs, CLI, and clear docs for apps.",
     "auth_methods": [
-      "OAuth2",
-      "Bot Token",
-      "Other Token"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1095,7 +1094,7 @@
     },
     "api_type": "REST",
     "api_breadth": "Broad",
-    "existing_mcp": "None",
+    "existing_mcp": "Official",
     "composio_toolkit": "Yes",
     "buildability": "Easy",
     "main_blocker": "",
@@ -1104,7 +1103,8 @@
       "https://developers.klaviyo.com",
       "https://developers.klaviyo.com/en/reference/api_overview",
       "https://developers.klaviyo.com/",
-      "https://aeroleads.com/blog/getting-started-with-klaviyo-api-developer-documentation/"
+      "https://aeroleads.com/blog/getting-started-with-klaviyo-api-developer-documentation/",
+      "https://developers.klaviyo.com/en/docs/klaviyo_mcp_server"
     ],
     "confidence": 0.92,
     "verification_status": "Auto",
@@ -1247,7 +1247,7 @@
     },
     "api_type": "GraphQL",
     "api_breadth": "Broad",
-    "existing_mcp": "None",
+    "existing_mcp": "Official",
     "composio_toolkit": "Yes",
     "buildability": "Easy",
     "main_blocker": "",
@@ -1255,7 +1255,8 @@
     "evidence_urls": [
       "https://shopify.dev/docs/api/usage/authentication",
       "https://shopify.dev",
-      "https://shopify.dev/docs/api"
+      "https://shopify.dev/docs/api",
+      "https://shopify.dev/docs/apps/build/storefront-mcp"
     ],
     "confidence": 0.9,
     "verification_status": "Auto",
@@ -1848,7 +1849,7 @@
     },
     "api_type": "REST",
     "api_breadth": "Broad",
-    "existing_mcp": "None",
+    "existing_mcp": "Official",
     "composio_toolkit": "Yes",
     "buildability": "Easy",
     "main_blocker": "",
@@ -1857,7 +1858,8 @@
       "https://docs.github.com/en/rest/authentication/authenticating-to-the-rest-api",
       "https://docs.github.com/rest",
       "https://docs.github.com/en/rest",
-      "https://octokit.github.io/routes/cache/api.github.com/v3/index.html"
+      "https://octokit.github.io/routes/cache/api.github.com/v3/index.html",
+      "https://github.com/github/github-mcp-server"
     ],
     "confidence": 0.95,
     "verification_status": "Hand-Checked",
@@ -1879,14 +1881,15 @@
     },
     "api_type": "REST",
     "api_breadth": "Broad",
-    "existing_mcp": "None",
+    "existing_mcp": "Official",
     "composio_toolkit": "Yes",
     "buildability": "Easy",
     "main_blocker": "",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
       "https://vercel.com/docs/cli/api",
-      "https://deepwiki.com/vercel/sdk/5.2-api-reference"
+      "https://deepwiki.com/vercel/sdk/5.2-api-reference",
+      "https://vercel.com/docs/agent-resources/vercel-mcp"
     ],
     "confidence": 0.9,
     "verification_status": "Auto",
@@ -1909,7 +1912,7 @@
     },
     "api_type": "REST",
     "api_breadth": "Broad",
-    "existing_mcp": "None",
+    "existing_mcp": "Official",
     "composio_toolkit": "No",
     "buildability": "Easy",
     "main_blocker": "",
@@ -1917,7 +1920,8 @@
     "evidence_urls": [
       "https://docs.netlify.com/api",
       "https://docs.netlify.com/api-and-cli-guides/api-guides/get-started-with-api/",
-      "https://open-api.netlify.com/"
+      "https://open-api.netlify.com/",
+      "https://docs.netlify.com/build/build-with-ai/netlify-mcp-server/"
     ],
     "confidence": 0.95,
     "verification_status": "Auto",
@@ -1940,14 +1944,15 @@
     },
     "api_type": "REST",
     "api_breadth": "Broad",
-    "existing_mcp": "None",
+    "existing_mcp": "Official",
     "composio_toolkit": "Yes",
     "buildability": "Easy",
     "main_blocker": "",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
       "https://developers.cloudflare.com/api",
-      "https://developers.cloudflare.com/fundamentals/api/get-started/create-token/"
+      "https://developers.cloudflare.com/fundamentals/api/get-started/create-token/",
+      "https://github.com/cloudflare/mcp-server-cloudflare"
     ],
     "confidence": 0.95,
     "verification_status": "Auto",
@@ -2062,7 +2067,7 @@
     },
     "api_type": "REST",
     "api_breadth": "Broad",
-    "existing_mcp": "None",
+    "existing_mcp": "Official",
     "composio_toolkit": "No",
     "buildability": "Easy",
     "main_blocker": "",
@@ -2071,7 +2076,8 @@
       "https://www.mongodb.com/docs/atlas/api/api-authentication/",
       "https://mongodb.com/docs/atlas/api",
       "https://www.mongodb.com/docs/api/doc/atlas-admin-api-v2/authentication",
-      "https://github.com/mongodb-developer/atlas-admin-api-serviceaccount-auth"
+      "https://github.com/mongodb-developer/atlas-admin-api-serviceaccount-auth",
+      "https://www.mongodb.com/docs/mcp-server/"
     ],
     "confidence": 0.9,
     "verification_status": "Auto",
@@ -2125,7 +2131,7 @@
     },
     "api_type": "REST",
     "api_breadth": "Broad",
-    "existing_mcp": "None",
+    "existing_mcp": "Official",
     "composio_toolkit": "Yes",
     "buildability": "Easy",
     "main_blocker": "",
@@ -2134,7 +2140,8 @@
       "https://docs.sentry.io/api/auth/",
       "https://docs.sentry.io/api",
       "https://sentrydocs.dev/api/authentication",
-      "https://docs.sentry.io/api/"
+      "https://docs.sentry.io/api/",
+      "https://mcp.sentry.dev"
     ],
     "confidence": 0.95,
     "verification_status": "Auto",
@@ -2149,7 +2156,7 @@
     "one_liner": "Comprehensive REST API for managing Notion pages, databases, users, and comments via OAuth 2.0 or API tokens.",
     "auth_methods": [
       "OAuth2",
-      "Bearer Token"
+      "API Key"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2179,7 +2186,8 @@
     "category": "Productivity/PM",
     "one_liner": "Airtable provides a robust REST API for managing bases and records with pagination support.",
     "auth_methods": [
-      "API Key"
+      "Personal Access Token",
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2194,7 +2202,8 @@
     "recommended_next_action": "Build Now",
     "evidence_urls": [
       "https://support.airtable.com/docs/api",
-      "https://support.airtable.com/docs/getting-started-with-airtables-web-api"
+      "https://support.airtable.com/docs/getting-started-with-airtables-web-api",
+      "https://airtable.com/developers/web/api/authentication"
     ],
     "confidence": 0.9,
     "verification_status": "Auto",
@@ -2217,7 +2226,7 @@
     },
     "api_type": "GraphQL",
     "api_breadth": "Broad",
-    "existing_mcp": "None",
+    "existing_mcp": "Official",
     "composio_toolkit": "Yes",
     "buildability": "Easy",
     "main_blocker": "",
@@ -2225,7 +2234,8 @@
     "evidence_urls": [
       "https://developers.linear.app",
       "https://linear.app/developers",
-      "https://linear.app/developers/graphql"
+      "https://linear.app/developers/graphql",
+      "https://linear.app/docs/mcp"
     ],
     "confidence": 0.95,
     "verification_status": "Auto",
@@ -2249,7 +2259,7 @@
     },
     "api_type": "REST",
     "api_breadth": "Broad",
-    "existing_mcp": "None",
+    "existing_mcp": "Official",
     "composio_toolkit": "Yes",
     "buildability": "Easy",
     "main_blocker": "",
@@ -2257,7 +2267,8 @@
     "evidence_urls": [
       "https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/",
       "https://moldstud.com/articles/p-jira-api-basics-essential-guide-for-developers",
-      "https://unified.to/blog/jira_api_key_how_to_get_it_and_use_it_api_token_guide_for_developers"
+      "https://unified.to/blog/jira_api_key_how_to_get_it_and_use_it_api_token_guide_for_developers",
+      "https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/"
     ],
     "confidence": 0.95,
     "verification_status": "Auto",
@@ -2462,7 +2473,7 @@
     },
     "api_type": "REST",
     "api_breadth": "Broad",
-    "existing_mcp": "None",
+    "existing_mcp": "Official",
     "composio_toolkit": "Yes",
     "buildability": "Easy",
     "main_blocker": "",
@@ -2471,7 +2482,8 @@
       "https://docs.stripe.com/api/authentication",
       "https://stripe.com/docs/api",
       "https://docs.stripe.com/api",
-      "https://unified.to/blog/how_to_integrate_with_stripe_api_a_step_by_step_guide_for_developers"
+      "https://unified.to/blog/how_to_integrate_with_stripe_api_a_step_by_step_guide_for_developers",
+      "https://docs.stripe.com/mcp"
     ],
     "confidence": 0.95,
     "verification_status": "Hand-Checked",
