@@ -29,6 +29,23 @@ FETCH_TIMEOUT = 15
 MAX_TEXT_CHARS = 12000
 MAX_FETCH = 6
 
+MCP_OFFICIAL_SEEDS = {
+    # Vendor-owned MCP pages/servers that search can miss or rank below generic
+    # MCP directories. These are used as evidence seeds, not as final labels.
+    "github": ["https://github.com/github/github-mcp-server"],
+    "cloudflare": ["https://github.com/cloudflare/mcp-server-cloudflare"],
+    "stripe": ["https://docs.stripe.com/mcp"],
+    "linear": ["https://linear.app/docs/mcp"],
+    "sentry": ["https://mcp.sentry.dev"],
+    "netlify": ["https://docs.netlify.com/build/build-with-ai/netlify-mcp-server/"],
+    "vercel": ["https://vercel.com/docs/agent-resources/vercel-mcp"],
+    "mongodb-atlas": ["https://www.mongodb.com/docs/mcp-server/"],
+    "jira": ["https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/"],
+    "hubspot": ["https://developers.hubspot.com/mcp"],
+    "klaviyo": ["https://developers.klaviyo.com/en/docs/klaviyo_mcp_server"],
+    "shopify": ["https://shopify.dev/docs/apps/build/storefront-mcp"],
+}
+
 
 # --------------------------------------------------------------------------- #
 # HTML -> text
@@ -185,7 +202,43 @@ def _candidate_urls(hint_url: str, search_results: list[dict]) -> list[str]:
     return urls[:MAX_FETCH]
 
 
-def gather_mcp_evidence(app: str, k: int = 5, max_fetch: int = 2) -> dict:
+def _mcp_score(url: str, title: str, app: str, slug: str) -> int:
+    text = f"{title} {url}".lower()
+    host = urlparse(url).netloc.lower()
+    compact_app = re.sub(r"[^a-z0-9]", "", app.lower())
+    slug_parts = [p for p in slug.lower().replace("_", "-").split("-") if p]
+    score = 0
+    if "mcp" in text or "model-context-protocol" in text:
+        score += 8
+    if "official" in text:
+        score += 4
+    if compact_app and compact_app in re.sub(r"[^a-z0-9]", "", text):
+        score += 8
+    for part in slug_parts[:2]:
+        if len(part) >= 4 and part in text:
+            score += 5
+    vendorish = ("docs." in host or "developer" in host or "support." in host)
+    if vendorish and any(part in host for part in slug_parts[:2]):
+        score += 18
+    if host == "github.com" and slug_parts and f"github.com/{slug_parts[0]}/" in url.lower():
+        score += 18
+    generic_hosts = (
+        "modelcontextprotocol.io",
+        "modelcontextprotocol.info",
+        "mcpservers.org",
+        "mcpserver.dev",
+        "remote-mcp.com",
+        "findmcpservers.com",
+        "deepwiki.com",
+        "a2a-mcp.org",
+        "registry.modelcontextprotocol.io",
+    )
+    if any(g in host for g in generic_hosts):
+        score -= 20
+    return score
+
+
+def gather_mcp_evidence(app: str, slug: str = "", k: int = 8, max_fetch: int = 4) -> dict:
     """Dedicated probe for the `existing_mcp` field.
 
     API-reference pages almost never mention MCP, so deriving existing_mcp from
@@ -197,10 +250,20 @@ def gather_mcp_evidence(app: str, k: int = 5, max_fetch: int = 2) -> dict:
     """
     q = f"{app} official MCP server Model Context Protocol"
     results = search(q, k=k)
-    fetched = []
-    for r in results:
+    ranked = sorted(
+        results,
+        key=lambda r: _mcp_score(r.get("url", ""), r.get("title", ""), app, slug),
+        reverse=True,
+    )
+    candidates = list(MCP_OFFICIAL_SEEDS.get(slug, []))
+    for r in ranked:
         u = r.get("url", "")
-        if not u.startswith("http") or len(fetched) >= max_fetch:
+        if u.startswith("http") and u not in candidates:
+            candidates.append(u)
+
+    fetched = []
+    for u in candidates:
+        if len(fetched) >= max_fetch:
             continue
         f = fetch(u)
         if f["ok"]:
@@ -231,7 +294,7 @@ def gather_evidence(app: str, slug: str, hint_url: str = "", category: str = "",
     if degraded and log:
         _log_failure(slug, f"no fetchable docs; query={q!r}; candidates={candidates}")
 
-    mcp = gather_mcp_evidence(app)
+    mcp = gather_mcp_evidence(app, slug)
 
     return {
         "app": app, "slug": slug, "category": category, "query": q,

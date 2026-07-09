@@ -1,6 +1,6 @@
 {
   "handcheck": {
-    "method": "Human cross-check vs official docs on api_type + auth_methods + access_model (truth auth normalized to canonical labels before comparison). Misses shown, not hidden.",
+    "method": "Human cross-check vs official docs on api_type + auth_methods + access_model (both auth sides normalized to canonical labels before comparison). Misses shown, not hidden.",
     "n": 17,
     "api_type_accuracy": 1.0,
     "auth_accuracy": 0.824,

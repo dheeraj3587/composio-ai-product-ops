@@ -21,6 +21,26 @@ import verify
 from schema import validate_record
 
 
+AUTH_FOLDED_AFTER_HANDCHECK = {
+    "dealcloud": ["API Key", "Other Token"],
+    "notion": ["OAuth2", "Bearer Token"],
+    "slack": ["OAuth2", "Bot Token", "Other Token"],
+}
+
+HANDCHECK_NOTE = (
+    "The 3 auth misses above were subsequently folded back into the matrix via "
+    "corrections.py (evidence URLs appended). Accuracy shown is as-measured at "
+    "hand-check time — the number was not re-scored against the corrected data."
+)
+
+ACCURACY_MOVEMENT_NOTE = (
+    "Scored with both sides canonicalized, so the delta counts factual fixes only. "
+    "The label-normalization pass (e.g. 'OAuth 2.0' -> 'OAuth2', 8 fields on this "
+    "sample) is data hygiene and is deliberately NOT counted as accuracy movement. "
+    "Measured before the 3 hand-check auth folds; the shipped matrix carries those fixes."
+)
+
+
 def generate_template(n: int = 18) -> dict:
     results = config.load_json(config.RESULTS_PATH) or []
     if not results:
@@ -88,8 +108,11 @@ def fold() -> dict:
         # would count pure label-format differences ("OAuth 2.0" vs "OAuth2")
         # as factual misses.
         cur_auth = normalize.normalize_auth_list(rec.get("auth_methods", []))
+        measured_auth = normalize.normalize_auth_list(
+            AUTH_FOLDED_AFTER_HANDCHECK.get(slug, cur_auth)
+        )
         truth_auth = normalize.normalize_auth_list(truth.get("auth_methods") or [])
-        aa = verify._auth_agree(cur_auth, truth_auth)
+        aa = verify._auth_agree(measured_auth, truth_auth)
         cur_access = (rec.get("access_model") or {}).get("kind")
         ac = (cur_access == truth.get("access_model"))
         auth_hits += int(aa)
@@ -104,7 +127,7 @@ def fold() -> dict:
                                "notes": truth.get("notes", "")})
         if not aa:
             misses.append({"slug": slug, "app": row.get("app", slug), "field": "auth_methods",
-                           "current": cur_auth, "truth": truth_auth, "notes": truth.get("notes", "")})
+                           "current": measured_auth, "truth": truth_auth, "notes": truth.get("notes", "")})
         if not ac:
             misses.append({"slug": slug, "app": row.get("app", slug), "field": "access_model",
                            "current": cur_access, "truth": truth.get("access_model"), "notes": truth.get("notes", "")})
@@ -118,7 +141,8 @@ def fold() -> dict:
     total = 2 * n + api_n
     hc = {
         "method": ("Human cross-check vs official docs on api_type + auth_methods + access_model "
-                   "(truth auth normalized to canonical labels before comparison). Misses shown, not hidden."),
+                   "(both auth sides normalized to canonical labels before comparison). "
+                   "Misses shown, not hidden."),
         "n": n,
         "api_type_accuracy": round(api_hits / api_n, 3) if api_n else None,
         "auth_accuracy": round(auth_hits / n, 3) if n else None,
@@ -127,6 +151,7 @@ def fold() -> dict:
         "misses": misses,
         "checked": checked,
         "generated": dt.date.today().isoformat(),
+        "note": HANDCHECK_NOTE,
     }
     metrics = config.load_json(config.METRICS_PATH, default={}) or {}
     metrics["handcheck"] = hc
@@ -137,7 +162,7 @@ def fold() -> dict:
     return hc
 
 
-def _score_record(rec: dict, truth: dict):
+def _score_record(rec: dict, truth: dict, measured_auth_override: list[str] | None = None):
     """Field-level match of a record against hand truth (api_type + auth + access).
 
     Both auth lists are canonicalized first so the score reflects FACTUAL
@@ -147,7 +172,9 @@ def _score_record(rec: dict, truth: dict):
     movement: 8 of 19 first-pass 'misses' were label artifacts, not wrong facts.
     Honest movement under consistent scoring: 78.4% -> 94.1%, not 62.7% -> 94.1%.)"""
     checks = [
-        ("auth_methods", verify._auth_agree(normalize.normalize_auth_list(rec.get("auth_methods", [])),
+        ("auth_methods", verify._auth_agree(normalize.normalize_auth_list(
+            measured_auth_override if measured_auth_override is not None else rec.get("auth_methods", [])
+        ),
                                             normalize.normalize_auth_list(truth.get("auth_methods") or []))),
         ("access_model", (rec.get("access_model", {}) or {}).get("kind") == truth.get("access_model")),
     ]
@@ -174,7 +201,7 @@ def accuracy_movement() -> dict:
         if slug not in fp or slug not in cur:
             continue
         h1, t1 = _score_record(fp[slug], truth)
-        h2, t2 = _score_record(cur[slug], truth)
+        h2, t2 = _score_record(cur[slug], truth, AUTH_FOLDED_AFTER_HANDCHECK.get(slug))
         fh += h1; ft += t1; ch += h2; ct += t2
         per_app.append({"slug": slug, "first_pass": f"{h1}/{t1}", "post_verification": f"{h2}/{t2}"})
         if h2 > h1:
@@ -198,6 +225,7 @@ def accuracy_movement() -> dict:
         "improved_apps": improved,
         "regressed_apps": regressed,
         "per_app": per_app,
+        "note": ACCURACY_MOVEMENT_NOTE,
     }
     metrics = config.load_json(config.METRICS_PATH, default={}) or {}
     metrics["accuracy_movement"] = mv
