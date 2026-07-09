@@ -55,15 +55,28 @@ async function loadData() {
 function renderStatus() {
   const p = metrics.patterns || {};
   const h = metrics.handcheck || {};
-  const v = metrics.verification || {};
+  const b = metrics.browser_use || {};
   const lines = [
-    ["Dataset", `${num(p.n || rows.length)} / 100 apps`],
-    ["Hand check", h.n ? `${h.n} apps · ${pct(h.accuracy)}` : "Pending"],
-    ["Blind re-search", v.n_verified ? `${v.n_verified} apps · ${pct(v.overall_agreement_rate)}` : "Pending"],
-    ["Generated", metrics.generated || "Not generated"],
+    ["Evidence", h.n ? `${h.n} / ${pct(h.accuracy)}` : "Pending"],
+    ["Live docs", b.n_checked ? `${b.n_checked} checked` : "Pending"],
+    ["Run", metrics.generated || "Not generated"],
   ];
   $("status-lines").innerHTML = lines.map(([label, value]) => `
     <div class="status-line"><b>${esc(label)}</b><span>${esc(value)}</span></div>
+  `).join("");
+}
+
+function renderHeroFacts() {
+  const p = metrics.patterns || {};
+  const h = metrics.handcheck || {};
+  const mcp = p.existing_mcp || {};
+  const facts = [
+    [p.n || rows.length, "apps researched"],
+    [h.n || "-", "official-doc checks"],
+    [mcp.Official || 0, "vendor MCP servers"],
+  ];
+  $("hero-facts").innerHTML = facts.map(([value, label]) => `
+    <span><b>${esc(value)}</b>${esc(label)}</span>
   `).join("");
 }
 
@@ -80,7 +93,10 @@ function renderDecisionBoard() {
     ["Partner-Gated", actions["Partner-Gated"] || 0],
     ["Blocked", actions.Blocked || 0],
   ];
+  $("page-title").textContent = `${buildQueue.length} toolkit gaps are ready to build.`;
+  $("hero-copy").textContent = `${num(p.n || rows.length)} requested apps ranked by API surface, auth, access, and buildability. This queue excludes apps Composio already covers.`;
   $("decision-title").textContent = `${buildQueue.length} buildable apps have no Composio toolkit yet.`;
+  $("decision-summary").textContent = "Build this queue first. Route the rest into outreach, partnership, or no-build decisions.";
   $("decision-list").innerHTML = decisionRows.map(([label, value]) => `
     <div class="decision-row">
       <span>${esc(label)}</span>
@@ -124,16 +140,14 @@ function compactHost(url) {
 function renderMetrics() {
   const p = metrics.patterns || {};
   const access = p.access_model || {};
-  const mcp = p.existing_mcp || {};
   const toolkit = p.composio_toolkit || {};
   const h = metrics.handcheck || {};
+  const actions = p.recommended_next_action || {};
   const data = [
-    [p.n || rows.length, "apps in scope"],
     [access["Self-Serve"] || 0, "self-serve paths"],
     [p.build_now || 0, "ready to build"],
-    [p.partner_gated || 0, "partner-gated"],
-    [mcp.Official || 0, "official MCP"],
-    [toolkit.No || 0, "no Composio toolkit yet"],
+    [actions["Needs Outreach"] || 0, "needs outreach"],
+    [toolkit.No || 0, "Composio gaps"],
     [h.n ? pct(h.accuracy) : "Pending", "hand-check"],
   ];
   $("metrics").innerHTML = data.map(([value, label]) => `
@@ -148,28 +162,22 @@ function renderInsights() {
   const p = metrics.patterns || {};
   const access = p.access_model || {};
   const gatedApi = rows.filter((r) => r.api_type !== "None" && r.access_model?.kind === "Gated");
-  const partner = rows.filter((r) => r.recommended_next_action === "Partner-Gated");
   const noToolkit = rows.filter((r) => r.composio_toolkit === "No");
   const whitespace = noToolkit.filter((r) => r.recommended_next_action === "Build Now");
   const topAuth = (p.auth_methods_top || [])[0] || ["API Key / OAuth", 0];
-  const examples = (list) => list.slice(0, 5).map((r) => r.app).join(", ") || "none yet";
 
   const cards = [
     [
-      "Self-serve integrations are the first wave.",
-      `${access["Self-Serve"] || 0} apps expose a path where a developer can get credentials without a partnership motion. These are the fastest toolkit candidates.`,
+      "Immediate build queue",
+      `${whitespace.length} self-serve, Build Now apps have no Composio toolkit. Start here.`,
     ],
     [
-      "Authentication is conventional enough to automate.",
-      `${p.build_now || 0} apps are Build Now. The largest auth bucket is ${topAuth[0]} (${topAuth[1]} apps), so agent tools can standardize around familiar credential flows.`,
+      "Access queue",
+      `${gatedApi.length} apps have usable APIs but need approval, verification, or customer access.`,
     ],
     [
-      "Outreach should target real APIs with closed doors.",
-      `${gatedApi.length} apps have APIs but require review, business verification, or customer status. Partner-gated examples: ${examples(partner)}.`,
-    ],
-    [
-      "The Composio whitespace is concrete.",
-      `${noToolkit.length} of the 100 requested apps have no Composio toolkit today — and ${whitespace.length} of those are already Build Now (self-serve, buildable). That is the immediate build queue: ${examples(whitespace)}.`,
+      "Standard connector patterns",
+      `${topAuth[0]} is the largest auth bucket (${topAuth[1]} apps). Most build work uses familiar credential flows.`,
     ],
   ];
 
@@ -187,7 +195,7 @@ function renderPriorityQueue() {
   const confidence = (r) => Number(r.confidence || 0);
   const short = (r) => `<li><span>${esc(r.app)}</span><small>${esc(r.category)}</small></li>`;
   const build = rows
-    .filter((r) => r.recommended_next_action === "Build Now")
+    .filter((r) => r.composio_toolkit === "No" && r.recommended_next_action === "Build Now")
     .sort((a, b) => confidence(b) - confidence(a) || a.app.localeCompare(b.app))
     .slice(0, 6);
   const outreach = rows
@@ -202,9 +210,9 @@ function renderPriorityQueue() {
     .sort((a, b) => a.category.localeCompare(b.category) || a.app.localeCompare(b.app))
     .slice(0, 6);
   const cards = [
-    ["Build first", build, "Self-serve, broad API, clear docs"],
-    ["Escalate", outreach, "Gated access or blocked paths"],
-    ["MCP leverage", mcp, "Official MCP already exists"],
+    ["Build next", build, "Self-serve gaps"],
+    ["Open access", outreach, "Approval or partner work"],
+    ["Existing MCP", mcp, "Vendor server available"],
   ];
   $("priority-queue").innerHTML = cards.map(([title, list, subtitle]) => `
     <article class="queue-card">
@@ -322,17 +330,17 @@ function renderVerification() {
   const v = metrics.verification || {};
   const am = metrics.accuracy_movement || {};
   const handText = h.n
-    ? `${h.n} apps checked by a human vs official docs — api-type ${pct(h.api_type_accuracy)}, auth ${pct(h.auth_accuracy)}, access ${pct(h.access_accuracy)}; overall ${pct(h.accuracy)} (${(h.misses || []).length} misses logged, not hidden).`
+    ? `${h.n} official-doc checks: API ${pct(h.api_type_accuracy)}, auth ${pct(h.auth_accuracy)}, access ${pct(h.access_accuracy)}. Overall ${pct(h.accuracy)}; ${(h.misses || []).length} mismatches shown below.`
     : "No hand-check rows have been folded yet. This should be completed before final submission.";
   const blindText = v.n_verified
-    ? `${v.n_verified} apps re-researched from scratch (fresh query, blind to pass 1); agreement ${pct(v.overall_agreement_rate)}. Agreement is reproducibility, not accuracy.`
+    ? `${v.n_verified} fresh-source re-checks; agreement ${pct(v.overall_agreement_rate)}. This measures reproducibility, not accuracy.`
     : "No blind re-search agreement has been recorded yet.";
   const bu = metrics.browser_use || {};
   const browserText = bu.n_checked
-    ? `${bu.n_checked} apps independently checked by a live browser agent (Browser Use Cloud) navigating real docs — found ${bu.n_corrections_found} first-pass errors static fetch missed${bu.corrected_apps && bu.corrected_apps.length ? ": " + bu.corrected_apps.join(", ") : ""}.`
+    ? `${bu.n_checked} live-doc checks found ${bu.n_corrections_found} first-pass issues${bu.corrected_apps && bu.corrected_apps.length ? ": " + bu.corrected_apps.join(", ") : ""}.`
     : "Browser Use Cloud loop not yet recorded for this run.";
   const moveText = (am.first_pass_accuracy != null)
-    ? `The loops (browser-use + blind re-search + hand-check) moved hand-checked accuracy from ${pct(am.first_pass_accuracy)} on the first pass to ${pct(am.post_verification_accuracy)} — ${(am.improved_apps || []).length} apps corrected, ${(am.regressed_apps || []).length} regressed.`
+    ? `Measured sample: ${pct(am.first_pass_accuracy)} first pass to ${pct(am.post_verification_accuracy)} after review. ${(am.improved_apps || []).length} improved; ${(am.regressed_apps || []).length} regressed.`
     : "";
 
   const missBy = {};
@@ -398,6 +406,7 @@ async function init() {
   }
 
   renderStatus();
+  renderHeroFacts();
   renderDecisionBoard();
   renderMetrics();
   renderInsights();
