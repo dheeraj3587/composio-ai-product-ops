@@ -10,7 +10,7 @@ Four things:
      confidence + an explicit note.
   3. Fix existing_mcp FALSE NEGATIVES (MCP_OFFICIAL_FIXES): the first batch
      derived existing_mcp from API-reference pages, which rarely mention MCP,
-     so twelve famous official servers were marked "None". Each fix below was
+     so many official servers were marked "None". Each fix below was
      re-verified against the vendor's own MCP page (URL appended as evidence).
      docs_research.gather_mcp_evidence() now probes for this at research time.
   4. Fold the three auth misses the human hand-check found (DealCloud, Notion,
@@ -145,7 +145,8 @@ OVERRIDES: dict[str, dict] = {
         "recommended_next_action": "Needs Outreach",
         "main_blocker": "Requires an approved Google Ads developer token in addition to OAuth.",
         "evidence_urls": ["https://developers.google.com/google-ads/api/docs/oauth/overview",
-                          "https://developers.google.com/google-ads/api/docs/api-policy/developer-token"],
+                          "https://developers.google.com/google-ads/api/docs/api-policy/developer-token",
+                          "https://developers.google.com/google-ads/api/docs/developer-toolkit/mcp-server"],
         "confidence": 0.8,
     },
     "pinterest": {  # browser said Self-Serve; KEEP Gated (standard access needs review)
@@ -161,32 +162,45 @@ OVERRIDES: dict[str, dict] = {
     },
     # --- Weak / third-party evidence: prefer official, else lower confidence + note ---
     "pitchbook": {
+        "auth_methods": ["API Key"],
         "access_model": {"kind": "Gated", "note": "Enterprise/partner-only API (contact sales)."},
         "recommended_next_action": "Partner-Gated",
-        "main_blocker": "No public official API docs found; primary evidence is a third-party connector (docs.matia.io). Contact-sales / partner only.",
-        "primary_docs_url": "https://pitchbook.com",
-        "evidence_urls": ["https://pitchbook.com", "https://docs.matia.io/docs/connectors/etl/pitchbook/api-configuration"],
-        "confidence": 0.45,
+        "main_blocker": "Official API exists, but access requires requesting an API connection through PitchBook Direct Data.",
+        "primary_docs_url": "https://pitchbook.com/help/PitchBook-api",
+        "evidence_urls": [
+            "https://pitchbook.com/help/PitchBook-api",
+            "https://pitchbook.com/products/direct-access-data/api",
+            "https://pitchbook.com/products/direct-access-data",
+        ],
+        "confidence": 0.72,
     },
     "higgsfield": {  # Grok 4.5 re-research found the OFFICIAL docs.higgsfield.ai (replaced the apidog blog)
         "main_blocker": "Newer product, but official REST API + CLI docs now confirmed at docs.higgsfield.ai.",
         "primary_docs_url": "https://docs.higgsfield.ai",
-        "evidence_urls": ["https://higgsfield.ai/cli", "https://docs.higgsfield.ai"],
+        "evidence_urls": ["https://higgsfield.ai/mcp", "https://higgsfield.ai/cli", "https://docs.higgsfield.ai"],
         "confidence": 0.72,
     },
     "clay": {  # Grok 4.5 re-research found official developers.clay.com / docs.clay.com (better than university.clay)
         "auth_methods": ["API Key"],
         "main_blocker": "Public REST API + official MCP; developer docs at developers.clay.com / docs.clay.com.",
         "primary_docs_url": "https://developers.clay.com",
-        "evidence_urls": ["https://developers.clay.com", "https://docs.clay.com", "https://clay.com"],
+        "evidence_urls": [
+            "https://developers.clay.com",
+            "https://docs.clay.com",
+            "https://www.clay.com/mcp",
+            "https://www.clay.com/changelog/clay-mcp-in-codex",
+        ],
         "confidence": 0.72,
     },
     "lark": {
-        "main_blocker": "Auth corroborated by a third-party wiki (deepwiki); official portal is open.larksuite.com.",
-        "primary_docs_url": "https://open.larksuite.com",
-        "evidence_urls": ["https://open.larksuite.com", "https://github.com/larksuite/lark-openapi-mcp",
-                          "https://deepwiki.com/larksuite/oapi-sdk-go/2.3-authentication-and-token-management"],
-        "confidence": 0.78,
+        "main_blocker": "",
+        "primary_docs_url": "https://open.larksuite.com/document",
+        "evidence_urls": [
+            "https://open.larksuite.com/document",
+            "https://open.larksuite.com/document/home/introduction-to-scope-and-authorization/overview",
+            "https://github.com/larksuite/lark-openapi-mcp",
+        ],
+        "confidence": 0.84,
     },
     "zoho-crm": {  # official docs exist -> make them primary
         "primary_docs_url": "https://www.zoho.com/crm/developer/docs/api/v8/oauth-overview.html",
@@ -194,8 +208,348 @@ OVERRIDES: dict[str, dict] = {
                           "https://www.zoho.com/crm/developer/docs/api/v8/"],
         "confidence": 0.9,
     },
-    # --- existing_mcp corrections (spot-checked 18 of the most-doubtful "Official"
-    #     claims vs vendor docs; 16 held up, these 2 did not) ---
+    "gorgias": {
+        "auth_methods": ["API Key", "Basic Auth", "OAuth2"],
+        "primary_docs_url": "https://developers.gorgias.com/",
+        "evidence_urls": [
+            "https://developers.gorgias.com/",
+            "https://developers.gorgias.com/reference/introduction",
+            "https://docs.gorgias.com/en-US/rest-api-208286",
+            "https://developers.gorgias.com/docs/oauth2-authentication-for-creating-apps-with-gorgias",
+            "https://docs.gorgias.com/en-US/connect-your-ai-assistant-to-the-gorgias-mcp-6310546",
+        ],
+        "confidence": 0.9,
+    },
+    "vonage": {
+        "primary_docs_url": "https://developer.vonage.com/en/getting-started/concepts/authentication",
+        "evidence_urls": [
+            "https://developer.vonage.com/en/getting-started/concepts/authentication",
+            "https://developer.vonage.com/en/verify/concepts/authentication",
+            "https://developer.vonage.com/en/mcp-server/overview",
+        ],
+        "confidence": 0.9,
+    },
+    "systeme-io": {
+        "primary_docs_url": "https://help.systeme.io/article/2329-how-to-use-systeme-io-public-api",
+        "evidence_urls": [
+            "https://help.systeme.io/article/2329-how-to-use-systeme-io-public-api",
+            "https://help.systeme.io/article/9489-how-to-use-systeme-ios-mcp",
+        ],
+        "confidence": 0.9,
+    },
+    "woocommerce": {
+        "primary_docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/",
+        "evidence_urls": [
+            "https://developer.woocommerce.com/docs/apis/rest-api/",
+            "https://woocommerce.com/document/woocommerce-rest-api",
+            "https://developer.woocommerce.com/docs/features/mcp/",
+        ],
+        "confidence": 0.95,
+    },
+    "dataforseo": {
+        "primary_docs_url": "https://docs.dataforseo.com/v3/auth/",
+        "evidence_urls": [
+            "https://docs.dataforseo.com/v3/auth/",
+            "https://docs.dataforseo.com/v3/",
+            "https://dataforseo.com/model-context-protocol",
+            "https://dataforseo.com/help-center/setting-up-the-official-dataforseo-mcp-server-simple-guide",
+        ],
+        "confidence": 0.95,
+    },
+    "vercel": {
+        "primary_docs_url": "https://vercel.com/docs/rest-api",
+        "evidence_urls": [
+            "https://vercel.com/docs/rest-api",
+            "https://vercel.com/docs/integrations/create-integration/vercel-api-integrations",
+            "https://vercel.com/docs/agent-resources/vercel-mcp",
+        ],
+        "confidence": 0.92,
+    },
+    "supabase": {
+        "auth_methods": ["API Key", "Bearer Token", "Personal Access Token"],
+        "primary_docs_url": "https://supabase.com/docs/guides/api",
+        "evidence_urls": [
+            "https://supabase.com/docs/guides/api",
+            "https://supabase.com/docs/guides/getting-started/api-keys",
+            "https://supabase.com/docs/reference/api/introduction",
+            "https://supabase.com/docs/guides/ai-tools/mcp",
+        ],
+        "confidence": 0.95,
+    },
+    "neo4j": {
+        "primary_docs_url": "https://neo4j.com/docs/",
+        "evidence_urls": [
+            "https://neo4j.com/docs/",
+            "https://neo4j.com/developer/genai-ecosystem/model-context-protocol-mcp/",
+            "https://github.com/neo4j-contrib/mcp-neo4j",
+        ],
+        "confidence": 0.9,
+    },
+    "datadog": {
+        "primary_docs_url": "https://docs.datadoghq.com/api/latest/",
+        "evidence_urls": [
+            "https://docs.datadoghq.com/api/latest/",
+            "https://docs.datadoghq.com/account_management/api-app-keys/",
+            "https://docs.datadoghq.com/mcp_server/",
+        ],
+        "confidence": 0.92,
+    },
+    "jira": {
+        "primary_docs_url": "https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/",
+        "evidence_urls": [
+            "https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/",
+            "https://developer.atlassian.com/cloud/jira/software/oauth-2-3lo-apps/",
+            "https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/",
+        ],
+        "confidence": 0.95,
+    },
+    "quickbooks": {
+        "primary_docs_url": "https://developer.intuit.com/app/developer/qbo/docs/develop",
+        "evidence_urls": [
+            "https://developer.intuit.com/app/developer/qbo/docs/develop",
+            "https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0",
+            "https://github.com/intuit/quickbooks-online-mcp-server",
+        ],
+        "confidence": 0.92,
+    },
+    "zendesk": {
+        "primary_docs_url": "https://developer.zendesk.com/api-reference/introduction/security-and-auth/",
+        "evidence_urls": [
+            "https://developer.zendesk.com/api-reference/introduction/security-and-auth/",
+            "https://developer.zendesk.com/api-reference/",
+            "https://developer.zendesk.com/documentation/api-basics/best-practices/best-practices-for-avoiding-rate-limiting/",
+        ],
+        "confidence": 0.92,
+    },
+    "stripe": {
+        "primary_docs_url": "https://docs.stripe.com/api/authentication",
+        "evidence_urls": [
+            "https://docs.stripe.com/api/authentication",
+            "https://docs.stripe.com/api",
+            "https://docs.stripe.com/mcp",
+        ],
+        "confidence": 0.95,
+    },
+    "xero": {
+        "primary_docs_url": "https://developer.xero.com/documentation/getting-started-guide/",
+        "evidence_urls": [
+            "https://developer.xero.com/documentation/getting-started-guide/",
+            "https://github.com/xeroapi/xero-mcp-server",
+            "https://developer.xero.com/faq/AI-Toolkit",
+        ],
+        "confidence": 0.92,
+    },
+    "attio": {
+        "primary_docs_url": "https://docs.attio.com/rest-api/overview",
+        "evidence_urls": [
+            "https://docs.attio.com/rest-api/overview",
+            "https://docs.attio.com/rest-api/guides/authentication",
+            "https://docs.attio.com/mcp/overview",
+        ],
+        "confidence": 0.92,
+    },
+    "close": {
+        "primary_docs_url": "https://developer.close.com/api/overview/api-key-authentication",
+        "evidence_urls": [
+            "https://developer.close.com/api/overview/api-key-authentication",
+            "https://help.close.com/docs/mcp-server",
+            "https://close.com/integrations/close-mcp",
+        ],
+        "confidence": 0.92,
+    },
+    "intercom": {
+        "primary_docs_url": "https://developers.intercom.com/docs/build-an-integration/learn-more/authentication",
+        "evidence_urls": [
+            "https://developers.intercom.com/docs/build-an-integration/learn-more/authentication",
+            "https://developers.intercom.com/docs/references/rest-api/api.intercom.io",
+            "https://developers.intercom.com/docs/guides/mcp",
+            "https://github.com/intercom/intercom-mcp-server",
+        ],
+        "confidence": 0.9,
+    },
+    "front": {
+        "existing_mcp": "Official",
+        "primary_docs_url": "https://dev.frontapp.com/docs/core-api-getting-started",
+        "evidence_urls": [
+            "https://dev.frontapp.com/docs/core-api-getting-started",
+            "https://dev.frontapp.com/docs/mcp-server",
+        ],
+        "confidence": 0.9,
+    },
+    "pylon": {
+        "primary_docs_url": "https://docs.usepylon.com/pylon-docs/developer/api/authentication",
+        "evidence_urls": [
+            "https://docs.usepylon.com/pylon-docs/developer/api/authentication",
+            "https://docs.usepylon.com/pylon-docs/integrations/pylon-mcp",
+            "https://support.usepylon.com/articles/2407390554-connecting-to-the-pylon-mcp-server",
+        ],
+        "confidence": 0.88,
+    },
+    "plain": {
+        "primary_docs_url": "https://www.plain.com/docs/graphql/authentication",
+        "evidence_urls": [
+            "https://www.plain.com/docs/graphql/authentication",
+            "https://www.plain.com/docs/graphql/introduction",
+            "https://help.plain.com/article/mcp-server",
+        ],
+        "confidence": 0.9,
+    },
+    "bigcommerce": {
+        "existing_mcp": "Community",
+        "primary_docs_url": "https://developer.bigcommerce.com/docs/start/about",
+        "evidence_urls": [
+            "https://developer.bigcommerce.com/docs/start/about",
+            "https://docs.bigcommerce.com/developer/api-reference/about-our-apis",
+            "https://github.com/CDataSoftware/bigcommerce-mcp-server-by-cdata",
+        ],
+        "confidence": 0.82,
+    },
+    "se-ranking": {
+        "primary_docs_url": "https://seranking.com/api/data/getting-started/",
+        "evidence_urls": [
+            "https://seranking.com/api/data/getting-started/",
+            "https://seranking.com/api/integrations/mcp/",
+            "https://seranking.com/mcp.html",
+        ],
+        "confidence": 0.9,
+    },
+    "ahrefs": {
+        "primary_docs_url": "https://docs.ahrefs.com/en/api/docs/introduction",
+        "evidence_urls": [
+            "https://docs.ahrefs.com/en/api/docs/introduction",
+            "https://docs.ahrefs.com/en/mcp/docs/introduction",
+            "https://github.com/ahrefs/ahrefs-mcp-server",
+        ],
+        "confidence": 0.92,
+    },
+    "mrscraper": {
+        "existing_mcp": "Community",
+        "one_liner": "AI web-scraping platform with a scraper API and third-party MCP options.",
+        "primary_docs_url": "https://docs.mrscraper.com",
+        "evidence_urls": [
+            "https://docs.mrscraper.com",
+            "https://mrscraper.com/",
+            "https://zapier.com/mcp/mrscraper",
+        ],
+        "confidence": 0.78,
+    },
+    "apify": {
+        "primary_docs_url": "https://docs.apify.com/api/v2",
+        "evidence_urls": [
+            "https://docs.apify.com/api/v2",
+            "https://docs.apify.com/platform/integrations/mcp",
+        ],
+        "confidence": 0.95,
+    },
+    "firecrawl": {
+        "primary_docs_url": "https://docs.firecrawl.dev/api-reference/introduction",
+        "evidence_urls": [
+            "https://docs.firecrawl.dev/api-reference/introduction",
+            "https://docs.firecrawl.dev/use-cases/developers-mcp",
+            "https://github.com/firecrawl/firecrawl-mcp-server",
+        ],
+        "confidence": 0.95,
+    },
+    "bright-data": {
+        "primary_docs_url": "https://docs.brightdata.com/api-reference/authentication",
+        "evidence_urls": [
+            "https://docs.brightdata.com/api-reference/authentication",
+            "https://brightdata.com/ai/mcp-server",
+        ],
+        "confidence": 0.92,
+    },
+    "asana": {
+        "primary_docs_url": "https://developers.asana.com/docs/authentication",
+        "evidence_urls": [
+            "https://developers.asana.com/docs/authentication",
+            "https://developers.asana.com/docs/using-asanas-mcp-server",
+            "https://developers.asana.com/docs/mcp-clients",
+        ],
+        "confidence": 0.92,
+    },
+    "monday": {
+        "primary_docs_url": "https://developer.monday.com/api-reference/docs/authentication",
+        "evidence_urls": [
+            "https://developer.monday.com/api-reference/docs/authentication",
+            "https://developer.monday.com/api-reference/docs/monday-mcp-security-overview",
+            "https://monday.com/w/mcp",
+        ],
+        "confidence": 0.9,
+    },
+    "clickup": {
+        "primary_docs_url": "https://developer.clickup.com/docs/authentication",
+        "evidence_urls": [
+            "https://developer.clickup.com/docs/authentication",
+            "https://developer.clickup.com/docs/connect-an-ai-assistant-to-clickups-mcp-server",
+            "https://help.clickup.com/hc/en-us/articles/33335772678423-What-is-ClickUp-MCP",
+        ],
+        "confidence": 0.9,
+    },
+    "coda": {
+        "primary_docs_url": "https://coda.io/developers",
+        "evidence_urls": [
+            "https://coda.io/developers",
+            "https://coda.io/resources/guides/getting_started_with_coda_mcp",
+        ],
+        "confidence": 0.9,
+    },
+    "smartsheet": {
+        "primary_docs_url": "https://developers.smartsheet.com/api/smartsheet/guides/basics/authentication",
+        "evidence_urls": [
+            "https://developers.smartsheet.com/api/smartsheet/guides/basics/authentication",
+            "https://developers.smartsheet.com/ai-mcp/smartsheet/mcp-server",
+            "https://help.smartsheet.com/articles/2483670-smartsheet-mcp-server",
+        ],
+        "confidence": 0.92,
+    },
+    "brex": {
+        "primary_docs_url": "https://developer.brex.com/guides/authentication",
+        "evidence_urls": [
+            "https://developer.brex.com/guides/authentication",
+            "https://developer.brex.com/docs/mcp",
+            "https://www.brex.com/journal/brex-mcp-connect-brex-to-ai-tools",
+        ],
+        "confidence": 0.92,
+    },
+    "fathom": {
+        "existing_mcp": "None",
+        "primary_docs_url": "https://developers.fathom.ai/sdks/authentication",
+        "evidence_urls": [
+            "https://developers.fathom.ai/sdks/authentication",
+            "https://developers.fathom.ai/",
+            "https://fathom.video",
+        ],
+        "confidence": 0.88,
+    },
+    "reducto": {
+        "primary_docs_url": "https://docs.reducto.ai/quickstart",
+        "evidence_urls": [
+            "https://docs.reducto.ai/quickstart",
+            "https://docs.reducto.ai/mcp-server",
+            "https://reducto.ai/developers",
+        ],
+        "confidence": 0.95,
+    },
+    "devin": {
+        "primary_docs_url": "https://docs.devin.ai/api-reference/authentication",
+        "evidence_urls": [
+            "https://docs.devin.ai/api-reference/authentication",
+            "https://docs.devin.ai/work-with-devin/devin-mcp",
+            "https://docs.devin.ai/api-reference/overview",
+        ],
+        "confidence": 0.92,
+    },
+    "youtube-transcript": {
+        "primary_docs_url": "https://transcriptapi.com/docs/api/",
+        "evidence_urls": [
+            "https://transcriptapi.com/docs/api/",
+            "https://transcriptapi.com/blog/youtube-mcp-server-setup-connect-claude",
+            "https://transcriptapi.com/docs/",
+        ],
+        "confidence": 0.9,
+    },
+    # --- existing_mcp false-positive corrections (verified against vendor docs;
+    #     do not count third-party MCP wrappers as first-party official servers) ---
     "binance": {"existing_mcp": "Community"},   # only community/third-party MCPs found, no official
     "dealcloud": {  # no DealCloud MCP found; drop the unsupported "MCP preview" claim from the one-liner
         "existing_mcp": "None",
@@ -209,6 +563,11 @@ OVERRIDES: dict[str, dict] = {
     #     as-measured, 94.1%); the shipped matrix should still carry the truth. ---
     "notion": {  # internal integration secret is an API key, not a generic bearer
         "auth_methods": ["OAuth2", "API Key"],
+        "evidence_urls": [
+            "https://developers.notion.com/reference/authentication",
+            "https://developers.notion.com/guides/get-started/overview",
+            "https://developers.notion.com/guides/mcp/overview",
+        ],
     },
     "slack": {  # apps are created + installed via OAuth; tokens are OAuth artifacts
         "auth_methods": ["OAuth2"],
@@ -219,6 +578,51 @@ OVERRIDES: dict[str, dict] = {
     },
     "hubspot": {  # developer API keys were sunset in 2022; private-app tokens + OAuth remain
         "auth_methods": ["OAuth2", "Bearer Token"],
+        "evidence_urls": [
+            "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/authentication/overview",
+            "https://developers.hubspot.com/docs/api/private-apps",
+            "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/integrate-with-the-remote-hubspot-mcp-server",
+        ],
+        "confidence": 0.9,
+    },
+    "help-scout": {
+        "auth_methods": ["OAuth2", "API Key", "Basic Auth"],
+        "primary_docs_url": "https://developer.helpscout.com/mailbox-api/overview/authentication/",
+        "evidence_urls": [
+            "https://developer.helpscout.com/mailbox-api/overview/authentication/",
+            "https://developer.helpscout.com/docs-api/",
+        ],
+        "confidence": 0.9,
+    },
+    "plaid": {
+        "auth_methods": ["API Key", "Other Token"],
+        "access_model": {"kind": "Gated",
+                         "note": "Sandbox signup is self-serve, but Production API access must be requested in the Plaid Dashboard."},
+        "buildability": "Moderate",
+        "recommended_next_action": "Needs Outreach",
+        "main_blocker": "Production access requires a Plaid approval/review process.",
+        "evidence_urls": ["https://plaid.com/docs/api/", "https://plaid.com/docs/resources/mcp/"],
+        "confidence": 0.88,
+    },
+    "pumble": {
+        "one_liner": "Pumble provides a self-serve API-key addon and official MCP server for workspace messaging.",
+        "access_model": {"kind": "Self-Serve", "note": "API addon is available on all plans; keys are generated inside Pumble."},
+        "primary_docs_url": "https://pumble.com/help/integrations/automation-workflow-integrations/api-keys-integration/",
+        "evidence_urls": [
+            "https://pumble.com/help/integrations/automation-workflow-integrations/api-keys-integration/",
+            "https://pumble.com/help/integrations/automation-workflow-integrations/how-to-use-the-pumble-mcp-server/",
+        ],
+        "confidence": 0.82,
+    },
+    "twilio": {
+        "auth_methods": ["Basic Auth", "API Key"],
+        "existing_mcp": "Official",
+        "evidence_urls": [
+            "https://www.twilio.com/docs/iam/api-keys",
+            "https://www.twilio.com/docs/iam/api/authtoken",
+            "https://www.twilio.com/docs/ai/mcp",
+        ],
+        "confidence": 0.93,
     },
     # --- Paygent Connect: first pass researched the WRONG product (an LLM-cost SDK at
     #     paygent.to), not the NMI-powered payment gateway. Mark honestly as unconfirmed. ---
@@ -254,6 +658,24 @@ MCP_OFFICIAL_FIXES: dict[str, str] = {
     "hubspot": "https://developers.hubspot.com/mcp",
     "klaviyo": "https://developers.klaviyo.com/en/docs/klaviyo_mcp_server",
     "shopify": "https://shopify.dev/docs/apps/build/storefront-mcp",
+    # Second sweep: current vendor pages now show first-party MCP support.
+    "slack": "https://docs.slack.dev/ai/slack-mcp-server/",
+    "airtable": "https://support.airtable.com/docs/using-the-airtable-mcp-server",
+    "ramp": "https://docs.ramp.com/developer-api/v1/developer-mcp",
+    "twilio": "https://www.twilio.com/docs/ai/mcp",
+    "vonage": "https://developer.vonage.com/en/mcp-server/overview",
+    "dataforseo": "https://dataforseo.com/help-center/setting-up-the-official-dataforseo-mcp-server-simple-guide",
+    "freshdesk": "https://support.freshdesk.com/support/solutions/articles/50000012670-model-context-protocol-mcp-integration-in-freshdesk-eap-",
+    "gohighlevel": "https://help.gohighlevel.com/support/solutions/articles/155000007981-highlevel-mcp-server-connect-ai-agents-to-highlevel-tools",
+    "gorgias": "https://docs.gorgias.com/en-US/connect-your-ai-assistant-to-the-gorgias-mcp-6310546",
+    "podio": "https://docs.sharefile.com/en-us/podio/using-podio/general-features/podio-mcp-server.html",
+    "quickbooks": "https://github.com/intuit/quickbooks-online-mcp-server",
+    "salesforce": "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/overview",
+    "snowflake": "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-mcp",
+    "woocommerce": "https://developer.woocommerce.com/docs/features/mcp/",
+    "zoho-crm": "https://www.zoho.com/crm/developer/docs/mcp/overview.html",
+    "zoho-cliq": "https://www.zoho.com/cliq/help/platform/zoho-cliq-mcp.html",
+    "systeme-io": "https://help.systeme.io/article/9489-how-to-use-systeme-ios-mcp",
 }
 
 # Evidence URLs to APPEND (never replace) for rows whose fix is sourced from a
@@ -263,6 +685,7 @@ EVIDENCE_APPENDS: dict[str, list[str]] = {
     "slack": ["https://docs.slack.dev/authentication/"],
     "airtable": ["https://airtable.com/developers/web/api/authentication"],
     "hubspot": ["https://developers.hubspot.com/docs/api/private-apps"],
+    "plaid": ["https://plaid.com/docs/api/"],
 }
 
 # Full, accurate one-liners (<=120 chars) that REPLACE 9 the old synthesis hard-truncated

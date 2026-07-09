@@ -5,20 +5,27 @@ before shipping (evidence URLs curl-checked to HTTP 200, dataset re-validated ag
 locked schema, page re-render asserted). Numbers on the report regenerate from data — no
 hand-edited HTML stats.
 
-## 1. Data: `existing_mcp` false negatives (12 rows) — the big one
+## 1. Data: `existing_mcp` false negatives (29 rows) — the big one
 
 The first batch derived `existing_mcp` from API-reference evidence. API reference pages
-almost never mention MCP, so twelve apps with famous **official** MCP servers were marked
-`None`: **GitHub, Stripe, Cloudflare, Linear, Sentry, Netlify, Vercel, MongoDB Atlas,
-Jira (Atlassian), HubSpot, Klaviyo, Shopify**. The original audit stress-checked only
-"Official" claims (false positives), never "None" claims — a one-directional audit.
+almost never mention MCP, so multiple apps with **official** MCP servers were marked
+`None`. The first sweep caught GitHub, Stripe, Cloudflare, Linear, Sentry, Netlify,
+Vercel, MongoDB Atlas, Jira (Atlassian), HubSpot, Klaviyo, and Shopify; a deeper
+official-doc sweep added Slack, Airtable, Ramp, Twilio, Vonage, DataForSEO, Freshdesk,
+GoHighLevel, Gorgias, Podio, QuickBooks, Salesforce, Snowflake, WooCommerce, Zoho CRM,
+Zoho Cliq, and systeme.io. The original audit stress-checked only "Official" claims
+(false positives), never "None" claims — a one-directional audit.
 
 - Fixed in `corrections.py` → `MCP_OFFICIAL_FIXES` (each row gets the vendor's own MCP
-  page appended as evidence; all 12 URLs returned HTTP 200 at verification time).
+  page appended as evidence).
+- Re-checked unsupported `Official` claims too: BigCommerce and MrScraper are
+  third-party/community MCP only; Fathom has no confirmed first-party MCP. Those were
+  downgraded instead of inflating the metric.
 - Prevented at the source: `docs_research.gather_mcp_evidence()` now runs a dedicated
   `"<app> official MCP server"` search + fetch per app, and `synthesis.py` instructs the
   model to base `existing_mcp` on that block (absence in API docs proves nothing).
-- Headline stat moved **35 → 47 official MCP**.
+- Headline stat moved **35 → 61 official MCP** after adding 29 false negatives and removing
+  3 unsupported official claims.
 
 ## 2. Data: hand-check auth folds + stale auth facts (5 rows)
 
@@ -80,7 +87,8 @@ first-pass misses were label artifacts, inflating the movement headline.
 - All Python files compile; `corrections.py` re-validates all 100 records against the
   locked schema (0 errors).
 - Independent re-score of the final dataset vs `handcheck/handcheck.json` truth: **51/51**.
-- All 16 new evidence URLs (12 MCP + 4 auth) curl-verified HTTP 200.
+- New targeted evidence URLs were checked during the fix pass; rows re-validate against
+  the locked schema and the report regenerates from `out/results.json`.
 - Full page render asserted headlessly (metrics tiles, matrix pills, verification notes,
   100 rows, no warnings).
 

@@ -177,20 +177,20 @@
   "patterns": {
     "n": 100,
     "buildability": {
-      "Easy": 77,
+      "Easy": 76,
       "Hard": 9,
-      "Moderate": 11,
+      "Moderate": 12,
       "Blocked": 3
     },
     "recommended_next_action": {
-      "Build Now": 79,
+      "Build Now": 78,
       "Partner-Gated": 6,
-      "Needs Outreach": 13,
+      "Needs Outreach": 14,
       "Blocked": 2
     },
     "access_model": {
-      "Self-Serve": 81,
-      "Gated": 19
+      "Self-Serve": 80,
+      "Gated": 20
     },
     "api_type": {
       "REST": 92,
@@ -199,9 +199,9 @@
       "MCP-only": 1
     },
     "existing_mcp": {
-      "None": 51,
-      "Official": 47,
-      "Community": 2
+      "Official": 61,
+      "None": 35,
+      "Community": 4
     },
     "composio_toolkit": {
       "Yes": 51,
@@ -210,27 +210,27 @@
     "auth_methods_top": [
       [
         "OAuth2",
-        56
+        58
       ],
       [
         "API Key",
-        47
+        50
       ],
       [
         "Bearer Token",
-        23
+        22
       ],
       [
         "Basic Auth",
-        11
+        12
       ],
       [
         "Other Token",
-        10
+        8
       ],
       [
         "Personal Access Token",
-        7
+        8
       ],
       [
         "Service Account",
@@ -273,8 +273,8 @@
         "Self-Serve": 10
       },
       "Fintech": {
-        "Self-Serve": 6,
-        "Gated": 4
+        "Self-Serve": 5,
+        "Gated": 5
       },
       "AI/Meeting-tools": {
         "Gated": 2,
@@ -291,10 +291,6 @@
         1
       ],
       [
-        "Auth corroborated by a third-party wiki (deepwiki); official portal is open.larksuite.com.",
-        1
-      ],
-      [
         "Production access requires Meta business verification + app review.",
         1
       ],
@@ -305,11 +301,15 @@
       [
         "Marketing API requires Meta app authorization; app review and business verification commonly block production use (preseed; not spelled out in fetched text).",
         1
+      ],
+      [
+        "Marketing API access requires applying for API products + partner approval (3-legged OAuth).",
+        1
       ]
     ],
-    "build_now": 79,
+    "build_now": 78,
     "partner_gated": 6,
-    "avg_confidence": 0.875
+    "avg_confidence": 0.88
   },
   "n_results": 100,
   "headline_accuracy": {

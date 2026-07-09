@@ -44,6 +44,51 @@ MCP_OFFICIAL_SEEDS = {
     "hubspot": ["https://developers.hubspot.com/mcp"],
     "klaviyo": ["https://developers.klaviyo.com/en/docs/klaviyo_mcp_server"],
     "shopify": ["https://shopify.dev/docs/apps/build/storefront-mcp"],
+    "slack": ["https://docs.slack.dev/ai/slack-mcp-server/"],
+    "airtable": ["https://support.airtable.com/docs/using-the-airtable-mcp-server"],
+    "ramp": ["https://docs.ramp.com/developer-api/v1/developer-mcp"],
+    "twilio": ["https://www.twilio.com/docs/ai/mcp"],
+    "vonage": ["https://developer.vonage.com/en/mcp-server/overview"],
+    "dataforseo": ["https://dataforseo.com/help-center/setting-up-the-official-dataforseo-mcp-server-simple-guide"],
+    "freshdesk": ["https://support.freshdesk.com/support/solutions/articles/50000012670-model-context-protocol-mcp-integration-in-freshdesk-eap-"],
+    "gohighlevel": ["https://help.gohighlevel.com/support/solutions/articles/155000007981-highlevel-mcp-server-connect-ai-agents-to-highlevel-tools"],
+    "gorgias": ["https://docs.gorgias.com/en-US/connect-your-ai-assistant-to-the-gorgias-mcp-6310546"],
+    "podio": ["https://docs.sharefile.com/en-us/podio/using-podio/general-features/podio-mcp-server.html"],
+    "quickbooks": ["https://github.com/intuit/quickbooks-online-mcp-server"],
+    "salesforce": ["https://developer.salesforce.com/docs/platform/hosted-mcp-servers/overview"],
+    "snowflake": ["https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-mcp"],
+    "woocommerce": ["https://developer.woocommerce.com/docs/features/mcp/"],
+    "zoho-crm": ["https://www.zoho.com/crm/developer/docs/mcp/overview.html"],
+    "zoho-cliq": ["https://www.zoho.com/cliq/help/platform/zoho-cliq-mcp.html"],
+    "systeme-io": ["https://help.systeme.io/article/9489-how-to-use-systeme-ios-mcp"],
+    "xero": ["https://github.com/xeroapi/xero-mcp-server"],
+    "attio": ["https://docs.attio.com/mcp/overview"],
+    "close": ["https://help.close.com/docs/mcp-server"],
+    "front": ["https://dev.frontapp.com/docs/mcp-server"],
+    "intercom": ["https://developers.intercom.com/docs/guides/mcp"],
+    "pylon": ["https://docs.usepylon.com/pylon-docs/integrations/pylon-mcp"],
+    "plain": ["https://help.plain.com/article/mcp-server"],
+    "google-ads": ["https://developers.google.com/google-ads/api/docs/developer-toolkit/mcp-server"],
+    "se-ranking": ["https://seranking.com/api/integrations/mcp/"],
+    "ahrefs": ["https://docs.ahrefs.com/en/mcp/docs/introduction"],
+    "apify": ["https://docs.apify.com/platform/integrations/mcp"],
+    "firecrawl": ["https://docs.firecrawl.dev/use-cases/developers-mcp"],
+    "bright-data": ["https://brightdata.com/ai/mcp-server"],
+    "clay": ["https://www.clay.com/mcp"],
+    "supabase": ["https://supabase.com/docs/guides/ai-tools/mcp"],
+    "neo4j": ["https://neo4j.com/developer/genai-ecosystem/model-context-protocol-mcp/"],
+    "datadog": ["https://docs.datadoghq.com/mcp_server/"],
+    "notion": ["https://developers.notion.com/guides/mcp/overview"],
+    "asana": ["https://developers.asana.com/docs/using-asanas-mcp-server"],
+    "monday": ["https://monday.com/w/mcp"],
+    "clickup": ["https://developer.clickup.com/docs/connect-an-ai-assistant-to-clickups-mcp-server"],
+    "coda": ["https://coda.io/resources/guides/getting_started_with_coda_mcp"],
+    "smartsheet": ["https://developers.smartsheet.com/ai-mcp/smartsheet/mcp-server"],
+    "brex": ["https://developer.brex.com/docs/mcp"],
+    "reducto": ["https://docs.reducto.ai/mcp-server"],
+    "devin": ["https://docs.devin.ai/work-with-devin/devin-mcp"],
+    "higgsfield": ["https://higgsfield.ai/mcp", "https://higgsfield.ai/cli"],
+    "youtube-transcript": ["https://transcriptapi.com/blog/youtube-mcp-server-setup-connect-claude"],
 }
 
 
@@ -243,10 +288,9 @@ def gather_mcp_evidence(app: str, slug: str = "", k: int = 8, max_fetch: int = 4
 
     API-reference pages almost never mention MCP, so deriving existing_mcp from
     the main evidence pass systematically produced false "None"s — the first
-    batch marked GitHub, Stripe, Cloudflare, Linear, Sentry, Vercel, Netlify,
-    MongoDB, Jira, HubSpot, Klaviyo and Shopify as having no official MCP server
-    when all twelve have one. One extra search + up to two fetches per app is
-    cheap and fixes the field at the source.
+    batch marked many vendor-owned MCP servers as "None" because API reference
+    docs rarely mention MCP. One extra search + a few high-confidence official
+    seeds per app is cheap and fixes the field at the source.
     """
     q = f"{app} official MCP server Model Context Protocol"
     results = search(q, k=k)

@@ -798,7 +798,7 @@
             <li><b>Preseed priors (~20 apps):</b> human hypotheses like "Amazon SP-API is gated" — the pipeline re-confirms each against fresh evidence and trusts the evidence over the prior.</li>
             <li><b>Hand-check (17 apps):</b> field-level verification of api_type + auth + access against official docs; misses are published, not hidden.</li>
             <li><b>Adjudicating loop disagreements:</b> the browser agent over-called WhatsApp and Pinterest as Self-Serve; a human kept them Gated because production access needs review/verification.</li>
-            <li><b>MCP false-negative sweep:</b> the first batch marked twelve official MCP servers (GitHub, Stripe, Cloudflare, Linear…) as "None" — caught in review, re-verified against vendor pages, fixed in <code>corrections.py</code>, and prevented at the source with the new MCP probe.</li>
+            <li><b>MCP evidence sweep:</b> two review passes found 29 official MCP servers that the first batch had marked "None"; a false-positive pass also downgraded 3 unsupported "Official" claims — all fixed in <code>corrections.py</code> and guarded by the new MCP probe.</li>
           </ul>
         </div>
         <div class="proof">

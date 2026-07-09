@@ -27,11 +27,12 @@ clear cross-app patterns second, honest verification third.
 - **Browser-Use Cloud loop:** 12 apps re-checked against live docs; caught **6** first-pass errors
   static fetch missed (e.g. Copper and Plain, which the first pass had wrongly marked "no API").
 - **existing_mcp false-negative sweep:** the first batch derived `existing_mcp` from API-reference
-  pages (which rarely mention MCP) and marked **12 official MCP servers as "None"** — GitHub, Stripe,
-  Cloudflare, Linear, Sentry, Netlify, Vercel, MongoDB, Jira/Atlassian, HubSpot, Klaviyo, Shopify.
-  Each was re-verified against the vendor's own MCP page (evidence appended), fixed in
-  `corrections.py`, and prevented at the source with a dedicated MCP probe in `docs_research.py`.
-  Official MCP count moved **35 → 47**.
+  pages (which rarely mention MCP) and marked **29 official MCP servers as "None"** across two
+  review sweeps — including GitHub, Stripe, Cloudflare, Slack, Airtable, Ramp, Twilio, Salesforce,
+  Snowflake, WooCommerce, Zoho CRM, and others. Each fixed row carries the vendor's own MCP page as
+  evidence, the corrections are centralized in `corrections.py`, and future runs get a dedicated MCP
+  probe in `docs_research.py`. A follow-up false-positive audit also downgraded 3 unsupported
+  `Official` claims, so the final official MCP count moved **35 → 61**.
 - **Two named patterns:** *"API exists ≠ API is accessible"* (WhatsApp/Meta/LinkedIn/Google Ads have
   APIs but gate access behind review/verification) and *"good API, no entry point"* (DealCloud-style:
   solid API, but keys require being an existing paying customer → Partner-Gated).
@@ -222,12 +223,12 @@ or point a Vercel project at the repo with **Root Directory = `report`** (no bui
 - `composio_toolkit` via the public catalog is a **heuristic** when the SDK isn't available; the SDK path is authoritative.
 - `existing_mcp` is an automated signal (not part of the formal 17-app hand-check), and it burned us
   in **both** directions: the first audit stress-checked the 18 most-doubtful `Official` claims
-  (16 held up; Binance → Community, DealCloud → None) but never audited the `None` claims — and 12 of
-  those were false negatives (GitHub, Stripe, Cloudflare, Linear, Sentry, Netlify, Vercel, MongoDB,
-  Jira, HubSpot, Klaviyo, Shopify all have official servers). Root cause: API-reference evidence rarely
-  mentions MCP. Fixed in `corrections.py` with vendor evidence, and prevented going forward by the
-  dedicated MCP probe in `docs_research.py`. Remaining `None`/`Community` rows have not all been
-  re-swept by hand — treat that field as verified-on-fix, not hand-checked.
+  (16 held up; Binance → Community, DealCloud → None) but never audited the `None` claims. Two
+  follow-up sweeps found 29 false negatives with official vendor MCP pages. Root cause:
+  API-reference evidence rarely mentions MCP. Fixed in `corrections.py` with vendor evidence, and
+  prevented going forward by the dedicated MCP probe in `docs_research.py`. Remaining
+  `None`/`Community` rows have not all been re-swept by hand — treat that field as verified-on-fix,
+  not hand-checked.
 - Self-scored `confidence` can be miscalibrated — that's exactly why the **hand-checked** number, not
   confidence, is the accuracy claim.
 - The dataset was produced by a mix of models (free-tier during the batch, plus targeted re-checks); it
