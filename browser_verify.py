@@ -132,6 +132,13 @@ def main() -> None:
 
     client = BrowserUse(api_key=key)
     fp = {r["slug"]: r for r in sample}
+    # preserve prior verdicts so browser coverage ACCUMULATES across runs (keyed by slug)
+    prior = {}
+    if OUT.exists():
+        try:
+            prior = {x["slug"]: x for x in json.loads(OUT.read_text()) if x.get("slug")}
+        except Exception:
+            prior = {}
     results: list[dict] = []
     for ci, chunk in enumerate(chunks, 1):
         slugs = [r["slug"] for r in chunk]
@@ -163,9 +170,12 @@ def main() -> None:
                                                "access_model": r["access_model"]["kind"]},
                                 "browser": {"error": str(e)[:200]}})
         OUT.parent.mkdir(parents=True, exist_ok=True)
-        OUT.write_text(json.dumps(results, indent=2, ensure_ascii=False))
+        # merge prior + this run's verdicts (new overrides prior for the same slug)
+        merged = {**prior, **{x["slug"]: x for x in results if x.get("slug")}}
+        OUT.write_text(json.dumps(list(merged.values()), indent=2, ensure_ascii=False))
 
-    print(f"\nwrote {len(results)} browser verdicts -> {OUT}")
+    total_now = len({**prior, **{x["slug"]: x for x in results if x.get("slug")}})
+    print(f"\nwrote {len(results)} new verdicts; {total_now} total in {OUT}")
 
 
 if __name__ == "__main__":
