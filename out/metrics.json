@@ -199,9 +199,9 @@
       "MCP-only": 1
     },
     "existing_mcp": {
-      "Official": 62,
-      "None": 34,
-      "Community": 4
+      "Official": 64,
+      "None": 33,
+      "Community": 3
     },
     "composio_toolkit": {
       "Yes": 51,
@@ -309,7 +309,7 @@
     ],
     "build_now": 79,
     "partner_gated": 6,
-    "avg_confidence": 0.88
+    "avg_confidence": 0.881
   },
   "n_results": 100,
   "headline_accuracy": {
@@ -324,7 +324,7 @@
       "label": "Automated blind re-search agreement (not accuracy)"
     }
   },
-  "generated": "2026-07-09",
+  "generated": "2026-07-10",
   "accuracy_movement": {
     "method": "Field-level accuracy (api_type + auth_methods + access_model) vs hand-verified truth, comparing the first-pass snapshot to the post-verification results. Both sides canonicalized before comparison, so the delta reflects factual corrections only — label normalization (e.g. 'OAuth 2.0' -> 'OAuth2') is counted separately, not as accuracy.",
     "n": 17,

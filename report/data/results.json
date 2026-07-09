@@ -375,7 +375,7 @@
   {
     "app": "Freshdesk",
     "category": "Support",
-    "one_liner": "Broad self-serve REST API covering tickets, conversations, fields and more with clear docs.",
+    "one_liner": "Broad self-serve REST API for tickets, conversations & fields; official MCP integration is in EAP/beta.",
     "auth_methods": [
       "API Key",
       "Basic Auth",
@@ -558,7 +558,7 @@
   {
     "app": "Gorgias",
     "category": "Support",
-    "one_liner": "Gorgias has a self-serve REST API (Basic Auth/API key) for private apps; public apps need review.",
+    "one_liner": "Self-serve REST API (Basic Auth/API key) for private apps; official MCP server is currently in beta.",
     "auth_methods": [
       "API Key",
       "Basic Auth",
@@ -1042,10 +1042,11 @@
     "main_blocker": "",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
+      "https://marketplace.gohighlevel.com/docs/other/mcp/",
       "https://marketplace.gohighlevel.com/docs/",
+      "https://help.gohighlevel.com/support/solutions/articles/155000005741-how-to-use-the-highlevel-mcp-server",
       "https://help.gohighlevel.com/support/solutions/articles/48001060529-highlevel-api-documentation",
-      "https://github.com/GoHighLevel/highlevel-api-docs",
-      "https://help.gohighlevel.com/support/solutions/articles/155000007981-highlevel-mcp-server-connect-ai-agents-to-highlevel-tools"
+      "https://github.com/GoHighLevel/highlevel-api-docs"
     ],
     "confidence": 0.85,
     "verification_status": "Auto",
@@ -1633,7 +1634,7 @@
   {
     "app": "MrScraper",
     "category": "Research/Scraping",
-    "one_liner": "AI web-scraping platform with a scraper API and third-party MCP options.",
+    "one_liner": "AI web-scraping platform with a scraper API and an official cloud-hosted MCP server (mcp.mrscraper.com/mcp).",
     "auth_methods": [
       "API Key"
     ],
@@ -1643,20 +1644,20 @@
     },
     "api_type": "REST",
     "api_breadth": "Broad",
-    "existing_mcp": "Community",
+    "existing_mcp": "Official",
     "composio_toolkit": "No",
     "buildability": "Easy",
     "main_blocker": "",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
+      "https://docs.mrscraper.com/docs/getting-started/mcp-server",
       "https://docs.mrscraper.com",
-      "https://mrscraper.com/",
-      "https://zapier.com/mcp/mrscraper"
+      "https://mrscraper.com/"
     ],
-    "confidence": 0.78,
+    "confidence": 0.85,
     "verification_status": "Auto",
     "slug": "mrscraper",
-    "primary_docs_url": "https://docs.mrscraper.com",
+    "primary_docs_url": "https://docs.mrscraper.com/docs/getting-started/mcp-server",
     "rate_limit_note": "Not explicitly stated in provided text, but mentions various plans and billing.",
     "last_verified": "2026-07-09"
   },
@@ -2826,7 +2827,7 @@
   {
     "app": "Fathom",
     "category": "AI/Meeting-tools",
-    "one_liner": "Fathom provides a public REST API with SDKs and OAuth support for meeting data and AI summaries.",
+    "one_liner": "Fathom offers a public REST API plus an official OAuth-authenticated MCP server for meeting data & summaries.",
     "auth_methods": [
       "API Key",
       "Bearer Token",
@@ -2838,20 +2839,20 @@
     },
     "api_type": "REST",
     "api_breadth": "Moderate",
-    "existing_mcp": "None",
+    "existing_mcp": "Official",
     "composio_toolkit": "Yes",
     "buildability": "Easy",
     "main_blocker": "",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
+      "https://developers.fathom.ai/mcp-docs",
       "https://developers.fathom.ai/sdks/authentication",
-      "https://developers.fathom.ai/",
-      "https://fathom.video"
+      "https://help.fathom.video/en/articles/11497793"
     ],
-    "confidence": 0.88,
+    "confidence": 0.9,
     "verification_status": "Auto",
     "slug": "fathom",
-    "primary_docs_url": "https://developers.fathom.ai/sdks/authentication",
+    "primary_docs_url": "https://developers.fathom.ai/mcp-docs",
     "rate_limit_note": "",
     "last_verified": "2026-07-09"
   },

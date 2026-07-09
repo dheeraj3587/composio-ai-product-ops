@@ -32,7 +32,9 @@ clear cross-app patterns second, honest verification third.
   Snowflake, WooCommerce, Zoho CRM, Consensus, and others. Each fixed row carries the vendor's own MCP page as
   evidence, the corrections are centralized in `corrections.py`, and future runs get a dedicated MCP
   probe in `docs_research.py`. A follow-up false-positive audit also downgraded 3 unsupported
-  `Official` claims, so the final official MCP count moved **35 → 62**.
+  `Official` claims, and a third targeted sweep re-fixed two rows a prior pass had mis-audited
+  (Fathom `None`→`Official`, MrScraper `Community`→`Official`) plus GoHighLevel's dead evidence
+  link — so the final official MCP count moved **35 → 64**.
 - **Two named patterns:** *"API exists ≠ API is accessible"* (WhatsApp/Meta/LinkedIn/Google Ads have
   APIs but gate access behind review/verification) and *"good API, no entry point"* (DealCloud-style:
   solid API, but keys require being an existing paying customer → Partner-Gated).

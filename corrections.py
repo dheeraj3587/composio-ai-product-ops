@@ -422,16 +422,18 @@ OVERRIDES: dict[str, dict] = {
         ],
         "confidence": 0.92,
     },
-    "mrscraper": {
-        "existing_mcp": "Community",
-        "one_liner": "AI web-scraping platform with a scraper API and third-party MCP options.",
-        "primary_docs_url": "https://docs.mrscraper.com",
+    "mrscraper": {  # OFFICIAL first-party, cloud-hosted MCP server at mcp.mrscraper.com/mcp
+                    # (docs.mrscraper.com/docs/getting-started/mcp-server). The prior check saw only
+                    # the third-party Zapier wrapper and missed the vendor's own MCP subpage.
+        "existing_mcp": "Official",
+        "one_liner": "AI web-scraping platform with a scraper API and an official cloud-hosted MCP server (mcp.mrscraper.com/mcp).",
+        "primary_docs_url": "https://docs.mrscraper.com/docs/getting-started/mcp-server",
         "evidence_urls": [
+            "https://docs.mrscraper.com/docs/getting-started/mcp-server",
             "https://docs.mrscraper.com",
             "https://mrscraper.com/",
-            "https://zapier.com/mcp/mrscraper",
         ],
-        "confidence": 0.78,
+        "confidence": 0.85,
     },
     "apify": {
         "primary_docs_url": "https://docs.apify.com/api/v2",
@@ -511,15 +513,30 @@ OVERRIDES: dict[str, dict] = {
         ],
         "confidence": 0.92,
     },
-    "fathom": {
-        "existing_mcp": "None",
-        "primary_docs_url": "https://developers.fathom.ai/sdks/authentication",
+    "gohighlevel": {  # Official MCP is real (LeadConnector ships it), but the old evidence
+                      # URL (…/articles/155000007981-…) now 404s. Replace it with the live
+                      # LeadConnector MCP developer docs + the current help-center walkthrough.
         "evidence_urls": [
-            "https://developers.fathom.ai/sdks/authentication",
-            "https://developers.fathom.ai/",
-            "https://fathom.video",
+            "https://marketplace.gohighlevel.com/docs/other/mcp/",
+            "https://marketplace.gohighlevel.com/docs/",
+            "https://help.gohighlevel.com/support/solutions/articles/155000005741-how-to-use-the-highlevel-mcp-server",
+            "https://help.gohighlevel.com/support/solutions/articles/48001060529-highlevel-api-documentation",
+            "https://github.com/GoHighLevel/highlevel-api-docs",
         ],
-        "confidence": 0.88,
+    },
+    "fathom": {  # OFFICIAL vendor-hosted MCP server at api.fathom.ai/mcp
+                 # (docs: developers.fathom.ai/mcp-docs, confirmed at help.fathom.video/en/articles/11497793).
+                 # The "deepen audit" pass wrongly downgraded this to None — a generic
+                 # "does Fathom have an official MCP?" search missed the dedicated MCP subpage.
+        "existing_mcp": "Official",
+        "one_liner": "Fathom offers a public REST API plus an official OAuth-authenticated MCP server for meeting data & summaries.",
+        "primary_docs_url": "https://developers.fathom.ai/mcp-docs",
+        "evidence_urls": [
+            "https://developers.fathom.ai/mcp-docs",
+            "https://developers.fathom.ai/sdks/authentication",
+            "https://help.fathom.video/en/articles/11497793",
+        ],
+        "confidence": 0.9,
     },
     "reducto": {
         "primary_docs_url": "https://docs.reducto.ai/quickstart",
@@ -683,9 +700,12 @@ MCP_OFFICIAL_FIXES: dict[str, str] = {
     "twilio": "https://www.twilio.com/docs/ai/mcp",
     "vonage": "https://developer.vonage.com/en/mcp-server/overview",
     "dataforseo": "https://dataforseo.com/help-center/setting-up-the-official-dataforseo-mcp-server-simple-guide",
-    "freshdesk": "https://support.freshdesk.com/support/solutions/articles/50000012670-model-context-protocol-mcp-integration-in-freshdesk-eap-",
-    "gohighlevel": "https://help.gohighlevel.com/support/solutions/articles/155000007981-highlevel-mcp-server-connect-ai-agents-to-highlevel-tools",
-    "gorgias": "https://docs.gorgias.com/en-US/connect-your-ai-assistant-to-the-gorgias-mcp-6310546",
+    # NOTE on MCP maturity: most rows here are official + GA (e.g. GitHub, Stripe,
+    # Twilio, Salesforce). A few are official but vendor-labeled Beta/EAP — still
+    # first-party/"Official", just not yet GA. Flagged inline below.
+    "freshdesk": "https://support.freshdesk.com/support/solutions/articles/50000012670-model-context-protocol-mcp-integration-in-freshdesk-eap-",  # official, vendor-labeled EAP (beta)
+    "gohighlevel": "https://marketplace.gohighlevel.com/docs/other/mcp/",  # was …/155000007981-… (404); now the live LeadConnector MCP dev docs
+    "gorgias": "https://docs.gorgias.com/en-US/connect-your-ai-assistant-to-the-gorgias-mcp-6310546",  # official, vendor-labeled Beta
     "podio": "https://docs.sharefile.com/en-us/podio/using-podio/general-features/podio-mcp-server.html",
     "quickbooks": "https://github.com/intuit/quickbooks-online-mcp-server",
     "salesforce": "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/overview",
@@ -695,6 +715,11 @@ MCP_OFFICIAL_FIXES: dict[str, str] = {
     "zoho-cliq": "https://www.zoho.com/cliq/help/platform/zoho-cliq-mcp.html",
     "systeme-io": "https://help.systeme.io/article/9489-how-to-use-systeme-ios-mcp",
     "consensus": "https://docs.consensus.app/docs/mcp",
+    # Third sweep: the "deepen audit" over-corrected two rows the wrong way — a generic
+    # "does X have an official MCP?" search returned "no" when the real answer was "yes,
+    # on a subpage the search missed". Re-verified against the vendor's own MCP page.
+    "fathom": "https://developers.fathom.ai/mcp-docs",        # was None; official server at api.fathom.ai/mcp
+    "mrscraper": "https://docs.mrscraper.com/docs/getting-started/mcp-server",  # was Community; official server at mcp.mrscraper.com/mcp
 }
 
 # Evidence URLs to APPEND (never replace) for rows whose fix is sourced from a
@@ -719,6 +744,10 @@ ONE_LINERS = {
     "ipayx": "iPayX exposes an FX Audit API, but public endpoint documentation is thin and not fully verifiable.",
     "reducto": "Agentic document API for parsing, extraction, classification, splitting, and editing across 30+ file types.",
     "higgsfield": "Higgsfield offers a self-serve REST API with API-key auth for integrating generative AI models.",
+    # Precision: these two ship an OFFICIAL (vendor-hosted) MCP server, but the vendors
+    # themselves label it Beta/EAP — distinct from official + GA (GitHub, Stripe). Still "Official".
+    "freshdesk": "Broad self-serve REST API for tickets, conversations & fields; official MCP integration is in EAP/beta.",
+    "gorgias": "Self-serve REST API (Basic Auth/API key) for private apps; official MCP server is currently in beta.",
 }
 
 
