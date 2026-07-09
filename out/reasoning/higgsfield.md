@@ -1,19 +1,18 @@
 # higgsfield — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+_generated 2026-07-09 · model anthropic/claude-opus-4.8_
 
 ## Model reasoning
-Buildability is 'Easy' because the Apidog article explicitly details 'REST API integration, API key authentication' and outlines a self-serve account creation process on cloud.higgsfield.ai, mentioning potential free tiers for testing. There are no significant blockers identified, leading to an empty 'main_blocker' and a 'Build Now' recommendation. Confidence is high due to the clear and direct information provided by the Apidog blog post, which serves as a technical guide. The preseed hypothesis of a 'Gated' access model is contradicted by the evidence, which clearly describes a self-serve account creation process.
+Evidence from docs.higgsfield.ai describes a public programmatic API (unified endpoints for image/video/voice/audio generation, webhooks, client libraries) and how-to-use-API guides—contradicting the preseed Gated/invite-beta hypothesis. CLI page shows npm install, higgsfield auth login (browser OAuth-style), and official MCP & CLI for agents. Search mentions cloud API-keys and a Python SDK, supporting self-serve key access. Breadth is moderate (generation-focused resources across media types, not full multi-domain CRUD). No rate-limit details in fetched text. Confidence moderate-high: allowed docs confirm public API/MCP, but full auth/rate-limit pages not in ALLOWED_URLS so some details inferred from titles/snippets only.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — Account creation via email, Google, Apple, or Microsoft, with potential free tiers available for testing.
+- access_model: **Self-Serve** — CLI auth login and public API docs/dashboard; cloud API-keys surface referenced in search.
 - recommended_next_action: **Build Now**
-- confidence: **0.9**
+- confidence: **0.72**
 
 ## Evidence URLs (whitelist-enforced)
-- https://apidog.com/blog/higgsfield-api/
 - https://higgsfield.ai/cli
-- https://cloud.higgsfield.ai/
+- https://docs.higgsfield.ai
 
 ## Preseed hypothesis (unverified prior)
 ```json

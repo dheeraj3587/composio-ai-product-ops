@@ -1806,30 +1806,31 @@
   {
     "app": "Clay",
     "category": "Research/Scraping",
-    "one_liner": "Clay provides a REST API for data enrichment and workflow automation, including a native MCP implementation.",
+    "one_liner": "Clay offers public REST API + official MCP for searches, routines, and enterprise tables.",
     "auth_methods": [
       "API Key"
     ],
     "access_model": {
       "kind": "Self-Serve",
-      "note": "API keys can be managed within the workspace settings."
+      "note": "Public developer docs and free trial; Tables API is Enterprise-only."
     },
     "api_type": "REST",
     "api_breadth": "Moderate",
     "existing_mcp": "Official",
     "composio_toolkit": "No",
     "buildability": "Easy",
-    "main_blocker": "HTTP API documented at university.clay.com; first-pass primary evidence was third-party (apitracker.io).",
+    "main_blocker": "Public REST API + official MCP; developer docs at developers.clay.com / docs.clay.com.",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://university.clay.com/docs/http-api-integration-overview",
+      "https://developers.clay.com",
+      "https://docs.clay.com",
       "https://clay.com"
     ],
-    "confidence": 0.65,
+    "confidence": 0.72,
     "verification_status": "Auto",
     "slug": "clay",
-    "primary_docs_url": "https://university.clay.com/docs/http-api-integration-overview",
-    "rate_limit_note": "Not specified in provided evidence",
+    "primary_docs_url": "https://developers.clay.com",
+    "rate_limit_note": "Not documented in provided evidence",
     "last_verified": "2026-07-09"
   },
   {
@@ -2926,29 +2927,29 @@
     "category": "AI/Meeting-tools",
     "one_liner": "Higgsfield offers a self-serve REST API with API-key auth for integrating generative AI models.",
     "auth_methods": [
-      "API Key"
+      "API Key",
+      "Other Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
-      "note": "Account creation via email, Google, Apple, or Microsoft, with potential free tiers available for testing."
+      "note": "CLI auth login and public API docs/dashboard; cloud API-keys surface referenced in search."
     },
     "api_type": "REST",
-    "api_breadth": "Broad",
+    "api_breadth": "Moderate",
     "existing_mcp": "Official",
     "composio_toolkit": "No",
     "buildability": "Easy",
-    "main_blocker": "Newer product; primary evidence is a third-party blog (apidog.com) — official API docs unconfirmed.",
+    "main_blocker": "Newer product, but official REST API + CLI docs now confirmed at docs.higgsfield.ai.",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
       "https://higgsfield.ai/cli",
-      "https://cloud.higgsfield.ai/",
-      "https://apidog.com/blog/higgsfield-api/"
+      "https://docs.higgsfield.ai"
     ],
-    "confidence": 0.5,
+    "confidence": 0.72,
     "verification_status": "Auto",
     "slug": "higgsfield",
-    "primary_docs_url": "https://higgsfield.ai/cli",
-    "rate_limit_note": "",
+    "primary_docs_url": "https://docs.higgsfield.ai",
+    "rate_limit_note": "Not specified in provided evidence",
     "last_verified": "2026-07-09"
   },
   {

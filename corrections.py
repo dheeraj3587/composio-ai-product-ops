@@ -160,17 +160,18 @@ OVERRIDES: dict[str, dict] = {
         "evidence_urls": ["https://pitchbook.com", "https://docs.matia.io/docs/connectors/etl/pitchbook/api-configuration"],
         "confidence": 0.45,
     },
-    "higgsfield": {
-        "main_blocker": "Newer product; primary evidence is a third-party blog (apidog.com) — official API docs unconfirmed.",
-        "primary_docs_url": "https://higgsfield.ai/cli",
-        "evidence_urls": ["https://higgsfield.ai/cli", "https://cloud.higgsfield.ai/", "https://apidog.com/blog/higgsfield-api/"],
-        "confidence": 0.5,
+    "higgsfield": {  # Grok 4.5 re-research found the OFFICIAL docs.higgsfield.ai (replaced the apidog blog)
+        "main_blocker": "Newer product, but official REST API + CLI docs now confirmed at docs.higgsfield.ai.",
+        "primary_docs_url": "https://docs.higgsfield.ai",
+        "evidence_urls": ["https://higgsfield.ai/cli", "https://docs.higgsfield.ai"],
+        "confidence": 0.72,
     },
-    "clay": {
-        "main_blocker": "HTTP API documented at university.clay.com; first-pass primary evidence was third-party (apitracker.io).",
-        "primary_docs_url": "https://university.clay.com/docs/http-api-integration-overview",
-        "evidence_urls": ["https://university.clay.com/docs/http-api-integration-overview", "https://clay.com"],
-        "confidence": 0.65,
+    "clay": {  # Grok 4.5 re-research found official developers.clay.com / docs.clay.com (better than university.clay)
+        "auth_methods": ["API Key"],
+        "main_blocker": "Public REST API + official MCP; developer docs at developers.clay.com / docs.clay.com.",
+        "primary_docs_url": "https://developers.clay.com",
+        "evidence_urls": ["https://developers.clay.com", "https://docs.clay.com", "https://clay.com"],
+        "confidence": 0.72,
     },
     "lark": {
         "main_blocker": "Auth corroborated by a third-party wiki (deepwiki); official portal is open.larksuite.com.",

@@ -221,7 +221,7 @@
       ],
       [
         "Other Token",
-        11
+        12
       ],
       [
         "Basic Auth",
@@ -308,7 +308,7 @@
     ],
     "build_now": 79,
     "partner_gated": 6,
-    "avg_confidence": 0.872
+    "avg_confidence": 0.875
   },
   "n_results": 100,
   "headline_accuracy": {
