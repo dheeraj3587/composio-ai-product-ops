@@ -15,15 +15,28 @@ clear cross-app patterns second, honest verification third.
 ## Headline results (current run)
 
 - **100 / 100 apps** researched, schema-valid, every row backed by a real, resolving evidence URL.
-- **Hand-checked accuracy: 94.1%** (n=17, field-level over api_type + auth + access) — the ground-truth number.
-- **Accuracy moved 62.7% → 94.1%** on the hand-check sample *because of the verification loops*
-  (12 apps corrected, 0 regressed). Misses are shown, not hidden.
+- **Hand-checked accuracy: 94.1% as measured** (n=17, field-level over api_type + auth + access) —
+  the ground-truth number. The 3 auth misses it caught (DealCloud, Notion, Slack) have since been
+  folded back into the matrix via `corrections.py`, so the shipped rows carry the verified truth.
+- **Accuracy moved 78.4% → 94.1%** on the hand-check sample *because of the verification loops*
+  (4 apps factually corrected: Copper, Plain, WhatsApp Business, LinkedIn Ads; 0 regressed).
+  Scored with both sides label-canonicalized so the delta counts **factual fixes only** — the raw
+  scorer previously reported 62.7% → 94.1%, but 8 of those first-pass "misses" were label-format
+  artifacts ("OAuth 2.0" vs "OAuth2"), which is data hygiene, not accuracy. Misses shown, not hidden.
 - **Blind re-search agreement: ~59%** (n≈21) — labeled as *reproducibility, not accuracy*.
 - **Browser-Use Cloud loop:** 12 apps re-checked against live docs; caught **6** first-pass errors
   static fetch missed (e.g. Copper and Plain, which the first pass had wrongly marked "no API").
+- **existing_mcp false-negative sweep:** the first batch derived `existing_mcp` from API-reference
+  pages (which rarely mention MCP) and marked **12 official MCP servers as "None"** — GitHub, Stripe,
+  Cloudflare, Linear, Sentry, Netlify, Vercel, MongoDB, Jira/Atlassian, HubSpot, Klaviyo, Shopify.
+  Each was re-verified against the vendor's own MCP page (evidence appended), fixed in
+  `corrections.py`, and prevented at the source with a dedicated MCP probe in `docs_research.py`.
+  Official MCP count moved **35 → 47**.
 - **Two named patterns:** *"API exists ≠ API is accessible"* (WhatsApp/Meta/LinkedIn/Google Ads have
   APIs but gate access behind review/verification) and *"good API, no entry point"* (DealCloud-style:
   solid API, but keys require being an existing paying customer → Partner-Gated).
+- **Composio overlap surfaced:** 49 of the 100 requested apps have **no Composio toolkit yet**; the
+  self-serve Build Now subset of those is the immediate build queue (own column + insight on the report).
 
 Full live matrix + pattern charts are on the report.
 
@@ -53,7 +66,8 @@ Generated outputs land in `out/` and are baked into `report/` for deploy.
 research.py (offline CLI = the agent)
   data/apps.json + data/preseed.json
      ├─ composio_lookup.py   composio_toolkit (Yes/No) via Composio SDK / public catalog
-     ├─ docs_research.py     web SEARCH + direct FETCH (+ developer-subdomain probing)
+     ├─ docs_research.py     web SEARCH + direct FETCH (+ developer-subdomain probing,
+     │                        + a dedicated "official MCP server" probe for existing_mcp)
      ├─ synthesis.py         LLM (OpenAI-compatible) -> locked schema + reasoning log
      │                        cites ONLY fetched, resolving URLs — no invented sources
      ├─ verify.py            LOOP 1: BLIND re-search from scratch -> agreement + metrics.json
@@ -110,6 +124,9 @@ the calling layer of the research itself. A read-only Composio tool-call demo li
 ---
 
 ## Quickstart
+
+Requires **Python 3.10+** (the optional Composio SDK's dependency tree needs it; the
+requirement is version-guarded so installs on older interpreters still resolve).
 
 ```bash
 git clone https://github.com/dheeraj3587/composio-ai-product-ops.git && cd composio-ai-product-ops
@@ -203,9 +220,14 @@ or point a Vercel project at the repo with **Root Directory = `report`** (no bui
 ## Honest limitations
 
 - `composio_toolkit` via the public catalog is a **heuristic** when the SDK isn't available; the SDK path is authoritative.
-- `existing_mcp` is an automated signal (not part of the formal 17-app hand-check). I stress-checked the
-  18 most-doubtful `Official` claims against vendor docs — **16 held up, 2 were corrected**
-  (Binance → Community, DealCloud → None). `Community` is the noisiest value.
+- `existing_mcp` is an automated signal (not part of the formal 17-app hand-check), and it burned us
+  in **both** directions: the first audit stress-checked the 18 most-doubtful `Official` claims
+  (16 held up; Binance → Community, DealCloud → None) but never audited the `None` claims — and 12 of
+  those were false negatives (GitHub, Stripe, Cloudflare, Linear, Sentry, Netlify, Vercel, MongoDB,
+  Jira, HubSpot, Klaviyo, Shopify all have official servers). Root cause: API-reference evidence rarely
+  mentions MCP. Fixed in `corrections.py` with vendor evidence, and prevented going forward by the
+  dedicated MCP probe in `docs_research.py`. Remaining `None`/`Community` rows have not all been
+  re-swept by hand — treat that field as verified-on-fix, not hand-checked.
 - Self-scored `confidence` can be miscalibrated — that's exactly why the **hand-checked** number, not
   confidence, is the accuracy claim.
 - The dataset was produced by a mix of models (free-tier during the batch, plus targeted re-checks); it

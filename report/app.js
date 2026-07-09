@@ -22,12 +22,15 @@ const tone = {
   None: "gray",
   Auto: "gray",
   "Hand-Checked": "green",
+  Yes: "green",
+  No: "gray",
 };
 
 const pct = (n) => (Number.isFinite(n) ? `${Math.round(n * 100)}%` : "Pending");
 const num = (value, fallback = "0") => value == null ? fallback : String(value);
 const pill = (text, kind) => `<span class="pill ${tone[kind || text] || "gray"}">${esc(text || "—")}</span>`;
-const width = (value, max) => `${max > 0 ? Math.max(3, Math.round((value / max) * 100)) : 0}%`;
+// zero stays zero — a 3% sliver for a 0-count bar would misreport the data
+const width = (value, max) => `${value > 0 && max > 0 ? Math.max(3, Math.round((value / max) * 100)) : 0}%`;
 const docsHints = ["docs", "developer", "api", "reference", "learn", "help", "github", "postman"];
 const weakerHints = ["blog", "moldstud", "apitracker", "aeroleads", "vohrtech", "grokipedia"];
 
@@ -118,6 +121,7 @@ function renderMetrics() {
   const p = metrics.patterns || {};
   const access = p.access_model || {};
   const mcp = p.existing_mcp || {};
+  const toolkit = p.composio_toolkit || {};
   const h = metrics.handcheck || {};
   const data = [
     [p.n || rows.length, "apps in scope"],
@@ -125,6 +129,7 @@ function renderMetrics() {
     [p.build_now || 0, "ready to build"],
     [p.partner_gated || 0, "partner-gated"],
     [mcp.Official || 0, "official MCP"],
+    [toolkit.No || 0, "no Composio toolkit yet"],
     [h.n ? pct(h.accuracy) : "Pending", "hand-check"],
   ];
   $("metrics").innerHTML = data.map(([value, label]) => `
@@ -140,6 +145,8 @@ function renderInsights() {
   const access = p.access_model || {};
   const gatedApi = rows.filter((r) => r.api_type !== "None" && r.access_model?.kind === "Gated");
   const partner = rows.filter((r) => r.recommended_next_action === "Partner-Gated");
+  const noToolkit = rows.filter((r) => r.composio_toolkit === "No");
+  const whitespace = noToolkit.filter((r) => r.recommended_next_action === "Build Now");
   const topAuth = (p.auth_methods_top || [])[0] || ["API Key / OAuth", 0];
   const examples = (list) => list.slice(0, 5).map((r) => r.app).join(", ") || "none yet";
 
@@ -156,6 +163,10 @@ function renderInsights() {
       "Outreach should target real APIs with closed doors.",
       `${gatedApi.length} apps have APIs but require review, business verification, or customer status. Partner-gated examples: ${examples(partner)}.`,
     ],
+    [
+      "The Composio whitespace is concrete.",
+      `${noToolkit.length} of the 100 requested apps have no Composio toolkit today — and ${whitespace.length} of those are already Build Now (self-serve, buildable). That is the immediate build queue: ${examples(whitespace)}.`,
+    ],
   ];
 
   $("insights").innerHTML = cards.map(([title, body]) => `
@@ -164,7 +175,8 @@ function renderInsights() {
       <p>${esc(body)}</p>
     </article>
   `).join("");
-  $("generated-note").textContent = `Generated ${metrics.generated || "—"} · avg confidence ${(p.avg_confidence || 0).toFixed ? p.avg_confidence.toFixed(3) : "—"}`;
+  const conf = Number(p.avg_confidence);
+  $("generated-note").textContent = `Generated ${metrics.generated || "—"} · avg confidence ${Number.isFinite(conf) ? conf.toFixed(3) : "—"}`;
 }
 
 function renderPriorityQueue() {
@@ -291,6 +303,7 @@ function renderTable() {
         <td>${pill(r.access_model?.kind, r.access_model?.kind)}</td>
         <td>${esc(r.api_type)} <span class="subtle">· ${esc(r.api_breadth)}</span></td>
         <td>${pill(r.existing_mcp, r.existing_mcp)}</td>
+        <td>${pill(r.composio_toolkit, r.composio_toolkit)}</td>
         <td>${pill(r.buildability, r.buildability)}</td>
         <td>${pill(r.recommended_next_action, r.recommended_next_action)}</td>
         <td>${esc(r.confidence)}</td>
@@ -335,6 +348,7 @@ function renderVerification() {
   const handCard = `<article class="proof"><h3>Hand-Checked Accuracy (ground truth)</h3><p>${esc(handText)}</p>`
     + (missList ? `<p class="subtle" style="margin:10px 0 4px">The ${(h.misses || []).length} misses (shown, not hidden):</p><ul style="margin:0 0 6px 18px; padding:0">${missList}</ul>` : "")
     + (checkedList ? `<p class="subtle" style="margin:10px 0 6px">All ${(h.checked || []).length} hand-checked apps (amber = a field we got wrong):</p><div style="display:flex; flex-wrap:wrap; gap:6px">${checkedList}</div>` : "")
+    + (h.note ? `<p class="subtle" style="margin:10px 0 0">${esc(h.note)}</p>` : "")
     + `</article>`;
   const cards = [
     handCard,
@@ -342,7 +356,9 @@ function renderVerification() {
     `<article class="proof"><h3>Browser-Use Verification (live docs)</h3><p>${esc(browserText)}</p></article>`,
   ];
   if (moveText) {
-    cards.push(`<article class="proof"><h3>Accuracy Movement</h3><p>${esc(moveText)}</p></article>`);
+    cards.push(`<article class="proof"><h3>Accuracy Movement</h3><p>${esc(moveText)}</p>`
+      + (am.note ? `<p class="subtle" style="margin:10px 0 0">${esc(am.note)}</p>` : "")
+      + `</article>`);
   }
   $("verification-grid").innerHTML = cards.join("");
 
