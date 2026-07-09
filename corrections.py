@@ -213,6 +213,10 @@ def apply() -> None:
     if not rows:
         raise SystemExit("out/results.json missing")
     changed_auth = 0
+    # first-pass synthesis self-scores, used to undo the weak blind-re-search confidence
+    # penalty on solid, NON-corrected apps (e.g. Vercel/Airtable/Neo4j were 0.9 -> 0.576).
+    fp = {r["slug"]: r.get("confidence")
+          for r in (config.load_json(config.OUT_DIR / "results_firstpass.json") or [])}
     for r in rows:
         # 1) normalize auth on EVERY record
         before = list(r.get("auth_methods", []))
@@ -224,6 +228,10 @@ def apply() -> None:
         if ov:
             for k, v in ov.items():
                 r[k] = v
+        # undo the weak-model verify penalty: restore first-pass self-score where an
+        # app that has NO manual override was dragged down by the blind re-search pass.
+        if r["slug"] not in OVERRIDES and fp.get(r["slug"]) and fp[r["slug"]] > r.get("confidence", 0):
+            r["confidence"] = fp[r["slug"]]
         # cap over-confident self-scores (nothing from doc-scraping is 100% certain)
         r["confidence"] = round(min(float(r.get("confidence", 0.5)), 0.95), 3)
         # re-validate against the locked schema
