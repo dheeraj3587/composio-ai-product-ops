@@ -143,7 +143,9 @@ Optional Composio tool-call demo: `python demo/composio_demo.py` (read-only GitH
 ## Honest limitations
 - `composio_toolkit` via the public catalog is a **heuristic** when the SDK isn't available; the
   Composio SDK path is authoritative.
-- `existing_mcp = Community` is best-effort (noisy to detect across 100 apps).
+- `existing_mcp` is an automated signal (not part of the 17-app formal hand-check). I stress-checked
+  the 18 most-doubtful `Official` claims against vendor docs — 16 held up, 2 were corrected
+  (Binance → Community, DealCloud → None). `Community` is the noisiest value.
 - Self-scored `confidence` can be miscalibrated — that's exactly why the hand-checked number, not
   confidence, is the accuracy claim.
 

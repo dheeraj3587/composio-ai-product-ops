@@ -78,9 +78,9 @@
       "MCP-only": 1
     },
     "existing_mcp": {
-      "None": 62,
-      "Official": 37,
-      "Community": 1
+      "None": 63,
+      "Official": 35,
+      "Community": 2
     },
     "composio_toolkit": {
       "Yes": 51,
@@ -188,7 +188,7 @@
     ],
     "build_now": 80,
     "partner_gated": 6,
-    "avg_confidence": 0.852
+    "avg_confidence": 0.86
   },
   "n_results": 100,
   "headline_accuracy": {

@@ -21,7 +21,7 @@
       "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm",
       "https://developer.salesforce.com"
     ],
-    "confidence": 0.68,
+    "confidence": 0.85,
     "verification_status": "Hand-Checked",
     "slug": "salesforce",
     "primary_docs_url": "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm",
@@ -291,7 +291,7 @@
     },
     "api_type": "REST",
     "api_breadth": "Broad",
-    "existing_mcp": "Official",
+    "existing_mcp": "None",
     "composio_toolkit": "No",
     "buildability": "Hard",
     "main_blocker": "No usable entry without an existing paid DealCloud site whose admin can issue API keys; no public trial/self-serve path found.",
@@ -857,7 +857,7 @@
       "https://developers.facebook.com/docs/whatsapp",
       "https://developers.facebook.com/documentation/business-messaging/whatsapp/access-tokens"
     ],
-    "confidence": 0.64,
+    "confidence": 0.8,
     "verification_status": "Hand-Checked",
     "slug": "whatsapp-business",
     "primary_docs_url": "https://developers.facebook.com/docs/whatsapp",
@@ -951,7 +951,7 @@
       "https://developers.google.com/google-ads/api/docs/oauth/overview",
       "https://developers.google.com/google-ads/api/docs/api-policy/developer-token"
     ],
-    "confidence": 0.85,
+    "confidence": 0.8,
     "verification_status": "Hand-Checked",
     "slug": "google-ads",
     "primary_docs_url": "https://developers.google.com/google-ads/api/docs/oauth/overview",
@@ -1766,7 +1766,7 @@
     "evidence_urls": [
       "https://github.com/sherlock-project/sherlock"
     ],
-    "confidence": 0.72,
+    "confidence": 0.9,
     "verification_status": "Auto",
     "slug": "sherlock",
     "primary_docs_url": "https://github.com/sherlock-project/sherlock",
@@ -2521,7 +2521,7 @@
     },
     "api_type": "REST",
     "api_breadth": "Broad",
-    "existing_mcp": "Official",
+    "existing_mcp": "Community",
     "composio_toolkit": "No",
     "buildability": "Easy",
     "main_blocker": "",
@@ -2707,7 +2707,7 @@
       "https://docs.ramp.com/developer-api/v1/authorization",
       "https://docs.ramp.com/developer-api/v1/introduction"
     ],
-    "confidence": 0.64,
+    "confidence": 0.8,
     "verification_status": "Auto",
     "slug": "ramp",
     "primary_docs_url": "https://docs.ramp.com/developer-api/v1/authorization",
@@ -2736,7 +2736,7 @@
       "https://pitchbook.com",
       "https://docs.matia.io/docs/connectors/etl/pitchbook/api-configuration"
     ],
-    "confidence": 0.36,
+    "confidence": 0.45,
     "verification_status": "Auto",
     "slug": "pitchbook",
     "primary_docs_url": "https://pitchbook.com",
@@ -2944,7 +2944,7 @@
       "https://cloud.higgsfield.ai/",
       "https://apidog.com/blog/higgsfield-api/"
     ],
-    "confidence": 0.4,
+    "confidence": 0.5,
     "verification_status": "Auto",
     "slug": "higgsfield",
     "primary_docs_url": "https://higgsfield.ai/cli",

@@ -185,6 +185,10 @@ OVERRIDES: dict[str, dict] = {
                           "https://www.zoho.com/crm/developer/docs/api/v8/"],
         "confidence": 0.9,
     },
+    # --- existing_mcp corrections (spot-checked 18 of the most-doubtful "Official"
+    #     claims vs vendor docs; 16 held up, these 2 did not) ---
+    "binance": {"existing_mcp": "Community"},   # only community/third-party MCPs found, no official
+    "dealcloud": {"existing_mcp": "None"},       # no DealCloud MCP found (official or community)
 }
 
 
