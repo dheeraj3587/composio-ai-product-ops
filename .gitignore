@@ -19,3 +19,4 @@ out/cache/
 .vscode/
 .idea/
 node_modules/
+.vercel
