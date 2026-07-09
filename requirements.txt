@@ -7,7 +7,10 @@ tenacity>=8.2
 
 # Composio SDK for the toolkit lookup. Optional: composio_lookup.py falls back
 # to the public Composio catalog over HTTP if this import is unavailable.
-composio>=0.5
+# Guarded by python_version so `pip install -r requirements.txt` stays solvable
+# on older interpreters (the SDK's dependency tree needs 3.10+); the pipeline
+# itself degrades gracefully without it.
+composio>=0.5; python_version >= "3.10"
 
 # Optional: only needed if you enable the browser-use fallback for a handful of
 # apps whose docs cannot be fetched any other way (disclosed on the report).

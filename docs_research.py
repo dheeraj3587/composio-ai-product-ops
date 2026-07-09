@@ -185,6 +185,35 @@ def _candidate_urls(hint_url: str, search_results: list[dict]) -> list[str]:
     return urls[:MAX_FETCH]
 
 
+def gather_mcp_evidence(app: str, k: int = 5, max_fetch: int = 2) -> dict:
+    """Dedicated probe for the `existing_mcp` field.
+
+    API-reference pages almost never mention MCP, so deriving existing_mcp from
+    the main evidence pass systematically produced false "None"s — the first
+    batch marked GitHub, Stripe, Cloudflare, Linear, Sentry, Vercel, Netlify,
+    MongoDB, Jira, HubSpot, Klaviyo and Shopify as having no official MCP server
+    when all twelve have one. One extra search + up to two fetches per app is
+    cheap and fixes the field at the source.
+    """
+    q = f"{app} official MCP server Model Context Protocol"
+    results = search(q, k=k)
+    fetched = []
+    for r in results:
+        u = r.get("url", "")
+        if not u.startswith("http") or len(fetched) >= max_fetch:
+            continue
+        f = fetch(u)
+        if f["ok"]:
+            fetched.append(f)
+        time.sleep(0.2)
+    return {
+        "query": q,
+        "search_results": results,
+        "fetched": fetched,
+        "fetched_urls": [f["url"] for f in fetched],
+    }
+
+
 def gather_evidence(app: str, slug: str, hint_url: str = "", category: str = "",
                     query: str | None = None, log: bool = True) -> dict:
     """Search + fetch → raw Evidence dict (no LLM here; cheap & deterministic)."""
@@ -202,12 +231,16 @@ def gather_evidence(app: str, slug: str, hint_url: str = "", category: str = "",
     if degraded and log:
         _log_failure(slug, f"no fetchable docs; query={q!r}; candidates={candidates}")
 
+    mcp = gather_mcp_evidence(app)
+
     return {
         "app": app, "slug": slug, "category": category, "query": q,
         "search_results": results,
         "fetched": fetched,
-        "fetched_urls": ok_urls,   # <-- Flag D whitelist for evidence_urls
+        # Flag D whitelist for evidence_urls (MCP-probe pages are citable too)
+        "fetched_urls": ok_urls + [u for u in mcp["fetched_urls"] if u not in ok_urls],
         "degraded": degraded,
+        "mcp": mcp,
     }
 
 

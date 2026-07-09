@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import os
+import threading
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -18,6 +19,16 @@ from typing import Any
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Which (provider, model) actually answered the LAST llm_json() call on this
+# thread. Thread-local because the batch runner calls llm_json concurrently.
+# Used by synthesis to stamp reasoning logs with the model REALLY used instead
+# of the configured primary (which can differ when the chain falls back).
+_last_llm = threading.local()
+
+
+def last_llm_used() -> str:
+    return getattr(_last_llm, "value", "")
 
 # --------------------------------------------------------------------------- #
 # Paths
@@ -280,6 +291,7 @@ def llm_json(
                 obj = next((x for x in obj if isinstance(x, dict)), None)
             if not isinstance(obj, dict):
                 raise ValueError("model did not return a JSON object")
+            _last_llm.value = f"{provider}:{mdl}"
             return obj, raw
         except Exception as e:
             last_err = e

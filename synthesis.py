@@ -51,6 +51,7 @@ Rubrics (apply consistently):
 - api_breadth: Narrow = one resource / a few endpoints; Moderate = several resources / full CRUD; Broad = many resources across multiple domains.
 - buildability: Easy = self-serve key + REST/GraphQL + clear docs; Moderate = OAuth app setup or partial docs; Hard = heavy review/verification or thin docs; Blocked = no usable public API.
 - recommended_next_action: Build Now = Easy + Self-Serve; Needs Outreach = API exists but access needs review/business verification; Partner-Gated = good API but NO entry point without an existing paid account; Blocked = no public API.
+- existing_mcp: judge PRIMARILY from the MCP EVIDENCE block (API reference pages rarely mention MCP — absence there proves nothing). "Official" = a server hosted or published by the vendor itself (e.g. mcp.<vendor>.com, the vendor's docs, or the vendor's own GitHub org); "Community" = credible third-party servers only; "None" = no credible server found in the MCP evidence.
 
 Return JSON with EXACTLY these keys:
 one_liner, auth_methods (list of strings), access_model (object {kind:"Self-Serve"|"Gated", note:string}), api_type ("REST"|"GraphQL"|"SDK"|"SOAP"|"MCP-only"|"None"), api_breadth ("Narrow"|"Moderate"|"Broad"), existing_mcp ("Official"|"Community"|"None"), buildability ("Easy"|"Moderate"|"Hard"|"Blocked"), main_blocker (string, "" if none), recommended_next_action ("Build Now"|"Needs Outreach"|"Partner-Gated"|"Blocked"), rate_limit_note (string), evidence_urls (list, subset of ALLOWED_URLS), confidence (float 0-1), reasoning (string: justify buildability/blocker/next_action/confidence and whether the preseed was confirmed or contradicted)."""
@@ -93,8 +94,26 @@ def _evidence_block(evidence: dict, per_source: int = 3000, max_sources: int = 4
     return "\n\n".join(blocks), "\n".join(snips)
 
 
+def _mcp_block(evidence: dict, per_source: int = 1600):
+    """Render the dedicated MCP probe (docs_research.gather_mcp_evidence)."""
+    mcp = evidence.get("mcp") or {}
+    snips = [
+        f"- {r.get('title', '')} ({r.get('url', '')}): {r.get('snippet', '')[:200]}"
+        for r in mcp.get("search_results", [])[:5]
+    ]
+    blocks = [f"URL: {f['url']}\nTEXT: {f['text'][:per_source]}"
+              for f in mcp.get("fetched", []) if f.get("ok") and f.get("text")]
+    parts = []
+    if snips:
+        parts.append("\n".join(snips))
+    if blocks:
+        parts.append("\n\n".join(blocks))
+    return "\n\n".join(parts)
+
+
 def build_messages(evidence: dict, composio_signal: dict, preseed: dict | None = None):
     ev_text, snips = _evidence_block(evidence)
+    mcp_text = _mcp_block(evidence)
     allowed = evidence.get("fetched_urls", [])
     preseed_txt = (
         json.dumps(preseed.get("hypothesis"), ensure_ascii=False)
@@ -113,6 +132,9 @@ SEARCH RESULTS:
 
 FETCHED DOCUMENTATION TEXT:
 {ev_text or "(no pages fetched successfully — evidence is thin; lower confidence)"}
+
+MCP EVIDENCE (dedicated '{evidence.get("app", "")} official MCP server' probe — base existing_mcp on THIS):
+{mcp_text or "(MCP probe found nothing — existing_mcp is at most Community, likely None)"}
 
 Return the STRICT JSON record now."""
     return [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}]
@@ -199,7 +221,9 @@ def _write_reasoning(app_meta, reasoning, record, evidence, preseed) -> None:
     ev_lines = [f"- {u}" for u in record["evidence_urls"]] or ["- (none)"]
     lines = [
         f"# {app_meta['app']} — synthesis reasoning",
-        f"_generated {record['last_verified']} · model {config.PRIMARY_MODEL}_",
+        # last_llm_used() = the tier that ACTUALLY answered (fallback chains and
+        # sharding mean it is often not the configured primary).
+        f"_generated {record['last_verified']} · model {config.last_llm_used() or config.PRIMARY_MODEL}_",
         "",
         "## Model reasoning",
         reasoning,
