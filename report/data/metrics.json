@@ -55,26 +55,25 @@
   "patterns": {
     "n": 100,
     "buildability": {
-      "Easy": 78,
+      "Easy": 77,
       "Hard": 9,
       "Moderate": 11,
-      "Blocked": 2
+      "Blocked": 3
     },
     "recommended_next_action": {
-      "Build Now": 80,
+      "Build Now": 79,
       "Partner-Gated": 6,
-      "Needs Outreach": 12,
+      "Needs Outreach": 13,
       "Blocked": 2
     },
     "access_model": {
-      "Self-Serve": 82,
-      "Gated": 18
+      "Self-Serve": 81,
+      "Gated": 19
     },
     "api_type": {
       "REST": 92,
       "GraphQL": 4,
-      "None": 2,
-      "SDK": 1,
+      "None": 3,
       "MCP-only": 1
     },
     "existing_mcp": {
@@ -93,7 +92,7 @@
       ],
       [
         "API Key",
-        49
+        48
       ],
       [
         "Bearer Token",
@@ -152,8 +151,8 @@
         "Self-Serve": 10
       },
       "Fintech": {
-        "Self-Serve": 7,
-        "Gated": 3
+        "Self-Serve": 6,
+        "Gated": 4
       },
       "AI/Meeting-tools": {
         "Gated": 2,
@@ -186,9 +185,9 @@
         1
       ]
     ],
-    "build_now": 80,
+    "build_now": 79,
     "partner_gated": 6,
-    "avg_confidence": 0.86
+    "avg_confidence": 0.839
   },
   "n_results": 100,
   "headline_accuracy": {

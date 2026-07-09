@@ -280,7 +280,7 @@
   {
     "app": "DealCloud",
     "category": "CRM",
-    "one_liner": "Broad REST API with SDKs and official MCP preview; keys need existing DealCloud site admin.",
+    "one_liner": "Broad REST API with SDKs; API keys require an existing DealCloud site admin (no public signup).",
     "auth_methods": [
       "API Key",
       "Other Token"
@@ -1287,7 +1287,7 @@
       "https://woocommerce.com/document/woocommerce-rest-api",
       "https://emaralive.github.io/woocommerce-rest-api-docs/"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "woocommerce",
     "primary_docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/",
@@ -1409,7 +1409,7 @@
       "https://developers.squarespace.com",
       "https://developers.squarespace.com/commerce-apis/overview"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "squarespace",
     "primary_docs_url": "https://developers.squarespace.com/commerce-apis/authentication-and-permissions",
@@ -1438,7 +1438,7 @@
       "https://api-docs.ecwid.com",
       "https://docs.ecwid.com/api-reference"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "ecwid",
     "primary_docs_url": "https://api-docs.ecwid.com",
@@ -1558,7 +1558,7 @@
       "https://docs.dataforseo.com/v3/",
       "https://searchxpro.com/how-to-integrate-dataforseo-api-for-rank-tracking/"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "dataforseo",
     "primary_docs_url": "https://docs.dataforseo.com/v3/auth/",
@@ -1617,7 +1617,7 @@
       "https://docs.ahrefs.com/en/api/docs/introduction",
       "https://docs.ahrefs.com/"
     ],
-    "confidence": 0.98,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "ahrefs",
     "primary_docs_url": "https://ahrefs.com/api",
@@ -1677,7 +1677,7 @@
       "https://use-apify.com/docs/apify-for-developers",
       "https://docs.apify.com/api/v2"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "apify",
     "primary_docs_url": "https://docs.apify.com",
@@ -1707,7 +1707,7 @@
       "https://firecrawl.dev",
       "https://docs.firecrawl.dev/api-reference/v2-introduction"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "firecrawl",
     "primary_docs_url": "https://docs.firecrawl.dev/api-reference/introduction",
@@ -1738,7 +1738,7 @@
       "https://brightdata.com",
       "https://docs.brightdata.com/api-reference/proxy/proxy_api_auth"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "bright-data",
     "primary_docs_url": "https://docs.brightdata.com/api-reference/authentication",
@@ -1858,7 +1858,7 @@
       "https://docs.github.com/en/rest",
       "https://octokit.github.io/routes/cache/api.github.com/v3/index.html"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Hand-Checked",
     "slug": "github",
     "primary_docs_url": "https://docs.github.com/en/rest/authentication/authenticating-to-the-rest-api",
@@ -1918,7 +1918,7 @@
       "https://docs.netlify.com/api-and-cli-guides/api-guides/get-started-with-api/",
       "https://open-api.netlify.com/"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "netlify",
     "primary_docs_url": "https://docs.netlify.com/api",
@@ -1948,7 +1948,7 @@
       "https://developers.cloudflare.com/api",
       "https://developers.cloudflare.com/fundamentals/api/get-started/create-token/"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "cloudflare",
     "primary_docs_url": "https://developers.cloudflare.com/api",
@@ -1979,7 +1979,7 @@
       "https://supabase.com/docs",
       "https://deepwiki.com/supabase/auth/3-api-reference"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "supabase",
     "primary_docs_url": "https://supabase.com/docs/guides/auth",
@@ -2040,7 +2040,7 @@
       "https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/authentication",
       "https://docs.snowflake.cn/en/developer-guide/sql-api/index"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "snowflake",
     "primary_docs_url": "https://docs.snowflake.com/en/en/developer-guide/sql-api/authenticating",
@@ -2135,7 +2135,7 @@
       "https://sentrydocs.dev/api/authentication",
       "https://docs.sentry.io/api/"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "sentry",
     "primary_docs_url": "https://docs.sentry.io/api/auth/",
@@ -2226,7 +2226,7 @@
       "https://linear.app/developers",
       "https://linear.app/developers/graphql"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "linear",
     "primary_docs_url": "https://developers.linear.app",
@@ -2258,7 +2258,7 @@
       "https://moldstud.com/articles/p-jira-api-basics-essential-guide-for-developers",
       "https://unified.to/blog/jira_api_key_how_to_get_it_and_use_it_api_token_guide_for_developers"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "jira",
     "primary_docs_url": "https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/",
@@ -2288,7 +2288,7 @@
       "https://developers.asana.com/docs/authentication",
       "https://developers.asana.com"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "asana",
     "primary_docs_url": "https://developers.asana.com/docs/authentication",
@@ -2319,7 +2319,7 @@
       "https://developer.monday.com",
       "https://developer.monday.com/api-reference/"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "monday",
     "primary_docs_url": "https://developer.monday.com/api-reference/docs/authentication",
@@ -2350,7 +2350,7 @@
       "https://clickup.com/api",
       "https://developer.clickup.com/docs/Getting%20Started"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "clickup",
     "primary_docs_url": "https://developer.clickup.com/docs/authentication",
@@ -2380,7 +2380,7 @@
       "https://coda.io/developers",
       "https://coda.io/@oleg/getting-started-guide-coda-api"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "coda",
     "primary_docs_url": "https://coda.io/developers",
@@ -2411,7 +2411,7 @@
       "https://smartsheet.com/developers",
       "https://developers.smartsheet.com/"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "smartsheet",
     "primary_docs_url": "https://developers.smartsheet.com/api/smartsheet/guides/basics/authentication",
@@ -2441,7 +2441,7 @@
       "https://help.getharvest.com/api-v2/authentication-api/authentication/authentication/",
       "https://help.getharvest.com/api-v2"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "harvest",
     "primary_docs_url": "https://help.getharvest.com/api-v2/authentication-api/authentication/authentication/",
@@ -2472,7 +2472,7 @@
       "https://docs.stripe.com/api",
       "https://unified.to/blog/how_to_integrate_with_stripe_api_a_step_by_step_guide_for_developers"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Hand-Checked",
     "slug": "stripe",
     "primary_docs_url": "https://docs.stripe.com/api/authentication",
@@ -2530,7 +2530,7 @@
       "https://developers.binance.info/docs/binance-spot-api-docs/README",
       "https://support.binance.us/en/articles/9843443-binance-us-launches-new-api-documentation-portal-for-traders-and-developers"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "binance",
     "primary_docs_url": "https://developers.binance.info/docs/binance-spot-api-docs/README",
@@ -2540,26 +2540,26 @@
   {
     "app": "Paygent Connect",
     "category": "Fintech",
-    "one_liner": "Paygent provides SDKs for Python and TypeScript to track LLM costs and enforce per-user spending limits.",
+    "one_liner": "NMI-powered payment gateway; no clear public API docs found (docs.paygent.to looks like a different product).",
     "auth_methods": [
-      "API Key"
+      "None / Not Applicable"
     ],
     "access_model": {
-      "kind": "Self-Serve",
-      "note": "Documentation shows initialization via api_key = \"pg_live_...\""
+      "kind": "Gated",
+      "note": "Payment gateway; no self-serve public API docs confirmed. Likely partner / contact-sales."
     },
-    "api_type": "SDK",
+    "api_type": "None",
     "api_breadth": "Moderate",
     "existing_mcp": "None",
     "composio_toolkit": "No",
-    "buildability": "Easy",
-    "main_blocker": "",
-    "recommended_next_action": "Build Now",
+    "buildability": "Blocked",
+    "main_blocker": "Could not confirm the NMI-powered Paygent Connect API; docs found (paygent.to) appear to be a different product.",
+    "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
       "https://docs.paygent.to/",
       "https://docs.paygent.to/reference/sdk-reference/"
     ],
-    "confidence": 0.9,
+    "confidence": 0.3,
     "verification_status": "Auto",
     "slug": "paygent-connect",
     "primary_docs_url": "https://docs.paygent.to/",
@@ -2648,7 +2648,7 @@
       "https://moldstud.com/articles/p-the-complete-guide-to-xero-api-documentation-for-developers-unlock-your-integration-potential",
       "https://developer.xero.com/documentation/getting-started-guide/"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "xero",
     "primary_docs_url": "https://developer.xero.com",
@@ -2678,7 +2678,7 @@
       "https://developer.brex.com",
       "https://developer.brex.com/"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "brex",
     "primary_docs_url": "https://developer.brex.com/guides/authentication",
@@ -2825,7 +2825,7 @@
       "https://fathom.video",
       "https://developers.fathom.ai/"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "fathom",
     "primary_docs_url": "https://developers.fathom.ai/sdks/authentication",
@@ -2883,7 +2883,7 @@
       "https://reducto.ai",
       "https://docs.reducto.ai/quickstart"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "reducto",
     "primary_docs_url": "https://reducto.ai/developers",
@@ -3002,7 +3002,7 @@
       "https://transcriptapi.com/docs/api/",
       "https://transcriptapi.com/docs/"
     ],
-    "confidence": 1.0,
+    "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "youtube-transcript",
     "primary_docs_url": "https://transcriptapi.com",

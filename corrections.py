@@ -188,7 +188,23 @@ OVERRIDES: dict[str, dict] = {
     # --- existing_mcp corrections (spot-checked 18 of the most-doubtful "Official"
     #     claims vs vendor docs; 16 held up, these 2 did not) ---
     "binance": {"existing_mcp": "Community"},   # only community/third-party MCPs found, no official
-    "dealcloud": {"existing_mcp": "None"},       # no DealCloud MCP found (official or community)
+    "dealcloud": {  # no DealCloud MCP found; drop the unsupported "MCP preview" claim from the one-liner
+        "existing_mcp": "None",
+        "one_liner": "Broad REST API with SDKs; API keys require an existing DealCloud site admin (no public signup).",
+    },
+    # --- Paygent Connect: first pass researched the WRONG product (an LLM-cost SDK at
+    #     paygent.to), not the NMI-powered payment gateway. Mark honestly as unconfirmed. ---
+    "paygent-connect": {
+        "one_liner": "NMI-powered payment gateway; no clear public API docs found (docs.paygent.to looks like a different product).",
+        "api_type": "None",
+        "auth_methods": ["None / Not Applicable"],
+        "access_model": {"kind": "Gated", "note": "Payment gateway; no self-serve public API docs confirmed. Likely partner / contact-sales."},
+        "existing_mcp": "None",
+        "buildability": "Blocked",
+        "recommended_next_action": "Needs Outreach",
+        "main_blocker": "Could not confirm the NMI-powered Paygent Connect API; docs found (paygent.to) appear to be a different product.",
+        "confidence": 0.3,
+    },
 }
 
 
@@ -208,6 +224,8 @@ def apply() -> None:
         if ov:
             for k, v in ov.items():
                 r[k] = v
+        # cap over-confident self-scores (nothing from doc-scraping is 100% certain)
+        r["confidence"] = round(min(float(r.get("confidence", 0.5)), 0.95), 3)
         # re-validate against the locked schema
         validate_record(r)
 
