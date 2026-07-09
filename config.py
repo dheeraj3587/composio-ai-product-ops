@@ -1,9 +1,9 @@
 """Central configuration: env loading, filesystem paths, and the LLM layer.
 
 LLM = multi-provider, OpenAI-compatible, ORDERED FALLBACK CHAIN. Default:
-  1) Claude Opus 4.7 on AgentRouter                 [primary]
-  2) Claude Fable 5 (anthropic/claude-fable-5-free) on ZenMux   [fallback]
-  3) Tencent Hy3     (tencent/hy3:free)             on OpenRouter [last resort]
+  1) Claude Opus 4.8 on OpenRouter                   [primary]
+  2) GPT-5 mini on OpenRouter                        [fallback]
+  3) Gemini 2.5 Flash on Google                      [last resort]
 llm_json() tries each tier in order until one succeeds. Kept small and explicit
 so every line is interview-explainable.
 """

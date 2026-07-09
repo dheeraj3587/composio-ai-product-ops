@@ -71,12 +71,16 @@ function renderDecisionBoard() {
   const p = metrics.patterns || {};
   const actions = p.recommended_next_action || {};
   const total = p.n || rows.length || 1;
+  const buildQueue = rows.filter((row) =>
+    row.composio_toolkit === "No" && row.recommended_next_action === "Build Now"
+  );
   const decisionRows = [
-    ["Build Now", actions["Build Now"] || 0],
+    ["Build queue", buildQueue.length],
     ["Needs Outreach", actions["Needs Outreach"] || 0],
     ["Partner-Gated", actions["Partner-Gated"] || 0],
     ["Blocked", actions.Blocked || 0],
   ];
+  $("decision-title").textContent = `${buildQueue.length} buildable apps have no Composio toolkit yet.`;
   $("decision-list").innerHTML = decisionRows.map(([label, value]) => `
     <div class="decision-row">
       <span>${esc(label)}</span>
