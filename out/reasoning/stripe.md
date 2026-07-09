@@ -1,17 +1,15 @@
 # Stripe — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+_generated 2026-07-09 · model anthropic/claude-opus-4.8_
 
 ## Model reasoning
-Stripe provides a highly mature, well-documented REST API with a broad range of resources (Payments, Customers, Invoices, etc.). Authentication is self-serve via API keys managed in the dashboard, and they provide a sandbox/test mode for immediate development. Buildability is 'Easy' due to the self-serve nature and comprehensive documentation. No preseed hypothesis was provided to confirm or refute.
+The provided Stripe documentation explicitly states the API is RESTful, uses API keys to authenticate requests (test vs live), supports sandboxes/test mode, and lists a wide range of resources (payments, customers, invoices, Connect, SDKs). These facts support a 'Broad' API breadth and an 'Easy' buildability: self-serve account creation yields test API keys and comprehensive docs/SDKs make integration straightforward. No significant blockers were evident in the provided excerpts. Rate-limit details were not included in the fetched text, so I did not invent limits. PRESEED was 'none' so there was nothing to confirm or refute. Confidence is high (0.9) based on explicit documentation excerpts, but lowered slightly because some operational details (e.g., exact rate limits, OAuth specifics for Connect) were not included in the provided evidence.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — API keys (Secret, Publishable, and Restricted) are generated and managed directly via the Stripe Dashboard.
+- access_model: **Self-Serve** — Sign in or create an account to load test API keys; sandboxes and test mode supported.
 - recommended_next_action: **Build Now**
-- confidence: **1.0**
+- confidence: **0.9**
 
 ## Evidence URLs (whitelist-enforced)
 - https://stripe.com/docs/api
-- https://docs.stripe.com/api
-- https://docs.stripe.com/api/authentication
-- https://unified.to/blog/how_to_integrate_with_stripe_api_a_step_by_step_guide_for_developers
+- https://docs.stripe.com

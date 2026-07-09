@@ -44,3 +44,4 @@ airtable	verify error: RuntimeError: all LLM providers failed (last error: Unter
 ramp	verify error: RuntimeError: all LLM providers failed (last error: Expecting value: line 7 column 14 (char 86))
 ahrefs	verify error: RuntimeError: all LLM providers failed (last error: Unterminated string starting at: line 3 column 5 (char 10))
 notion	verify error: RuntimeError: all LLM providers failed (last error: Unterminated string starting at: line 3 column 5 (char 10))
+pitchbook	no fetchable docs; query='PitchBook API documentation authentication developer'; candidates=['https://pitchbook.com', 'https://developer.pitchbook.com', 'https://developers.pitchbook.com', 'https://docs.pitchbook.com', 'https://api.pitchbook.com', 'https://pitchbook.com/developers']

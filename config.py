@@ -91,13 +91,13 @@ PROVIDERS = {
     },
 }
 
-# Ordered chain. Default: AgentRouter Claude Opus -> ZenMux Claude/Grok -> OpenRouter Tencent Hy3.
-PRIMARY_PROVIDER = os.getenv("LLM_PROVIDER", "agentrouter")
-PRIMARY_MODEL = os.getenv("LLM_MODEL", "claude-opus-4-7")
-FALLBACK_PROVIDER = os.getenv("LLM_FALLBACK_PROVIDER", "zenmux")
-FALLBACK_MODEL = os.getenv("LLM_FALLBACK_MODEL", "anthropic/claude-fable-5-free")
-FALLBACK2_PROVIDER = os.getenv("LLM_FALLBACK2_PROVIDER", "openrouter")
-FALLBACK2_MODEL = os.getenv("LLM_FALLBACK2_MODEL", "tencent/hy3:free")
+# Ordered chain. Default: OpenRouter Claude Opus 4.8 -> OpenRouter GPT-5-mini -> Google Gemini 2.5 Flash.
+PRIMARY_PROVIDER = os.getenv("LLM_PROVIDER", "openrouter")
+PRIMARY_MODEL = os.getenv("LLM_MODEL", "anthropic/claude-opus-4.8")
+FALLBACK_PROVIDER = os.getenv("LLM_FALLBACK_PROVIDER", "openrouter")
+FALLBACK_MODEL = os.getenv("LLM_FALLBACK_MODEL", "openai/gpt-5-mini")
+FALLBACK2_PROVIDER = os.getenv("LLM_FALLBACK2_PROVIDER", "google")
+FALLBACK2_MODEL = os.getenv("LLM_FALLBACK2_MODEL", "gemini-2.5-flash")
 OPENROUTER_MODEL = PRIMARY_MODEL  # back-compat alias used in some logs
 
 # Per-provider model for SHARDING: round-robin the lead provider across apps to
@@ -105,11 +105,11 @@ OPENROUTER_MODEL = PRIMARY_MODEL  # back-compat alias used in some logs
 PROVIDER_MODELS = {
     "agentrouter": os.getenv("AGENTROUTER_MODEL", "claude-opus-4-7"),
     "zenmux": os.getenv("ZENMUX_MODEL", "x-ai/grok-4.5-free"),
-    "openrouter": os.getenv("OPENROUTER_MODEL_ID", "google/gemma-4-31b-it:free"),
+    "openrouter": os.getenv("OPENROUTER_MODEL_ID", "anthropic/claude-opus-4.8"),
     "google": os.getenv("GOOGLE_MODEL", "gemini-2.5-flash"),
 }
 SHARD_PROVIDERS = [p.strip() for p in
-                   os.getenv("LLM_SHARD_PROVIDERS", "agentrouter,zenmux,google,openrouter").split(",") if p.strip()]
+                   os.getenv("LLM_SHARD_PROVIDERS", "openrouter").split(",") if p.strip()]
 
 
 def keyed_shard_providers() -> list[str]:
