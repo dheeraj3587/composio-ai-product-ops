@@ -21,7 +21,7 @@
       "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm",
       "https://developer.salesforce.com"
     ],
-    "confidence": 0.85,
+    "confidence": 0.68,
     "verification_status": "Hand-Checked",
     "slug": "salesforce",
     "primary_docs_url": "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm",
@@ -301,7 +301,7 @@
       "https://api.docs.dealcloud.com/docs",
       "https://dealcloud.hexdocs.pm/api-reference.html"
     ],
-    "confidence": 0.83,
+    "confidence": 0.88,
     "verification_status": "Hand-Checked",
     "slug": "dealcloud",
     "primary_docs_url": "https://api.docs.dealcloud.com",
@@ -456,7 +456,7 @@
       "https://usepylon.com",
       "https://docs.usepylon.com/pylon-docs/developer/api"
     ],
-    "confidence": 0.432,
+    "confidence": 0.259,
     "verification_status": "Auto",
     "slug": "pylon",
     "primary_docs_url": "https://docs.usepylon.com/pylon-docs/developer/api/authentication",
@@ -485,7 +485,7 @@
       "https://support.liveagent.com/840770-Complete-API-reference",
       "https://liveagent.com"
     ],
-    "confidence": 0.544,
+    "confidence": 0.594,
     "verification_status": "Auto",
     "slug": "liveagent",
     "primary_docs_url": "https://support.liveagent.com/840770-Complete-API-reference",
@@ -764,7 +764,7 @@
       "https://vendortool.compliancescorecard.com/tools/pumble/api-docs",
       "https://dev-docs.marketplace.cake.com/pumble/build/api-client.html"
     ],
-    "confidence": 0.5,
+    "confidence": 0.55,
     "verification_status": "Hand-Checked",
     "slug": "pumble",
     "primary_docs_url": "https://pumble-api-keys.addons.marketplace.cake.com/api-docs/",
@@ -857,7 +857,7 @@
       "https://developers.facebook.com/docs/whatsapp",
       "https://developers.facebook.com/documentation/business-messaging/whatsapp/access-tokens"
     ],
-    "confidence": 0.8,
+    "confidence": 0.64,
     "verification_status": "Hand-Checked",
     "slug": "whatsapp-business",
     "primary_docs_url": "https://developers.facebook.com/docs/whatsapp",
@@ -951,7 +951,7 @@
       "https://developers.google.com/google-ads/api/docs/oauth/overview",
       "https://developers.google.com/google-ads/api/docs/api-policy/developer-token"
     ],
-    "confidence": 0.8,
+    "confidence": 0.85,
     "verification_status": "Hand-Checked",
     "slug": "google-ads",
     "primary_docs_url": "https://developers.google.com/google-ads/api/docs/oauth/overview",
@@ -983,7 +983,7 @@
       "https://developers.facebook.com/documentation/ads-commerce/marketing-api/get-started/authentication/",
       "https://vohrtech.com/blog/meta-ads-api-integration-guide-for-developers"
     ],
-    "confidence": 0.464,
+    "confidence": 0.514,
     "verification_status": "Hand-Checked",
     "slug": "meta-ads",
     "primary_docs_url": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/get-started/authorization/",
@@ -1347,7 +1347,7 @@
     "evidence_urls": [
       "https://salesforcecommercecloud.github.io/b2c-developer-tooling/guide/authentication.html"
     ],
-    "confidence": 0.9,
+    "confidence": 0.72,
     "verification_status": "Auto",
     "slug": "salesforce-commerce-cloud",
     "primary_docs_url": "https://salesforcecommercecloud.github.io/b2c-developer-tooling/guide/authentication.html",
@@ -1468,7 +1468,7 @@
       "https://gumroad.com/help/article/280-create-application-api",
       "https://apitracker.io/a/gumroad"
     ],
-    "confidence": 0.8,
+    "confidence": 0.64,
     "verification_status": "Auto",
     "slug": "gumroad",
     "primary_docs_url": "https://gumroad.com/api",
@@ -1499,7 +1499,7 @@
       "https://developer-docs-amazon-shipping.readme.io/apis/docs/connecting-to-the-selling-partner-api",
       "https://sell.amazon.com/developers"
     ],
-    "confidence": 0.72,
+    "confidence": 0.576,
     "verification_status": "Hand-Checked",
     "slug": "amazon-selling-partner",
     "primary_docs_url": "https://developer-docs-amazon-shipping.readme.io/apis/docs/authorizing-selling-partner-api-applications",
@@ -1766,7 +1766,7 @@
     "evidence_urls": [
       "https://github.com/sherlock-project/sherlock"
     ],
-    "confidence": 0.9,
+    "confidence": 0.72,
     "verification_status": "Auto",
     "slug": "sherlock",
     "primary_docs_url": "https://github.com/sherlock-project/sherlock",
@@ -1887,7 +1887,7 @@
       "https://vercel.com/docs/cli/api",
       "https://deepwiki.com/vercel/sdk/5.2-api-reference"
     ],
-    "confidence": 0.72,
+    "confidence": 0.576,
     "verification_status": "Auto",
     "slug": "vercel",
     "primary_docs_url": "https://vercel.com/docs/cli/api",
@@ -2009,7 +2009,7 @@
       "https://neo4j.com/developer/",
       "https://neo4j.com/docs/"
     ],
-    "confidence": 0.72,
+    "confidence": 0.576,
     "verification_status": "Auto",
     "slug": "neo4j",
     "primary_docs_url": "https://neo4j.com/developer/",
@@ -2195,7 +2195,7 @@
       "https://support.airtable.com/docs/api",
       "https://support.airtable.com/docs/getting-started-with-airtables-web-api"
     ],
-    "confidence": 0.72,
+    "confidence": 0.576,
     "verification_status": "Auto",
     "slug": "airtable",
     "primary_docs_url": "https://airtable.com/developers",
@@ -2501,7 +2501,7 @@
       "https://plaid.com/docs/api/",
       "https://plaid.com/docs"
     ],
-    "confidence": 0.9,
+    "confidence": 0.72,
     "verification_status": "Auto",
     "slug": "plaid",
     "primary_docs_url": "https://plaid.com/docs/api/",
@@ -2707,7 +2707,7 @@
       "https://docs.ramp.com/developer-api/v1/authorization",
       "https://docs.ramp.com/developer-api/v1/introduction"
     ],
-    "confidence": 0.8,
+    "confidence": 0.64,
     "verification_status": "Auto",
     "slug": "ramp",
     "primary_docs_url": "https://docs.ramp.com/developer-api/v1/authorization",
@@ -2736,7 +2736,7 @@
       "https://pitchbook.com",
       "https://docs.matia.io/docs/connectors/etl/pitchbook/api-configuration"
     ],
-    "confidence": 0.45,
+    "confidence": 0.36,
     "verification_status": "Auto",
     "slug": "pitchbook",
     "primary_docs_url": "https://pitchbook.com",
@@ -2765,7 +2765,7 @@
     "evidence_urls": [
       "https://docs.cloud.google.com/gemini/enterprise/notebooklm-enterprise/docs/api-notebooks"
     ],
-    "confidence": 0.72,
+    "confidence": 0.576,
     "verification_status": "Auto",
     "slug": "notebooklm",
     "primary_docs_url": "https://docs.cloud.google.com/gemini/enterprise/notebooklm-enterprise/docs/api-notebooks",
@@ -2853,7 +2853,7 @@
     "evidence_urls": [
       "https://consensus.app/home/api/"
     ],
-    "confidence": 0.72,
+    "confidence": 0.576,
     "verification_status": "Auto",
     "slug": "consensus",
     "primary_docs_url": "https://consensus.app/home/api/",
@@ -2944,7 +2944,7 @@
       "https://cloud.higgsfield.ai/",
       "https://apidog.com/blog/higgsfield-api/"
     ],
-    "confidence": 0.5,
+    "confidence": 0.4,
     "verification_status": "Auto",
     "slug": "higgsfield",
     "primary_docs_url": "https://higgsfield.ai/cli",

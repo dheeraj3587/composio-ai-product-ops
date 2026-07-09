@@ -1,40 +1,85 @@
 {
   "handcheck": {
-    "method": "Human verification of the two highest-risk fields (auth_methods, access_model) against primary docs; ~5 min/app (Flag E).",
+    "method": "Human cross-check vs official docs on api_type + auth_methods + access_model (truth auth normalized to canonical labels before comparison). Misses shown, not hidden.",
     "n": 17,
-    "auth_accuracy": null,
-    "access_accuracy": null,
-    "accuracy": 0.725,
-    "misses": [],
+    "api_type_accuracy": 1.0,
+    "auth_accuracy": 0.824,
+    "access_accuracy": 1.0,
+    "accuracy": 0.941,
+    "misses": [
+      {
+        "slug": "dealcloud",
+        "app": "DealCloud",
+        "field": "auth_methods",
+        "current": [
+          "API Key",
+          "Other Token"
+        ],
+        "truth": [
+          "API Key",
+          "OAuth2"
+        ],
+        "notes": "Good REST API but keys only issuable by an admin on an existing paid site."
+      },
+      {
+        "slug": "notion",
+        "app": "Notion",
+        "field": "auth_methods",
+        "current": [
+          "OAuth2",
+          "Bearer Token"
+        ],
+        "truth": [
+          "OAuth2",
+          "API Key"
+        ],
+        "notes": "REST; internal integration token or OAuth."
+      },
+      {
+        "slug": "slack",
+        "app": "Slack",
+        "field": "auth_methods",
+        "current": [
+          "OAuth2",
+          "Bot Token",
+          "Other Token"
+        ],
+        "truth": [
+          "OAuth2"
+        ],
+        "notes": "REST; self-serve app + OAuth."
+      }
+    ],
     "generated": "2026-07-09"
   },
   "patterns": {
     "n": 100,
     "buildability": {
-      "Moderate": 9,
-      "Easy": 77,
-      "Hard": 11,
-      "Blocked": 3
+      "Easy": 78,
+      "Hard": 9,
+      "Moderate": 11,
+      "Blocked": 2
     },
     "recommended_next_action": {
-      "Build Now": 78,
+      "Build Now": 80,
       "Partner-Gated": 6,
-      "Needs Outreach": 13,
-      "Blocked": 3
+      "Needs Outreach": 12,
+      "Blocked": 2
     },
     "access_model": {
-      "Self-Serve": 79,
-      "Gated": 21
+      "Self-Serve": 82,
+      "Gated": 18
     },
     "api_type": {
       "REST": 92,
       "GraphQL": 4,
-      "None": 3,
-      "SDK": 1
+      "None": 2,
+      "SDK": 1,
+      "MCP-only": 1
     },
     "existing_mcp": {
-      "None": 63,
-      "Official": 36,
+      "None": 62,
+      "Official": 37,
       "Community": 1
     },
     "composio_toolkit": {
@@ -43,35 +88,35 @@
     },
     "auth_methods_top": [
       [
+        "OAuth2",
+        54
+      ],
+      [
         "API Key",
-        27
-      ],
-      [
-        "OAuth",
-        22
-      ],
-      [
-        "OAuth 2.0",
-        18
+        49
       ],
       [
         "Bearer Token",
+        24
+      ],
+      [
+        "Other Token",
         11
       ],
       [
-        "OAuth2",
-        6
-      ],
-      [
         "Basic Auth",
-        4
+        11
       ],
       [
         "Personal Access Token",
-        4
+        6
       ],
       [
-        "API token",
+        "Bot Token",
+        3
+      ],
+      [
+        "Service Account",
         3
       ]
     ],
@@ -97,8 +142,8 @@
         "Gated": 3
       },
       "Research/Scraping": {
-        "Self-Serve": 7,
-        "Gated": 3
+        "Self-Serve": 8,
+        "Gated": 2
       },
       "DevInfra": {
         "Self-Serve": 10
@@ -107,12 +152,12 @@
         "Self-Serve": 10
       },
       "Fintech": {
-        "Self-Serve": 6,
-        "Gated": 4
+        "Self-Serve": 7,
+        "Gated": 3
       },
       "AI/Meeting-tools": {
-        "Gated": 3,
-        "Self-Serve": 7
+        "Gated": 2,
+        "Self-Serve": 8
       }
     },
     "top_blockers": [
@@ -125,36 +170,36 @@
         1
       ],
       [
-        "API exists but requires Meta business verification + app review before production access.",
+        "Auth corroborated by a third-party wiki (deepwiki); official portal is open.larksuite.com.",
         1
       ],
       [
-        "Gated access model plus OAuth (not instant self-serve); developer-token approval not fully detailed in provided excerpts",
+        "Production access requires Meta business verification + app review.",
+        1
+      ],
+      [
+        "Requires an approved Google Ads developer token in addition to OAuth.",
         1
       ],
       [
         "Marketing API requires Meta app authorization; app review and business verification commonly block production use (preseed; not spelled out in fetched text).",
         1
-      ],
-      [
-        "Marketing API access requires LinkedIn Marketing Developer Platform / partner approval.",
-        1
       ]
     ],
-    "build_now": 78,
+    "build_now": 80,
     "partner_gated": 6,
-    "avg_confidence": 0.871
+    "avg_confidence": 0.852
   },
   "n_results": 100,
   "headline_accuracy": {
     "hand_checked_accuracy": {
-      "value": 0.725,
+      "value": 0.941,
       "n": 17,
       "label": "Hand-checked accuracy (ground truth)"
     },
     "automated_agreement": {
-      "value": 0.472,
-      "n": 18,
+      "value": 0.595,
+      "n": 21,
       "label": "Automated blind re-search agreement (not accuracy)"
     }
   },
@@ -162,23 +207,33 @@
   "accuracy_movement": {
     "method": "Field-level accuracy (api_type + auth_methods + access_model) vs hand-verified truth, comparing the first-pass snapshot to the post-verification results.",
     "n": 17,
-    "first_pass_accuracy": 0.647,
-    "post_verification_accuracy": 0.725,
+    "first_pass_accuracy": 0.627,
+    "post_verification_accuracy": 0.941,
     "improved_apps": [
       "copper",
-      "plain"
+      "plain",
+      "salesforce",
+      "meta-ads",
+      "gladly",
+      "whatsapp-business",
+      "google-ads",
+      "linkedin-ads",
+      "pinterest",
+      "github",
+      "twilio",
+      "amazon-selling-partner"
     ],
     "regressed_apps": [],
     "per_app": [
       {
         "slug": "copper",
         "first_pass": "0/3",
-        "post_verification": "2/3"
+        "post_verification": "3/3"
       },
       {
         "slug": "plain",
         "first_pass": "0/3",
-        "post_verification": "2/3"
+        "post_verification": "3/3"
       },
       {
         "slug": "pumble",
@@ -188,12 +243,12 @@
       {
         "slug": "salesforce",
         "first_pass": "2/3",
-        "post_verification": "2/3"
+        "post_verification": "3/3"
       },
       {
         "slug": "meta-ads",
         "first_pass": "2/3",
-        "post_verification": "2/3"
+        "post_verification": "3/3"
       },
       {
         "slug": "dealcloud",
@@ -202,28 +257,28 @@
       },
       {
         "slug": "gladly",
-        "first_pass": "3/3",
+        "first_pass": "2/3",
         "post_verification": "3/3"
       },
       {
         "slug": "whatsapp-business",
         "first_pass": "2/3",
-        "post_verification": "2/3"
+        "post_verification": "3/3"
       },
       {
         "slug": "google-ads",
         "first_pass": "2/3",
-        "post_verification": "2/3"
+        "post_verification": "3/3"
       },
       {
         "slug": "linkedin-ads",
         "first_pass": "2/3",
-        "post_verification": "2/3"
+        "post_verification": "3/3"
       },
       {
         "slug": "pinterest",
         "first_pass": "2/3",
-        "post_verification": "2/3"
+        "post_verification": "3/3"
       },
       {
         "slug": "stripe",
@@ -233,7 +288,7 @@
       {
         "slug": "github",
         "first_pass": "2/3",
-        "post_verification": "2/3"
+        "post_verification": "3/3"
       },
       {
         "slug": "notion",
@@ -248,63 +303,56 @@
       {
         "slug": "twilio",
         "first_pass": "2/3",
-        "post_verification": "2/3"
+        "post_verification": "3/3"
       },
       {
         "slug": "amazon-selling-partner",
         "first_pass": "2/3",
-        "post_verification": "2/3"
+        "post_verification": "3/3"
       }
     ]
   },
   "verification": {
     "method": "Blind re-search from scratch: fresh differently-phrased query, independent fetch EXCLUDING stored evidence URLs, LLM blind to the pass-1 answer. Re-derived fields: auth_methods, access_model.",
-    "n_verified": 18,
-    "n_skipped_no_independent_source": 2,
-    "auth_methods_agreement_rate": 0.278,
-    "access_model_agreement_rate": 0.667,
-    "overall_agreement_rate": 0.472,
-    "avg_confidence_before": 0.806,
-    "avg_confidence_after": 0.643,
+    "n_verified": 21,
+    "n_skipped_no_independent_source": 3,
+    "auth_methods_agreement_rate": 0.429,
+    "access_model_agreement_rate": 0.762,
+    "overall_agreement_rate": 0.595,
+    "avg_confidence_before": 0.704,
+    "avg_confidence_after": 0.601,
     "disagreements": [
       {
-        "slug": "meta-ads",
-        "app": "Meta Ads",
+        "slug": "pitchbook",
+        "app": "PitchBook",
         "field": "auth_methods",
         "before": [
-          "OAuth",
-          "Access Token"
+          "Bearer Token"
         ],
         "after": [
-          "Access Tokens"
+          "OAuth2"
         ]
       },
       {
-        "slug": "ramp",
-        "app": "Ramp",
+        "slug": "higgsfield",
+        "app": "higgsfield",
         "field": "auth_methods",
-        "before": [],
-        "after": [
-          "OAuth2",
+        "before": [
           "API Key"
-        ]
-      },
-      {
-        "slug": "ramp",
-        "app": "Ramp",
-        "field": "access_model",
-        "before": "Gated",
-        "after": "Self-Serve"
-      },
-      {
-        "slug": "whatsapp-business",
-        "app": "WhatsApp Business",
-        "field": "auth_methods",
-        "before": [
-          "Access tokens"
         ],
         "after": [
-          "Bearer Token"
+          "Token"
+        ]
+      },
+      {
+        "slug": "amazon-selling-partner",
+        "app": "Amazon Selling Partner",
+        "field": "auth_methods",
+        "before": [
+          "OAuth2"
+        ],
+        "after": [
+          "Login"
         ]
       },
       {
@@ -315,25 +363,31 @@
         "after": "Self-Serve"
       },
       {
-        "slug": "notebooklm",
-        "app": "NotebookLM",
+        "slug": "sherlock",
+        "app": "Sherlock",
         "field": "auth_methods",
         "before": [
-          "OAuth2",
-          "Bearer Token"
+          "None / Not Applicable"
         ],
         "after": []
       },
       {
-        "slug": "liveagent",
-        "app": "LiveAgent",
+        "slug": "pylon",
+        "app": "Pylon",
         "field": "auth_methods",
         "before": [
-          "API token"
+          "Bearer Token"
         ],
         "after": [
           "API Key"
         ]
+      },
+      {
+        "slug": "pylon",
+        "app": "Pylon",
+        "field": "access_model",
+        "before": "Self-Serve",
+        "after": "Gated"
       },
       {
         "slug": "vercel",
@@ -359,25 +413,33 @@
         ]
       },
       {
-        "slug": "pitchbook",
-        "app": "PitchBook",
+        "slug": "ramp",
+        "app": "Ramp",
+        "field": "access_model",
+        "before": "Gated",
+        "after": "Self-Serve"
+      },
+      {
+        "slug": "notebooklm",
+        "app": "NotebookLM",
         "field": "auth_methods",
         "before": [
-          "accessToken"
+          "OAuth2",
+          "Bearer Token"
+        ],
+        "after": []
+      },
+      {
+        "slug": "salesforce-commerce-cloud",
+        "app": "Salesforce Commerce Cloud",
+        "field": "auth_methods",
+        "before": [
+          "OAuth2",
+          "Basic Auth",
+          "Bearer Token"
         ],
         "after": [
           "OAuth2"
-        ]
-      },
-      {
-        "slug": "salesforce",
-        "app": "Salesforce",
-        "field": "auth_methods",
-        "before": [
-          "OAuth"
-        ],
-        "after": [
-          "OAuth 2.0"
         ]
       },
       {
@@ -388,15 +450,28 @@
         "after": "Gated"
       },
       {
-        "slug": "amazon-selling-partner",
-        "app": "Amazon Selling Partner",
+        "slug": "neo4j",
+        "app": "Neo4j",
         "field": "auth_methods",
         "before": [
-          "OAuth",
-          "LWA (Login with Amazon)"
+          "Bearer Token",
+          "Basic Auth"
         ],
         "after": [
-          "Login"
+          "OAuth2",
+          "Basic"
+        ]
+      },
+      {
+        "slug": "plaid",
+        "app": "Plaid",
+        "field": "auth_methods",
+        "before": [
+          "Other Token"
+        ],
+        "after": [
+          "OAuth2",
+          "API Key"
         ]
       },
       {
@@ -407,59 +482,21 @@
         "after": "Self-Serve"
       },
       {
-        "slug": "sherlock",
-        "app": "Sherlock",
-        "field": "access_model",
-        "before": "Gated",
-        "after": "Self-Serve"
-      },
-      {
-        "slug": "pylon",
-        "app": "Pylon",
+        "slug": "gumroad",
+        "app": "Gumroad",
         "field": "auth_methods",
         "before": [
-          "Bearer token"
+          "OAuth2"
         ],
         "after": [
-          "API Key"
-        ]
-      },
-      {
-        "slug": "pylon",
-        "app": "Pylon",
-        "field": "access_model",
-        "before": "Self-Serve",
-        "after": "Gated"
-      },
-      {
-        "slug": "neo4j",
-        "app": "Neo4j",
-        "field": "auth_methods",
-        "before": [
-          "Token",
-          "Basic"
-        ],
-        "after": [
-          "OAuth2",
-          "Basic"
-        ]
-      },
-      {
-        "slug": "notion",
-        "app": "Notion",
-        "field": "auth_methods",
-        "before": [
           "OAuth 2.0",
-          "Bearer Token"
-        ],
-        "after": [
-          "OAuth2",
-          "API Key",
-          "PAT"
+          "API Key"
         ]
       }
     ],
     "caveat": "Agreement rate is NOT accuracy — it measures whether an independent second pass reproduced pass 1. True accuracy is the hand-checked number.",
     "generated": "2026-07-09"
-  }
+  },
+  "repo_url": "https://github.com/dheeraj3587/composio-ai-product-ops",
+  "live_url": "https://composio-ai-product-ops.vercel.app"
 }

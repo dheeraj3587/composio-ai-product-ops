@@ -4,27 +4,27 @@
     "category": "CRM",
     "one_liner": "Salesforce has public REST Platform APIs with OAuth; Postman collection available.",
     "auth_methods": [
-      "OAuth"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
-      "note": "Public developer guides and Postman collection for Platform APIs indicated in search results"
+      "note": "Free Developer Edition org; REST + OAuth2."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "None",
     "composio_toolkit": "Yes",
-    "buildability": "Moderate",
+    "buildability": "Easy",
     "main_blocker": "",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://www.postman.com/salesforce-developers/salesforce-developers/collection/b32utmu/salesforce-platform-apis",
-      "https://salesforce.com"
+      "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm",
+      "https://developer.salesforce.com"
     ],
-    "confidence": 0.55,
+    "confidence": 0.68,
     "verification_status": "Hand-Checked",
     "slug": "salesforce",
-    "primary_docs_url": "https://www.postman.com/salesforce-developers/salesforce-developers/collection/b32utmu/salesforce-platform-apis",
+    "primary_docs_url": "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm",
     "rate_limit_note": "No rate limit details in provided evidence",
     "last_verified": "2026-07-09"
   },
@@ -33,10 +33,9 @@
     "category": "CRM",
     "one_liner": "HubSpot offers a broad self-serve REST CRM API with OAuth and static/private tokens.",
     "auth_methods": [
-      "OAuth",
-      "Static auth access tokens",
-      "Developer API keys",
-      "Client credentials"
+      "OAuth2",
+      "Bearer Token",
+      "API Key"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -67,8 +66,8 @@
     "category": "CRM",
     "one_liner": "Broad self-serve REST CRM API with API token/OAuth, OpenAPI docs, and official SDKs.",
     "auth_methods": [
-      "API token",
-      "OAuth 2.0"
+      "API Key",
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -99,8 +98,8 @@
     "category": "CRM",
     "one_liner": "Public REST API + official MCP/SDK; self-serve API keys/OAuth for full CRM read-write.",
     "auth_methods": [
-      "API key",
-      "OAuth 2.0"
+      "API Key",
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -132,7 +131,7 @@
     "one_liner": "Self-serve REST & GraphQL CRM APIs with API keys, schema-per-tenant, and playground.",
     "auth_methods": [
       "API Key",
-      "OAuth"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -162,8 +161,8 @@
     "one_liner": "Self-serve OAuth2 REST API covering all Podio functionality with clear docs and client libs.",
     "auth_methods": [
       "OAuth2",
-      "App authentication",
-      "Username/password"
+      "Other Token",
+      "Basic Auth"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -193,7 +192,7 @@
     "category": "CRM",
     "one_liner": "Broad self-serve REST APIs (CRUD/bulk/query) via OAuth 2.0 for Zoho CRM modules.",
     "auth_methods": [
-      "OAuth 2.0"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -207,15 +206,13 @@
     "main_blocker": "",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://zoho-crm-api.readthedocs.io/en/latest/authentication/",
-      "https://zoho.com/crm",
-      "https://www.zoho.com/crm/developer/docs/api/v8/",
-      "https://www.zoho.com/crm/developer/docs/api/v8/oauth-overview.html"
+      "https://www.zoho.com/crm/developer/docs/api/v8/oauth-overview.html",
+      "https://www.zoho.com/crm/developer/docs/api/v8/"
     ],
     "confidence": 0.9,
     "verification_status": "Auto",
     "slug": "zoho-crm",
-    "primary_docs_url": "https://zoho-crm-api.readthedocs.io/en/latest/authentication/",
+    "primary_docs_url": "https://www.zoho.com/crm/developer/docs/api/v8/oauth-overview.html",
     "rate_limit_note": "Not specified in evidence",
     "last_verified": "2026-07-09"
   },
@@ -225,7 +222,7 @@
     "one_liner": "Broad self-serve REST API (API keys/OAuth) with webhooks, full CRM resources, and official MCP.",
     "auth_methods": [
       "API Key",
-      "OAuth"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -255,11 +252,12 @@
     "category": "CRM",
     "one_liner": "Copper provides a comprehensive REST API for managing CRM entities including leads, people, companies, and opportunities",
     "auth_methods": [
-      "OAuth2.0"
+      "API Key",
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
-      "note": "Developer portal provides OAuth2.0 quickstart guides and Postman collections for self-serve integration."
+      "note": "REST API; API key from Settings. Requires a Copper account (14-day trial available)."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
@@ -269,12 +267,13 @@
     "main_blocker": "",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
+      "https://developer.copper.com/introduction/authentication.html",
       "https://developer.copper.com"
     ],
-    "confidence": 1.0,
+    "confidence": 0.85,
     "verification_status": "Hand-Checked",
     "slug": "copper",
-    "primary_docs_url": "https://developer.copper.com",
+    "primary_docs_url": "https://developer.copper.com/introduction/authentication.html",
     "rate_limit_note": "Not specified in provided evidence",
     "last_verified": "2026-07-09"
   },
@@ -284,7 +283,7 @@
     "one_liner": "Broad REST API with SDKs and official MCP preview; keys need existing DealCloud site admin.",
     "auth_methods": [
       "API Key",
-      "Authorization Token"
+      "Other Token"
     ],
     "access_model": {
       "kind": "Gated",
@@ -302,7 +301,7 @@
       "https://api.docs.dealcloud.com/docs",
       "https://dealcloud.hexdocs.pm/api-reference.html"
     ],
-    "confidence": 0.78,
+    "confidence": 0.88,
     "verification_status": "Hand-Checked",
     "slug": "dealcloud",
     "primary_docs_url": "https://api.docs.dealcloud.com",
@@ -314,9 +313,8 @@
     "category": "Support",
     "one_liner": "Broad REST API with self-serve API tokens/OAuth and comprehensive multi-product docs.",
     "auth_methods": [
-      "API token",
-      "OAuth access token",
-      "Global OAuth access token"
+      "API Key",
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -346,8 +344,8 @@
     "category": "Support",
     "one_liner": "Self-serve REST API (Access Token/OAuth) with broad support resources; ready to build.",
     "auth_methods": [
-      "Access Token",
-      "OAuth"
+      "Bearer Token",
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -379,7 +377,7 @@
     "auth_methods": [
       "API Key",
       "Basic Auth",
-      "OAuth"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -409,8 +407,8 @@
     "category": "Support",
     "one_liner": "Self-serve REST Core API with OAuth/API tokens, broad resources, clear docs.",
     "auth_methods": [
-      "OAuth",
-      "API tokens"
+      "OAuth2",
+      "API Key"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -440,7 +438,7 @@
     "category": "Support",
     "one_liner": "Self-serve Bearer REST API for issues/customers; official MCP present in docs.",
     "auth_methods": [
-      "Bearer token"
+      "Bearer Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -458,7 +456,7 @@
       "https://usepylon.com",
       "https://docs.usepylon.com/pylon-docs/developer/api"
     ],
-    "confidence": 0.72,
+    "confidence": 0.259,
     "verification_status": "Auto",
     "slug": "pylon",
     "primary_docs_url": "https://docs.usepylon.com/pylon-docs/developer/api/authentication",
@@ -470,7 +468,7 @@
     "category": "Support",
     "one_liner": "Broad public REST API (v1) for agents, tickets, customers, KB, reports; docs available.",
     "auth_methods": [
-      "API token"
+      "API Key"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -487,7 +485,7 @@
       "https://support.liveagent.com/840770-Complete-API-reference",
       "https://liveagent.com"
     ],
-    "confidence": 0.68,
+    "confidence": 0.594,
     "verification_status": "Auto",
     "slug": "liveagent",
     "primary_docs_url": "https://support.liveagent.com/840770-Complete-API-reference",
@@ -499,11 +497,11 @@
     "category": "Support",
     "one_liner": "Plain provides a comprehensive GraphQL API for B2B support infrastructure, including an official MCP server.",
     "auth_methods": [
-      "Bearer Token"
+      "API Key"
     ],
     "access_model": {
       "kind": "Self-Serve",
-      "note": "API keys can be generated with specific permissions (e.g., customer:read) as indicated in the documentation."
+      "note": "GraphQL API; API key from workspace Settings > API Keys."
     },
     "api_type": "GraphQL",
     "api_breadth": "Broad",
@@ -513,13 +511,13 @@
     "main_blocker": "",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://docs.plain.com",
-      "https://plain.com"
+      "https://www.plain.com/docs/graphql/authentication",
+      "https://docs.plain.com"
     ],
-    "confidence": 1.0,
+    "confidence": 0.85,
     "verification_status": "Hand-Checked",
     "slug": "plain",
-    "primary_docs_url": "https://docs.plain.com",
+    "primary_docs_url": "https://www.plain.com/docs/graphql/authentication",
     "rate_limit_note": "Not explicitly mentioned in the provided text.",
     "last_verified": "2026-07-09"
   },
@@ -528,7 +526,7 @@
     "category": "Support",
     "one_liner": "Broad self-serve REST Mailbox/Docs API with clear docs; plan-based rate limits.",
     "auth_methods": [
-      "Documented authentication"
+      "Other Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -589,7 +587,7 @@
     "category": "Support",
     "one_liner": "Broad public REST API + webhooks/SDKs with API-token auth; needs Gladly customer account.",
     "auth_methods": [
-      "API Token"
+      "API Key"
     ],
     "access_model": {
       "kind": "Gated",
@@ -620,11 +618,9 @@
     "category": "Comms",
     "one_liner": "Slack offers broad self-serve REST APIs with OAuth, SDKs, CLI, and clear docs for apps.",
     "auth_methods": [
-      "OAuth 2.0",
-      "Bot tokens",
-      "User tokens",
-      "App tokens",
-      "Sign in with Slack"
+      "OAuth2",
+      "Bot Token",
+      "Other Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -655,9 +651,9 @@
     "category": "Comms",
     "one_liner": "Twilio provides broad self-serve REST APIs (messaging, voice, etc.) with Basic Auth/API keys and clear docs.",
     "auth_methods": [
-      "Basic Auth (AccountSid + Auth Token)",
-      "API Keys",
-      "Secondary Auth Token"
+      "Basic Auth",
+      "API Key",
+      "Other Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -688,7 +684,7 @@
     "category": "Comms",
     "one_liner": "Broad public REST API (v2/v3) with OAuth2 for chats, messages, users, teams & more.",
     "auth_methods": [
-      "OAuth 2.0"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -718,8 +714,8 @@
     "category": "Comms",
     "one_liner": "Lark has broad self-serve REST OpenAPI, App/Tenant/User tokens, SDKs, and official MCP.",
     "auth_methods": [
-      "AppID/AppSecret (app_access_token, tenant_access_token)",
-      "OAuth 2.0 (user_access_token)"
+      "Other Token",
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -730,18 +726,17 @@
     "existing_mcp": "Official",
     "composio_toolkit": "No",
     "buildability": "Easy",
-    "main_blocker": "",
+    "main_blocker": "Auth corroborated by a third-party wiki (deepwiki); official portal is open.larksuite.com.",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://deepwiki.com/larksuite/oapi-sdk-go/2.3-authentication-and-token-management",
       "https://open.larksuite.com",
       "https://github.com/larksuite/lark-openapi-mcp",
-      "https://deepwiki.com/larksuite/oapi-sdk-java/3.3-authentication-and-token-management"
+      "https://deepwiki.com/larksuite/oapi-sdk-go/2.3-authentication-and-token-management"
     ],
-    "confidence": 0.82,
+    "confidence": 0.78,
     "verification_status": "Auto",
     "slug": "lark",
-    "primary_docs_url": "https://deepwiki.com/larksuite/oapi-sdk-go/2.3-authentication-and-token-management",
+    "primary_docs_url": "https://open.larksuite.com",
     "rate_limit_note": "Not specified in provided evidence",
     "last_verified": "2026-07-09"
   },
@@ -769,7 +764,7 @@
       "https://vendortool.compliancescorecard.com/tools/pumble/api-docs",
       "https://dev-docs.marketplace.cake.com/pumble/build/api-client.html"
     ],
-    "confidence": 0.45,
+    "confidence": 0.55,
     "verification_status": "Hand-Checked",
     "slug": "pumble",
     "primary_docs_url": "https://pumble-api-keys.addons.marketplace.cake.com/api-docs/",
@@ -813,12 +808,8 @@
     "category": "Comms",
     "one_liner": "Free self-serve Bot API (HTTPS), TDLib SDK & Telegram API for bots/custom clients; broad features.",
     "auth_methods": [
-      "bot login",
-      "phone verification code",
-      "QR code",
-      "passkey",
-      "2FA password",
-      "auth_key_id"
+      "Bot Token",
+      "Other Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -848,25 +839,25 @@
     "category": "Comms",
     "one_liner": "WhatsApp Business Cloud API is broad REST messaging with free sandbox, but production needs Meta verification + app revi",
     "auth_methods": [
-      "Access tokens"
+      "OAuth2",
+      "Bearer Token"
     ],
     "access_model": {
       "kind": "Gated",
-      "note": "Free test numbers/sandbox and self-serve start available; production requires Meta business verification, permissions, and app review"
+      "note": "Cloud API; free test number is self-serve, but production requires Meta business verification + app review."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "None",
     "composio_toolkit": "No",
     "buildability": "Hard",
-    "main_blocker": "API exists but requires Meta business verification + app review before production access.",
+    "main_blocker": "Production access requires Meta business verification + app review.",
     "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
       "https://developers.facebook.com/docs/whatsapp",
-      "https://gurusup.com/blog/whatsapp-api-developers",
-      "https://whatsappbusiness.com/developers/developer-hub/"
+      "https://developers.facebook.com/documentation/business-messaging/whatsapp/access-tokens"
     ],
-    "confidence": 0.85,
+    "confidence": 0.64,
     "verification_status": "Hand-Checked",
     "slug": "whatsapp-business",
     "primary_docs_url": "https://developers.facebook.com/docs/whatsapp",
@@ -878,8 +869,8 @@
     "category": "Comms",
     "one_liner": "Broad self-serve REST API (Basic Auth tokens + OAuth) covering calls, users, contacts, webhooks.",
     "auth_methods": [
-      "Basic Auth (API ID + Token)",
-      "OAuth"
+      "Basic Auth",
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -910,8 +901,8 @@
     "category": "Comms",
     "one_liner": "Broad self-serve REST APIs (voice/video/messaging/verify/VCC) with SDKs and developer portal.",
     "auth_methods": [
-      "API credentials",
-      "Bearer token"
+      "API Key",
+      "Bearer Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -942,27 +933,25 @@
     "category": "Ads/Marketing",
     "one_liner": "Broad Google Ads REST API with OAuth; official MCP; access model gated.",
     "auth_methods": [
-      "OAuth 2.0",
+      "OAuth2",
       "Service Account"
     ],
     "access_model": {
       "kind": "Gated",
-      "note": "OAuth 2.0 required; docs include Access model overview plus service-account and user-auth workflows"
+      "note": "OAuth2 + an approved developer token (Basic/Standard access)."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "Official",
     "composio_toolkit": "Yes",
     "buildability": "Hard",
-    "main_blocker": "Gated access model plus OAuth (not instant self-serve); developer-token approval not fully detailed in provided excerpts",
+    "main_blocker": "Requires an approved Google Ads developer token in addition to OAuth.",
     "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
       "https://developers.google.com/google-ads/api/docs/oauth/overview",
-      "https://developers.google.com/google-ads",
-      "https://developers.google.com/google-ads/api",
-      "https://ads-developers.googleblog.com/2025/12/introducing-google-ads-api-developer.html"
+      "https://developers.google.com/google-ads/api/docs/api-policy/developer-token"
     ],
-    "confidence": 0.72,
+    "confidence": 0.85,
     "verification_status": "Hand-Checked",
     "slug": "google-ads",
     "primary_docs_url": "https://developers.google.com/google-ads/api/docs/oauth/overview",
@@ -974,8 +963,8 @@
     "category": "Ads/Marketing",
     "one_liner": "Broad Meta Marketing REST API for FB/IG ads; OAuth app setup; access typically gated.",
     "auth_methods": [
-      "OAuth",
-      "Access Token"
+      "OAuth2",
+      "Bearer Token"
     ],
     "access_model": {
       "kind": "Gated",
@@ -994,7 +983,7 @@
       "https://developers.facebook.com/documentation/ads-commerce/marketing-api/get-started/authentication/",
       "https://vohrtech.com/blog/meta-ads-api-integration-guide-for-developers"
     ],
-    "confidence": 0.58,
+    "confidence": 0.514,
     "verification_status": "Hand-Checked",
     "slug": "meta-ads",
     "primary_docs_url": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/get-started/authorization/",
@@ -1005,7 +994,9 @@
     "app": "LinkedIn Ads",
     "category": "Ads/Marketing",
     "one_liner": "Broad gated Marketing APIs (campaigns/leads/audiences/events); access via Getting API Access process.",
-    "auth_methods": [],
+    "auth_methods": [
+      "OAuth2"
+    ],
     "access_model": {
       "kind": "Gated",
       "note": "Requires Getting API Access process plus Integration Requirements for Marketing APIs / Conversions."
@@ -1015,15 +1006,16 @@
     "existing_mcp": "None",
     "composio_toolkit": "Yes",
     "buildability": "Hard",
-    "main_blocker": "Marketing API access requires LinkedIn Marketing Developer Platform / partner approval.",
+    "main_blocker": "Marketing API access requires applying for API products + partner approval (3-legged OAuth).",
     "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
-      "https://learn.microsoft.com/linkedin/marketing"
+      "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication",
+      "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access"
     ],
-    "confidence": 0.72,
+    "confidence": 0.85,
     "verification_status": "Hand-Checked",
     "slug": "linkedin-ads",
-    "primary_docs_url": "https://learn.microsoft.com/linkedin/marketing",
+    "primary_docs_url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication",
     "rate_limit_note": "",
     "last_verified": "2026-07-09"
   },
@@ -1032,8 +1024,8 @@
     "category": "Ads/Marketing",
     "one_liner": "Broad REST CRM API; private integration tokens self-serve, OAuth for marketplace apps.",
     "auth_methods": [
-      "OAuth 2.0",
-      "Private Integration Token"
+      "OAuth2",
+      "Other Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1064,7 +1056,7 @@
     "one_liner": "Broad self-serve REST Marketing API with API keys/OAuth and extensive docs.",
     "auth_methods": [
       "API Key",
-      "OAuth 2.0"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1095,7 +1087,7 @@
     "category": "Ads/Marketing",
     "one_liner": "Broad self-serve REST API with private keys, SDKs, and clear docs for marketing integrations.",
     "auth_methods": [
-      "Private API Key"
+      "API Key"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1126,7 +1118,7 @@
     "category": "Ads/Marketing",
     "one_liner": "Self-serve REST API (API-key) for contacts/tags/subs/newsletters; rate-limited.",
     "auth_methods": [
-      "API Key (X-API-Key header)"
+      "API Key"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1156,29 +1148,27 @@
     "category": "Ads/Marketing",
     "one_liner": "Broad REST API for pins/ads/catalogs/analytics via OAuth; trial app access needs daily review.",
     "auth_methods": [
-      "OAuth 2.0"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Gated",
-      "note": "Business account + email verify + app registration form; trial access reviewed each business day"
+      "note": "OAuth2; trial access self-serve, but standard/production access requires app review."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "None",
     "composio_toolkit": "No",
-    "buildability": "Hard",
+    "buildability": "Moderate",
     "main_blocker": "App must be submitted and approved for trial access before obtaining app ID/secret or tokens",
     "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
-      "https://developers.pinterest.com/docs/getting-started/authentication/",
-      "https://developers.pinterest.com",
-      "https://developers.pinterest.com/",
-      "https://zernio.com/blog/pinterest-api"
+      "https://developers.pinterest.com/docs/getting-started/set-up-authentication-and-authorization/",
+      "https://developers.pinterest.com/docs/getting-started/authentication/"
     ],
-    "confidence": 0.88,
+    "confidence": 0.8,
     "verification_status": "Hand-Checked",
     "slug": "pinterest",
-    "primary_docs_url": "https://developers.pinterest.com/docs/getting-started/authentication/",
+    "primary_docs_url": "https://developers.pinterest.com/docs/getting-started/set-up-authentication-and-authorization/",
     "rate_limit_note": "Third-party report: 1,000 req/min read, 100/min write",
     "last_verified": "2026-07-09"
   },
@@ -1187,7 +1177,7 @@
     "category": "Ads/Marketing",
     "one_liner": "Meta's Threads API allows for automated posting, media retrieval, reply management, and insights for creators and brands",
     "auth_methods": [
-      "OAuth 2.0"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Gated",
@@ -1247,10 +1237,9 @@
     "category": "Commerce",
     "one_liner": "Broad self-serve GraphQL/REST commerce APIs with CLI scaffolding and clear auth docs.",
     "auth_methods": [
-      "OAuth",
-      "session tokens",
-      "token exchange",
-      "public/private access tokens"
+      "OAuth2",
+      "Other Token",
+      "Bearer Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1280,7 +1269,7 @@
     "category": "Commerce",
     "one_liner": "Comprehensive REST API for WooCommerce stores with full CRUD capabilities for products, orders, and customers.",
     "auth_methods": [
-      "API Keys"
+      "API Key"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1310,7 +1299,7 @@
     "category": "Commerce",
     "one_liner": "Comprehensive e-commerce platform providing robust REST and GraphQL APIs for storefront and admin management.",
     "auth_methods": [
-      "Private API Token"
+      "API Key"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1340,10 +1329,9 @@
     "category": "Commerce",
     "one_liner": "Enterprise B2C commerce platform with comprehensive APIs (OCAPI, SCAPI) requiring Account Manager API clients.",
     "auth_methods": [
-      "OAuth",
+      "OAuth2",
       "Basic Auth",
-      "JWT Bearer",
-      "Client Credentials"
+      "Bearer Token"
     ],
     "access_model": {
       "kind": "Gated",
@@ -1359,7 +1347,7 @@
     "evidence_urls": [
       "https://salesforcecommercecloud.github.io/b2c-developer-tooling/guide/authentication.html"
     ],
-    "confidence": 0.9,
+    "confidence": 0.72,
     "verification_status": "Auto",
     "slug": "salesforce-commerce-cloud",
     "primary_docs_url": "https://salesforcecommercecloud.github.io/b2c-developer-tooling/guide/authentication.html",
@@ -1371,8 +1359,8 @@
     "category": "Commerce",
     "one_liner": "Adobe Commerce (Magento) provides a comprehensive REST API for managing e-commerce resources across PaaS and SaaS.",
     "auth_methods": [
-      "Token-based",
-      "IMS access token"
+      "Bearer Token",
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Gated",
@@ -1403,7 +1391,7 @@
     "one_liner": "Squarespace provides a comprehensive set of REST APIs for managing commerce, contacts, inventory, and orders.",
     "auth_methods": [
       "API Key",
-      "OAuth"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1433,7 +1421,7 @@
     "category": "Commerce",
     "one_liner": "Ecwid provides a comprehensive REST API for managing store data, orders, products, and customers via OAuth 2.0.",
     "auth_methods": [
-      "OAuth 2.0"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1462,7 +1450,7 @@
     "category": "Commerce",
     "one_liner": "Gumroad provides a developer API for creators to manage sales and products, supporting REST and GraphQL.",
     "auth_methods": [
-      "OAuth"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1480,7 +1468,7 @@
       "https://gumroad.com/help/article/280-create-application-api",
       "https://apitracker.io/a/gumroad"
     ],
-    "confidence": 0.8,
+    "confidence": 0.64,
     "verification_status": "Auto",
     "slug": "gumroad",
     "primary_docs_url": "https://gumroad.com/api",
@@ -1492,8 +1480,7 @@
     "category": "Commerce",
     "one_liner": "REST-based API for Amazon sellers to manage catalogs, orders, and fulfillment via a gated developer registration process",
     "auth_methods": [
-      "OAuth",
-      "LWA (Login with Amazon)"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Gated",
@@ -1512,7 +1499,7 @@
       "https://developer-docs-amazon-shipping.readme.io/apis/docs/connecting-to-the-selling-partner-api",
       "https://sell.amazon.com/developers"
     ],
-    "confidence": 0.9,
+    "confidence": 0.576,
     "verification_status": "Hand-Checked",
     "slug": "amazon-selling-partner",
     "primary_docs_url": "https://developer-docs-amazon-shipping.readme.io/apis/docs/authorizing-selling-partner-api-applications",
@@ -1630,7 +1617,7 @@
       "https://docs.ahrefs.com/en/api/docs/introduction",
       "https://docs.ahrefs.com/"
     ],
-    "confidence": 1.0,
+    "confidence": 0.98,
     "verification_status": "Auto",
     "slug": "ahrefs",
     "primary_docs_url": "https://ahrefs.com/api",
@@ -1733,7 +1720,7 @@
     "one_liner": "Comprehensive web data extraction and proxy platform with a broad suite of REST APIs and an official MCP server.",
     "auth_methods": [
       "API Key",
-      "Username/Password"
+      "Basic Auth"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1762,26 +1749,27 @@
     "app": "Sherlock",
     "category": "Research/Scraping",
     "one_liner": "The Sherlock OSINT tool is an open-source CLI for finding social media accounts, with no public API service.",
-    "auth_methods": [],
+    "auth_methods": [
+      "None / Not Applicable"
+    ],
     "access_model": {
-      "kind": "Gated",
-      "note": "No public API service available for the OSINT tool."
+      "kind": "Self-Serve",
+      "note": "Open-source CLI (username OSINT); not a hosted API service."
     },
     "api_type": "None",
     "api_breadth": "Narrow",
     "existing_mcp": "None",
     "composio_toolkit": "No",
     "buildability": "Blocked",
-    "main_blocker": "The Sherlock app is an open-source CLI tool for OSINT, not a hosted API service. The 'API documentation' found refers to a different Python library for distributed locks.",
+    "main_blocker": "Open-source CLI tool, not a hosted API — nothing to integrate via API (could wrap the CLI).",
     "recommended_next_action": "Blocked",
     "evidence_urls": [
-      "https://sher-lock.readthedocs.io/en/latest/api_documentation.html",
       "https://github.com/sherlock-project/sherlock"
     ],
-    "confidence": 1.0,
+    "confidence": 0.72,
     "verification_status": "Auto",
     "slug": "sherlock",
-    "primary_docs_url": "https://sher-lock.readthedocs.io/en/latest/api_documentation.html",
+    "primary_docs_url": "https://github.com/sherlock-project/sherlock",
     "rate_limit_note": "",
     "last_verified": "2026-07-09"
   },
@@ -1790,7 +1778,7 @@
     "category": "Research/Scraping",
     "one_liner": "Waterfall.io provides a comprehensive GTM API for contact/company enrichment, prospecting, and email verification.",
     "auth_methods": [
-      "x-api-key"
+      "API Key"
     ],
     "access_model": {
       "kind": "Gated",
@@ -1831,17 +1819,16 @@
     "existing_mcp": "Official",
     "composio_toolkit": "No",
     "buildability": "Easy",
-    "main_blocker": "",
+    "main_blocker": "HTTP API documented at university.clay.com; first-pass primary evidence was third-party (apitracker.io).",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://apitracker.io/a/clay-run",
-      "https://clay.com",
-      "https://university.clay.com/docs/http-api-integration-overview"
+      "https://university.clay.com/docs/http-api-integration-overview",
+      "https://clay.com"
     ],
-    "confidence": 0.9,
+    "confidence": 0.65,
     "verification_status": "Auto",
     "slug": "clay",
-    "primary_docs_url": "https://apitracker.io/a/clay-run",
+    "primary_docs_url": "https://university.clay.com/docs/http-api-integration-overview",
     "rate_limit_note": "Not specified in provided evidence",
     "last_verified": "2026-07-09"
   },
@@ -1850,10 +1837,9 @@
     "category": "DevInfra",
     "one_liner": "Comprehensive REST and GraphQL APIs for full GitHub platform management, including repos, issues, and actions.",
     "auth_methods": [
-      "OAuth",
-      "Personal Access Tokens",
-      "GitHub App installation tokens",
-      "GitHub App user tokens"
+      "OAuth2",
+      "Personal Access Token",
+      "Other Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1901,7 +1887,7 @@
       "https://vercel.com/docs/cli/api",
       "https://deepwiki.com/vercel/sdk/5.2-api-reference"
     ],
-    "confidence": 0.9,
+    "confidence": 0.576,
     "verification_status": "Auto",
     "slug": "vercel",
     "primary_docs_url": "https://vercel.com/docs/cli/api",
@@ -1914,7 +1900,7 @@
     "one_liner": "Comprehensive REST API for managing Netlify sites, deploys, DNS, environment variables, and serverless functions.",
     "auth_methods": [
       "Personal Access Token",
-      "OAuth"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1944,9 +1930,8 @@
     "category": "DevInfra",
     "one_liner": "Comprehensive API for managing Cloudflare DNS, Workers, Zero Trust, and account infrastructure.",
     "auth_methods": [
-      "API Token",
-      "Global API Key",
-      "OAuth"
+      "API Key",
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1975,7 +1960,7 @@
     "category": "DevInfra",
     "one_liner": "Supabase provides a comprehensive suite of REST and GraphQL APIs for database, auth, and storage management.",
     "auth_methods": [
-      "JWT",
+      "Bearer Token",
       "API Key"
     ],
     "access_model": {
@@ -2006,8 +1991,8 @@
     "category": "DevInfra",
     "one_liner": "Neo4j provides a comprehensive graph database platform with REST, GraphQL, and Bolt APIs for data management and AI.",
     "auth_methods": [
-      "Token",
-      "Basic"
+      "Bearer Token",
+      "Basic Auth"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2024,7 +2009,7 @@
       "https://neo4j.com/developer/",
       "https://neo4j.com/docs/"
     ],
-    "confidence": 0.9,
+    "confidence": 0.576,
     "verification_status": "Auto",
     "slug": "neo4j",
     "primary_docs_url": "https://neo4j.com/developer/",
@@ -2036,9 +2021,8 @@
     "category": "DevInfra",
     "one_liner": "Snowflake provides a comprehensive REST API for SQL execution and full account/resource management.",
     "auth_methods": [
-      "OAuth",
-      "Key-pair authentication",
-      "Workload identity federation"
+      "OAuth2",
+      "Service Account"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2068,7 +2052,7 @@
     "category": "DevInfra",
     "one_liner": "MongoDB Atlas provides a comprehensive Admin API for managing clusters and platform resources.",
     "auth_methods": [
-      "Digest Authentication",
+      "Basic Auth",
       "Service Account"
     ],
     "access_model": {
@@ -2100,8 +2084,7 @@
     "category": "DevInfra",
     "one_liner": "Datadog provides a comprehensive REST API for observability, security, and software delivery monitoring.",
     "auth_methods": [
-      "API Keys",
-      "Application Keys"
+      "API Key"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2164,7 +2147,7 @@
     "category": "Productivity/PM",
     "one_liner": "Comprehensive REST API for managing Notion pages, databases, users, and comments via OAuth 2.0 or API tokens.",
     "auth_methods": [
-      "OAuth 2.0",
+      "OAuth2",
       "Bearer Token"
     ],
     "access_model": {
@@ -2183,7 +2166,7 @@
       "https://developers.notion.com",
       "https://developers.notion.com/guides/get-started/overview"
     ],
-    "confidence": 1.0,
+    "confidence": 0.8,
     "verification_status": "Hand-Checked",
     "slug": "notion",
     "primary_docs_url": "https://developers.notion.com/reference/authentication",
@@ -2212,7 +2195,7 @@
       "https://support.airtable.com/docs/api",
       "https://support.airtable.com/docs/getting-started-with-airtables-web-api"
     ],
-    "confidence": 0.9,
+    "confidence": 0.576,
     "verification_status": "Auto",
     "slug": "airtable",
     "primary_docs_url": "https://airtable.com/developers",
@@ -2224,8 +2207,8 @@
     "category": "Productivity/PM",
     "one_liner": "Linear provides a robust GraphQL API and TypeScript SDK for comprehensive project and issue management.",
     "auth_methods": [
-      "OAuth 2.0",
-      "Personal API Keys"
+      "OAuth2",
+      "API Key"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2255,9 +2238,9 @@
     "category": "Productivity/PM",
     "one_liner": "Comprehensive REST API for Jira Cloud and Data Center supporting issues, projects, and user management.",
     "auth_methods": [
-      "Basic Auth (Email + API Token)",
-      "OAuth 2.0",
-      "Personal Access Tokens (PATs)"
+      "Basic Auth",
+      "OAuth2",
+      "Personal Access Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2288,7 +2271,7 @@
     "one_liner": "Comprehensive REST API for project management with support for PATs, OAuth, and an official MCP server.",
     "auth_methods": [
       "Personal Access Token",
-      "OAuth"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2317,8 +2300,8 @@
     "category": "Productivity/PM",
     "one_liner": "Comprehensive GraphQL API for monday.com with native MCP support and a dedicated developer playground.",
     "auth_methods": [
-      "apiKey",
-      "OAuth"
+      "API Key",
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2348,8 +2331,8 @@
     "category": "Productivity/PM",
     "one_liner": "Comprehensive REST API for productivity management with official MCP server support and flexible authentication.",
     "auth_methods": [
-      "Personal API Token",
-      "OAuth 2.0"
+      "API Key",
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2380,7 +2363,7 @@
     "one_liner": "Coda provides a comprehensive REST API for programmatically managing docs, pages, tables, and rows.",
     "auth_methods": [
       "API Key",
-      "OAuth"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2410,7 +2393,7 @@
     "one_liner": "Smartsheet provides a comprehensive REST API with SDKs and an official MCP server for productivity and project managemen",
     "auth_methods": [
       "API Key",
-      "OAuth 2.0"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2501,8 +2484,7 @@
     "category": "Fintech",
     "one_liner": "Comprehensive financial API for bank account authentication, balance, identity, and transaction data.",
     "auth_methods": [
-      "client_id",
-      "secret"
+      "Other Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2519,7 +2501,7 @@
       "https://plaid.com/docs/api/",
       "https://plaid.com/docs"
     ],
-    "confidence": 0.9,
+    "confidence": 0.72,
     "verification_status": "Auto",
     "slug": "plaid",
     "primary_docs_url": "https://plaid.com/docs/api/",
@@ -2588,23 +2570,26 @@
     "app": "iPayX",
     "category": "Fintech",
     "one_liner": "iPayX provides an FX Audit API, though detailed access and endpoint documentation are not fully available in the provide",
-    "auth_methods": [],
+    "auth_methods": [
+      "API Key",
+      "Bearer Token"
+    ],
     "access_model": {
-      "kind": "Gated",
-      "note": "Developer pages exist, but specific authentication and onboarding steps are not detailed in the fetched text."
+      "kind": "Self-Serve",
+      "note": "Create an account and get an API key via the developer portal (browser-verified; small/newer product)."
     },
     "api_type": "REST",
     "api_breadth": "Narrow",
     "existing_mcp": "None",
     "composio_toolkit": "No",
-    "buildability": "Hard",
-    "main_blocker": "Lack of detailed API reference, authentication requirements, and endpoint specifications in the provided evidence.",
-    "recommended_next_action": "Needs Outreach",
+    "buildability": "Moderate",
+    "main_blocker": "",
+    "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://www.ipayx.ai/docs/api?lang=en",
-      "https://www.ipayx.ai/developers?lang=en"
+      "https://www.ipayx.ai/developers?lang=en",
+      "https://www.ipayx.ai/docs/api?lang=en"
     ],
-    "confidence": 0.4,
+    "confidence": 0.5,
     "verification_status": "Auto",
     "slug": "ipayx",
     "primary_docs_url": "https://www.ipayx.ai/docs/api?lang=en",
@@ -2616,7 +2601,7 @@
     "category": "Fintech",
     "one_liner": "QuickBooks Online provides a comprehensive REST API for managing financial data, invoices, and accounting objects.",
     "auth_methods": [
-      "OAuth 2.0"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2645,7 +2630,7 @@
     "category": "Fintech",
     "one_liner": "Xero provides a comprehensive accounting API with OAuth 2.0 authentication and an official MCP server.",
     "auth_methods": [
-      "OAuth 2.0"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2704,7 +2689,9 @@
     "app": "Ramp",
     "category": "Fintech",
     "one_liner": "Ramp provides a developer API for business financial management, though public documentation is currently limited.",
-    "auth_methods": [],
+    "auth_methods": [
+      "OAuth2"
+    ],
     "access_model": {
       "kind": "Gated",
       "note": "API access is typically tied to being a Ramp business customer."
@@ -2714,14 +2701,13 @@
     "existing_mcp": "None",
     "composio_toolkit": "Yes",
     "buildability": "Hard",
-    "main_blocker": "API access is tied to being a Ramp business customer; not self-serve for a solo developer testing.",
+    "main_blocker": "OAuth2 (client-credentials / auth-code); API access tied to being a Ramp business customer.",
     "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
       "https://docs.ramp.com/developer-api/v1/authorization",
-      "https://docs.ramp.com",
       "https://docs.ramp.com/developer-api/v1/introduction"
     ],
-    "confidence": 0.7,
+    "confidence": 0.64,
     "verification_status": "Auto",
     "slug": "ramp",
     "primary_docs_url": "https://docs.ramp.com/developer-api/v1/authorization",
@@ -2733,26 +2719,27 @@
     "category": "Fintech",
     "one_liner": "Enterprise fintech data platform with a gated API requiring direct account access.",
     "auth_methods": [
-      "accessToken"
+      "Bearer Token"
     ],
     "access_model": {
       "kind": "Gated",
-      "note": "Enterprise research platform; API access is typically tied to a paid subscription and not self-serve."
+      "note": "Enterprise/partner-only API (contact sales)."
     },
     "api_type": "REST",
     "api_breadth": "Moderate",
     "existing_mcp": "None",
     "composio_toolkit": "No",
     "buildability": "Hard",
-    "main_blocker": "Enterprise research platform; API is contact-sales / partner-only, no public self-serve tier.",
+    "main_blocker": "No public official API docs found; primary evidence is a third-party connector (docs.matia.io). Contact-sales / partner only.",
     "recommended_next_action": "Partner-Gated",
     "evidence_urls": [
+      "https://pitchbook.com",
       "https://docs.matia.io/docs/connectors/etl/pitchbook/api-configuration"
     ],
-    "confidence": 0.8,
+    "confidence": 0.36,
     "verification_status": "Auto",
     "slug": "pitchbook",
-    "primary_docs_url": "https://docs.matia.io/docs/connectors/etl/pitchbook/api-configuration",
+    "primary_docs_url": "https://pitchbook.com",
     "rate_limit_note": "Not specified in provided evidence.",
     "last_verified": "2026-07-09"
   },
@@ -2778,7 +2765,7 @@
     "evidence_urls": [
       "https://docs.cloud.google.com/gemini/enterprise/notebooklm-enterprise/docs/api-notebooks"
     ],
-    "confidence": 0.9,
+    "confidence": 0.576,
     "verification_status": "Auto",
     "slug": "notebooklm",
     "primary_docs_url": "https://docs.cloud.google.com/gemini/enterprise/notebooklm-enterprise/docs/api-notebooks",
@@ -2788,26 +2775,28 @@
   {
     "app": "Otter AI",
     "category": "AI/Meeting-tools",
-    "one_liner": "Otter.ai (meeting tool) has no public API; evidence refers to unrelated companies (Otter.ai food/testing tools).",
-    "auth_methods": [],
+    "one_liner": "Meeting transcription with an official OAuth-authenticated MCP server (search/fetch/get-user tools).",
+    "auth_methods": [
+      "OAuth2"
+    ],
     "access_model": {
-      "kind": "Gated",
-      "note": "No public API found for the AI meeting tool; available docs belong to different entities."
+      "kind": "Self-Serve",
+      "note": "MCP connected via OAuth with your Otter account (Claude/ChatGPT/Cursor/Perplexity connectors). No public REST API/key."
     },
-    "api_type": "None",
+    "api_type": "MCP-only",
     "api_breadth": "Narrow",
-    "existing_mcp": "None",
+    "existing_mcp": "Official",
     "composio_toolkit": "No",
-    "buildability": "Blocked",
-    "main_blocker": "No usable public API for the AI meeting tool",
-    "recommended_next_action": "Blocked",
+    "buildability": "Moderate",
+    "main_blocker": "MCP-only (no public REST API/key); usable today via OAuth-authenticated MCP connectors.",
+    "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://help.otter.ai"
+      "https://help.otter.ai/hc/en-us/articles/35287607569687-Otter-MCP-Server"
     ],
     "confidence": 0.9,
     "verification_status": "Auto",
     "slug": "otter-ai",
-    "primary_docs_url": "https://help.otter.ai",
+    "primary_docs_url": "https://help.otter.ai/hc/en-us/articles/35287607569687-Otter-MCP-Server",
     "rate_limit_note": "",
     "last_verified": "2026-07-09"
   },
@@ -2818,7 +2807,7 @@
     "auth_methods": [
       "API Key",
       "Bearer Token",
-      "OAuth"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2864,7 +2853,7 @@
     "evidence_urls": [
       "https://consensus.app/home/api/"
     ],
-    "confidence": 0.9,
+    "confidence": 0.576,
     "verification_status": "Auto",
     "slug": "consensus",
     "primary_docs_url": "https://consensus.app/home/api/",
@@ -2948,17 +2937,17 @@
     "existing_mcp": "Official",
     "composio_toolkit": "No",
     "buildability": "Easy",
-    "main_blocker": "",
+    "main_blocker": "Newer product; primary evidence is a third-party blog (apidog.com) — official API docs unconfirmed.",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://apidog.com/blog/higgsfield-api/",
       "https://higgsfield.ai/cli",
-      "https://cloud.higgsfield.ai/"
+      "https://cloud.higgsfield.ai/",
+      "https://apidog.com/blog/higgsfield-api/"
     ],
-    "confidence": 0.9,
+    "confidence": 0.4,
     "verification_status": "Auto",
     "slug": "higgsfield",
-    "primary_docs_url": "https://apidog.com/blog/higgsfield-api/",
+    "primary_docs_url": "https://higgsfield.ai/cli",
     "rate_limit_note": "",
     "last_verified": "2026-07-09"
   },
@@ -2966,22 +2955,24 @@
     "app": "Mermaid CLI",
     "category": "AI/Meeting-tools",
     "one_liner": "Mermaid CLI is an open-source tool for rendering diagrams; it is not a hosted API service.",
-    "auth_methods": [],
+    "auth_methods": [
+      "None / Not Applicable"
+    ],
     "access_model": {
       "kind": "Self-Serve",
-      "note": "Open-source CLI tool available on GitHub."
+      "note": "Open-source CLI/library (diagram rendering); not a hosted API service."
     },
     "api_type": "None",
     "api_breadth": "Narrow",
     "existing_mcp": "None",
     "composio_toolkit": "No",
     "buildability": "Blocked",
-    "main_blocker": "Open-source CLI/library (diagram rendering), not a hosted API service.",
+    "main_blocker": "Open-source CLI/library, not a hosted API service.",
     "recommended_next_action": "Blocked",
     "evidence_urls": [
       "https://github.com/mermaid-js/mermaid-cli"
     ],
-    "confidence": 1.0,
+    "confidence": 0.9,
     "verification_status": "Auto",
     "slug": "mermaid-cli",
     "primary_docs_url": "https://github.com/mermaid-js/mermaid-cli",
@@ -3024,7 +3015,7 @@
     "one_liner": "Grain provides a comprehensive REST API for managing meeting recordings, transcripts, and workspace data.",
     "auth_methods": [
       "Personal Access Token",
-      "Workspace Access Token",
+      "Bearer Token",
       "OAuth2"
     ],
     "access_model": {

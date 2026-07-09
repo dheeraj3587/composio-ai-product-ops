@@ -199,6 +199,9 @@ def rebuild_metrics() -> dict:
             "value": ver.get("overall_agreement_rate"), "n": ver.get("n_verified"),
             "label": "Automated blind re-search agreement (not accuracy)"},
     }
+    import os
+    metrics["repo_url"] = os.getenv("REPO_URL", "https://github.com/dheeraj3587/composio-ai-product-ops")
+    metrics["live_url"] = os.getenv("LIVE_URL", "https://composio-ai-product-ops.vercel.app")
     metrics["generated"] = dt.date.today().isoformat()
     config.save_json(config.METRICS_PATH, metrics)
     return metrics

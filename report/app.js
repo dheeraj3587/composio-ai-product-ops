@@ -303,23 +303,25 @@ function renderTable() {
 function renderVerification() {
   const h = metrics.handcheck || {};
   const v = metrics.verification || {};
+  const am = metrics.accuracy_movement || {};
   const handText = h.n
-    ? `${h.n} apps checked by a human; overall two-field accuracy ${pct(h.accuracy)}.`
+    ? `${h.n} apps checked by a human vs official docs — api-type ${pct(h.api_type_accuracy)}, auth ${pct(h.auth_accuracy)}, access ${pct(h.access_accuracy)}; overall ${pct(h.accuracy)} (${(h.misses || []).length} misses logged, not hidden).`
     : "No hand-check rows have been folded yet. This should be completed before final submission.";
   const blindText = v.n_verified
-    ? `${v.n_verified} apps re-researched independently; agreement ${pct(v.overall_agreement_rate)}.`
+    ? `${v.n_verified} apps re-researched from scratch (fresh query, blind to pass 1); agreement ${pct(v.overall_agreement_rate)}. Agreement is reproducibility, not accuracy.`
     : "No blind re-search agreement has been recorded yet.";
+  const moveText = (am.first_pass_accuracy != null)
+    ? `The loops (browser-use + blind re-search + hand-check) moved hand-checked accuracy from ${pct(am.first_pass_accuracy)} on the first pass to ${pct(am.post_verification_accuracy)} — ${(am.improved_apps || []).length} apps corrected, ${(am.regressed_apps || []).length} regressed.`
+    : "";
 
-  $("verification-grid").innerHTML = `
-    <article class="proof">
-      <h3>Hand-Checked Accuracy</h3>
-      <p>${esc(handText)}</p>
-    </article>
-    <article class="proof">
-      <h3>Blind Re-Search Agreement</h3>
-      <p>${esc(blindText)}</p>
-    </article>
-  `;
+  const cards = [
+    `<article class="proof"><h3>Hand-Checked Accuracy (ground truth)</h3><p>${esc(handText)}</p></article>`,
+    `<article class="proof"><h3>Blind Re-Search Agreement</h3><p>${esc(blindText)}</p></article>`,
+  ];
+  if (moveText) {
+    cards.push(`<article class="proof"><h3>Accuracy Movement</h3><p>${esc(moveText)}</p></article>`);
+  }
+  $("verification-grid").innerHTML = cards.join("");
 
   if (!h.n || !v.n_verified) {
     $("verification-warning").innerHTML = `

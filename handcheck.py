@@ -15,6 +15,7 @@ from __future__ import annotations
 import datetime as dt
 
 import config
+import normalize
 import pipeline
 import verify
 from schema import validate_record
@@ -58,42 +59,55 @@ def generate_template(n: int = 18) -> dict:
 
 
 def fold() -> dict:
+    """Score CURRENT results.json against hand-verified truth (per field) + list misses."""
     payload = config.load_json(config.HANDCHECK_PATH) or {}
     rows = [r for r in payload.get("rows", []) if r.get("filled")]
     results = config.load_json(config.RESULTS_PATH) or []
     by_slug = {r["slug"]: r for r in results}
 
-    n = len(rows)
-    auth_hits = access_hits = 0
+    n = api_n = api_hits = auth_hits = access_hits = 0
     misses = []
     for row in rows:
-        agent, truth = row["agent"], row["truth"]
-        aa = verify._auth_agree(agent.get("auth_methods", []), truth.get("auth_methods") or [])
-        ac = (agent.get("access_model") == truth.get("access_model"))
+        slug, truth = row["slug"], row["truth"]
+        rec = by_slug.get(slug)
+        if not rec:
+            continue
+        n += 1
+        rec["verification_status"] = "Hand-Checked"
+        cur_auth = rec.get("auth_methods", [])
+        truth_auth = normalize.normalize_auth_list(truth.get("auth_methods") or [])
+        aa = verify._auth_agree(cur_auth, truth_auth)
+        cur_access = (rec.get("access_model") or {}).get("kind")
+        ac = (cur_access == truth.get("access_model"))
         auth_hits += int(aa)
         access_hits += int(ac)
-        if row["slug"] in by_slug:
-            by_slug[row["slug"]]["verification_status"] = "Hand-Checked"
+        if truth.get("api_type"):
+            api_n += 1
+            ok = rec.get("api_type") == truth.get("api_type")
+            api_hits += int(ok)
+            if not ok:
+                misses.append({"slug": slug, "app": row.get("app", slug), "field": "api_type",
+                               "current": rec.get("api_type"), "truth": truth.get("api_type"),
+                               "notes": truth.get("notes", "")})
         if not aa:
-            misses.append({"slug": row["slug"], "app": row["app"], "field": "auth_methods",
-                           "agent": agent.get("auth_methods"), "truth": truth.get("auth_methods"),
-                           "notes": truth.get("notes", "")})
+            misses.append({"slug": slug, "app": row.get("app", slug), "field": "auth_methods",
+                           "current": cur_auth, "truth": truth_auth, "notes": truth.get("notes", "")})
         if not ac:
-            misses.append({"slug": row["slug"], "app": row["app"], "field": "access_model",
-                           "agent": agent.get("access_model"), "truth": truth.get("access_model"),
-                           "notes": truth.get("notes", "")})
+            misses.append({"slug": slug, "app": row.get("app", slug), "field": "access_model",
+                           "current": cur_access, "truth": truth.get("access_model"), "notes": truth.get("notes", "")})
 
-    if results:  # persist verification_status flips
-        updated = [validate_record(by_slug[r["slug"]]).model_dump(mode="json") for r in results]
-        config.save_json(config.RESULTS_PATH, updated)
+    order = {a["slug"]: i for i, a in enumerate(pipeline.load_apps())}
+    config.save_json(config.RESULTS_PATH, sorted(by_slug.values(), key=lambda r: order.get(r["slug"], 10_000)))
 
+    total = 2 * n + api_n
     hc = {
-        "method": ("Human verification of the two highest-risk fields (auth_methods, "
-                   "access_model) against primary docs; ~5 min/app (Flag E)."),
+        "method": ("Human cross-check vs official docs on api_type + auth_methods + access_model "
+                   "(truth auth normalized to canonical labels before comparison). Misses shown, not hidden."),
         "n": n,
+        "api_type_accuracy": round(api_hits / api_n, 3) if api_n else None,
         "auth_accuracy": round(auth_hits / n, 3) if n else None,
         "access_accuracy": round(access_hits / n, 3) if n else None,
-        "accuracy": round((auth_hits + access_hits) / (2 * n), 3) if n else None,
+        "accuracy": round((api_hits + auth_hits + access_hits) / total, 3) if total else None,
         "misses": misses,
         "generated": dt.date.today().isoformat(),
     }
@@ -101,19 +115,16 @@ def fold() -> dict:
     metrics["handcheck"] = hc
     config.save_json(config.METRICS_PATH, metrics)
     verify.rebuild_metrics()
-
-    if n:
-        print(f"folded {n} hand-checked rows; accuracy={hc['accuracy']} "
-              f"(auth {hc['auth_accuracy']}, access {hc['access_accuracy']}), misses={len(misses)}")
-    else:
-        print("no filled rows yet — fill handcheck/handcheck.json, then re-run --fold-handcheck")
+    print(f"handcheck n={n}: api_type={hc['api_type_accuracy']} auth={hc['auth_accuracy']} "
+          f"access={hc['access_accuracy']} overall={hc['accuracy']} misses={len(misses)}")
     return hc
 
 
 def _score_record(rec: dict, truth: dict):
     """Field-level match of a record against hand truth (api_type + auth + access)."""
     checks = [
-        ("auth_methods", verify._auth_agree(rec.get("auth_methods", []), truth.get("auth_methods") or [])),
+        ("auth_methods", verify._auth_agree(rec.get("auth_methods", []),
+                                            normalize.normalize_auth_list(truth.get("auth_methods") or []))),
         ("access_model", (rec.get("access_model", {}) or {}).get("kind") == truth.get("access_model")),
     ]
     if truth.get("api_type"):
@@ -163,9 +174,6 @@ def accuracy_movement() -> dict:
     }
     metrics = config.load_json(config.METRICS_PATH, default={}) or {}
     metrics["accuracy_movement"] = mv
-    metrics.setdefault("handcheck", {})
-    metrics["handcheck"]["n"] = len(rows)
-    metrics["handcheck"]["accuracy"] = mv["post_verification_accuracy"]
     config.save_json(config.METRICS_PATH, metrics)
     verify.rebuild_metrics()
     print(f"ACCURACY MOVEMENT | first-pass {mv['first_pass_accuracy']} -> "
