@@ -61,3 +61,43 @@ HubSpot's developer documentation clearly outlines self-serve access to OAuth2 a
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "HubSpot",
+  "category": "CRM",
+  "one_liner": "HubSpot provides a comprehensive CRM platform with robust REST APIs and an official MCP server for AI integrations.",
+  "auth_methods": [
+    "OAuth2",
+    "Bearer Token"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can freely create a developer account to build apps, generate OAuth credentials, or create service keys for API access."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://developers.hubspot.com/docs/api-reference/latest/authentication/manage-oauth-tokens",
+    "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/authentication/account-service-keys",
+    "https://developers.hubspot.com/docs/getting-started/account-types",
+    "https://developers.hubspot.com/ai-tools/mcp"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "hubspot",
+  "primary_docs_url": "https://developers.hubspot.com/docs/api-reference/latest/authentication/manage-oauth-tokens",
+  "rate_limit_note": "Service keys and OAuth apps are subject to standard API limits based on the developer platform version.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

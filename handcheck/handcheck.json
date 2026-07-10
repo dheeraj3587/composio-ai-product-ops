@@ -1,87 +1,315 @@
 {
-  "_note": "Hand-verified ground truth (checked against each app's real developer docs). truth.access_model is Self-Serve if a developer can self-issue free/trial credentials, else Gated. Used by `python research.py --accuracy-movement` to score first-pass vs post-verification.",
-  "generated": "2026-07-10",
+  "_instructions": "Manually reviewed in the Codex in-app browser against official vendor pages on 2026-07-11. The agent snapshot is the pre-correction row. Truth uses the current production-access rubric and exact canonical auth sets.",
+  "auth_vocabulary": [
+    "OAuth2",
+    "API Key",
+    "Bearer Token",
+    "Basic Auth",
+    "Personal Access Token",
+    "Service Account",
+    "Bot Token",
+    "Other Token",
+    "None / Not Applicable"
+  ],
+  "access_rubric": "Self-Serve only when a new developer can obtain credentials usable in production without manual approval, partnership, business verification, or already being a paying customer. A sandbox or trial alone is not production Self-Serve; otherwise use Gated.",
+  "selection": "Ten reviewer-priority, broadly adopted apps from the catalog, spanning CRM, developer tools, collaboration, commerce, advertising, and messaging.",
+  "method": "Manual in-app browser DOM review of first-party API, authentication, production-access, and MCP documentation. Community MCP ownership was checked at the repository owner level.",
+  "generated": "2026-07-11",
   "rows": [
-    {"slug": "copper", "app": "Copper", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["API Key", "OAuth2"], "access_model": "Self-Serve",
-               "notes": "developer.copper.com — REST API; API key self-issued from account settings (trial available)."}},
-    {"slug": "plain", "app": "Plain", "filled": true,
-     "truth": {"api_type": "GraphQL", "auth_methods": ["API Key"], "access_model": "Self-Serve",
-               "notes": "plain.com/docs — GraphQL API; API key from workspace settings."}},
-    {"slug": "pumble", "app": "Pumble", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["API Key"], "access_model": "Self-Serve",
-               "notes": "Pumble REST API with API token."}},
-    {"slug": "salesforce", "app": "Salesforce", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["OAuth2"], "access_model": "Self-Serve",
-               "notes": "Free developer org; REST + OAuth2."}},
-    {"slug": "meta-ads", "app": "Meta Ads", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["OAuth2"], "access_model": "Gated",
-               "notes": "Marketing API behind Meta app review + business verification."}},
-    {"slug": "dealcloud", "app": "DealCloud", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["API Key", "OAuth2"], "access_model": "Gated",
-               "notes": "Good REST API but keys only issuable by an admin on an existing paid site."}},
-    {"slug": "gladly", "app": "Gladly", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["API Token"], "access_model": "Gated",
-               "notes": "REST API; access tied to being a Gladly customer."}},
-    {"slug": "whatsapp-business", "app": "WhatsApp Business", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["OAuth2"], "access_model": "Gated",
-               "notes": "Cloud API exists but requires Meta business verification + app review for production."}},
-    {"slug": "google-ads", "app": "Google Ads", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["OAuth2"], "access_model": "Gated",
-               "notes": "Requires a developer token approval + OAuth."}},
-    {"slug": "linkedin-ads", "app": "LinkedIn Ads", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["OAuth2"], "access_model": "Gated",
-               "notes": "Marketing Developer Platform / partner approval required."}},
-    {"slug": "pinterest", "app": "Pinterest", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["OAuth2"], "access_model": "Gated",
-               "notes": "Standard API access requires app review; trial access is limited."}},
-    {"slug": "stripe", "app": "Stripe", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["API Key"], "access_model": "Self-Serve",
-               "notes": "Instant test keys; REST."}},
-    {"slug": "github", "app": "GitHub", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["OAuth2", "PAT"], "access_model": "Self-Serve",
-               "notes": "REST + GraphQL; self-serve tokens."}},
-    {"slug": "notion", "app": "Notion", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["OAuth2", "API Key"], "access_model": "Self-Serve",
-               "notes": "REST; internal integration token or OAuth."}},
-    {"slug": "slack", "app": "Slack", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["OAuth2"], "access_model": "Self-Serve",
-               "notes": "REST; self-serve app + OAuth."}},
-    {"slug": "twilio", "app": "Twilio", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["API Key", "Basic Auth"], "access_model": "Self-Serve",
-               "notes": "REST; self-serve account SID + auth token."}},
-    {"slug": "amazon-selling-partner", "app": "Amazon Selling Partner", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["OAuth2"], "access_model": "Gated",
-               "notes": "Paid Professional Seller + developer approval."}},
-    {"slug": "hubspot", "app": "HubSpot", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["OAuth2", "Bearer Token"], "access_model": "Self-Serve",
-               "notes": "developers.hubspot.com authentication overview: OAuth for public apps and static access tokens for single-account apps."}},
-    {"slug": "shopify", "app": "Shopify", "filled": true,
-     "truth": {"api_type": "GraphQL", "auth_methods": ["OAuth2", "Bearer Token"], "access_model": "Self-Serve",
-               "notes": "shopify.dev API authentication: OAuth/session-token exchange and app access tokens; partner and development-store flow is self-serve."}},
-    {"slug": "zendesk", "app": "Zendesk", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["API Key", "OAuth2"], "access_model": "Self-Serve",
-               "notes": "Zendesk developer docs: verified users use email plus API token or OAuth access token."}},
-    {"slug": "intercom", "app": "Intercom", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["Bearer Token", "OAuth2"], "access_model": "Self-Serve",
-               "notes": "Intercom authentication docs: private-app access tokens and OAuth for public multi-workspace apps."}},
-    {"slug": "mailchimp", "app": "Mailchimp", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["API Key", "OAuth2"], "access_model": "Self-Serve",
-               "notes": "Mailchimp Marketing API quick start: create an account, generate an API key, and use OAuth 2 for other users."}},
-    {"slug": "discord", "app": "Discord", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["OAuth2", "Bot Token"], "access_model": "Self-Serve",
-               "notes": "Discord developer docs: self-serve application registration, bot token, and OAuth2 flows."}},
-    {"slug": "cloudflare", "app": "Cloudflare", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["API Key", "Bearer Token"], "access_model": "Self-Serve",
-               "notes": "Cloudflare API docs: users create API tokens in the dashboard and call the REST API with Authorization: Bearer API_TOKEN."}},
-    {"slug": "vercel", "app": "Vercel", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["Bearer Token"], "access_model": "Self-Serve",
-               "notes": "Vercel REST API docs: create access tokens in account settings and send them as Authorization: Bearer."}},
-    {"slug": "airtable", "app": "Airtable", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["Personal Access Token", "OAuth2"], "access_model": "Self-Serve",
-               "notes": "Airtable official docs: personal access tokens for account access and OAuth integrations for access on behalf of users."}},
-    {"slug": "asana", "app": "Asana", "filled": true,
-     "truth": {"api_type": "REST", "auth_methods": ["Personal Access Token", "OAuth2"], "access_model": "Self-Serve",
-               "notes": "Asana authentication docs list personal access tokens and OAuth for API integrations."}}
+    {
+      "slug": "salesforce",
+      "app": "Salesforce",
+      "category": "CRM",
+      "primary_docs_url": "https://developer.salesforce.com/docs/platform/connect-rest-api/guide/intro_using_oauth.html",
+      "selection_reason": "high-usage catalog priority",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": ["OAuth2"],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.8
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": ["OAuth2"],
+        "access_model": "Gated",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://developer.salesforce.com/docs/platform/connect-rest-api/guide/intro_using_oauth.html",
+          "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest_compatible_editions.htm",
+          "https://github.com/salesforcecli/mcp"
+        ],
+        "notes": "Connect REST uses OAuth and the Salesforce DX MCP is vendor-owned. API access is enabled in paid production editions; the free Developer Edition is documented as a development/testing environment before moving changes to production, so the strict production rubric is Gated."
+      },
+      "correction": {
+        "access_note": "Free Developer Edition supports development and testing; production API access requires a supported paid edition or API add-on.",
+        "buildability": "Hard",
+        "recommended_next_action": "Partner-Gated",
+        "main_blocker": "Production API access requires an existing customer on a supported paid edition or an API access add-on."
+      },
+      "filled": true
+    },
+    {
+      "slug": "hubspot",
+      "app": "HubSpot",
+      "category": "CRM",
+      "primary_docs_url": "https://developers.hubspot.com/docs/api-reference/latest/authentication/manage-oauth-tokens",
+      "selection_reason": "high-usage catalog priority",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": ["OAuth2", "API Key"],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": ["OAuth2", "Bearer Token"],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://developers.hubspot.com/docs/api-reference/latest/authentication/manage-oauth-tokens",
+          "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/authentication/account-service-keys",
+          "https://developers.hubspot.com/docs/getting-started/account-types",
+          "https://developers.hubspot.com/ai-tools/mcp"
+        ],
+        "notes": "HubSpot documents OAuth and independently issued service keys sent as Bearer credentials. A standard account can be free and is explicitly the production environment. HubSpot publishes its own remote MCP server."
+      },
+      "filled": true
+    },
+    {
+      "slug": "slack",
+      "app": "Slack",
+      "category": "Comms",
+      "primary_docs_url": "https://docs.slack.dev/authentication/installing-with-oauth/",
+      "selection_reason": "high-usage catalog priority",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": ["OAuth2"],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": ["OAuth2"],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://docs.slack.dev/quickstart/",
+          "https://docs.slack.dev/authentication/installing-with-oauth/",
+          "https://docs.slack.dev/ai/slack-mcp-server/"
+        ],
+        "notes": "Slack Web API apps are installed with OAuth 2.0 and receive access tokens. A developer can create an app in a workspace without vendor approval. Slack hosts the official MCP server."
+      },
+      "filled": true
+    },
+    {
+      "slug": "github",
+      "app": "GitHub",
+      "category": "DevInfra",
+      "primary_docs_url": "https://docs.github.com/en/rest/authentication/authenticating-to-the-rest-api",
+      "selection_reason": "high-usage catalog priority",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": ["Personal Access Token", "OAuth2"],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": ["Personal Access Token", "OAuth2"],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://docs.github.com/en/rest/authentication/authenticating-to-the-rest-api",
+          "https://github.com/github/github-mcp-server"
+        ],
+        "notes": "GitHub REST accepts self-created personal access tokens and OAuth or GitHub App user authorization. Token creation is self-serve. The github/github-mcp-server repository identifies itself as GitHub's official MCP server."
+      },
+      "filled": true
+    },
+    {
+      "slug": "notion",
+      "app": "Notion",
+      "category": "Productivity/PM",
+      "primary_docs_url": "https://developers.notion.com/reference/authentication",
+      "selection_reason": "high-usage catalog priority",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": ["OAuth2", "Personal Access Token", "API Key"],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": ["OAuth2", "Personal Access Token"],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://developers.notion.com/reference/authentication",
+          "https://developers.notion.com/guides/get-started/personal-access-tokens",
+          "https://developers.notion.com/guides/mcp/overview"
+        ],
+        "notes": "Notion documents OAuth for public connections and personal access tokens for user-scoped API access. It does not document a separate API-key credential for the REST API. Workspace owners can create PATs on the free plan. Notion MCP is hosted by Notion."
+      },
+      "filled": true
+    },
+    {
+      "slug": "shopify",
+      "app": "Shopify",
+      "category": "Commerce",
+      "primary_docs_url": "https://shopify.dev/docs/api/usage/authentication",
+      "selection_reason": "high-usage catalog priority",
+      "agent": {
+        "api_type": "GraphQL",
+        "auth_methods": ["OAuth2", "API Key"],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "GraphQL",
+        "auth_methods": ["OAuth2", "Bearer Token"],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://shopify.dev/docs/api/usage/authentication",
+          "https://shopify.dev/docs/apps/build/authentication-authorization/access-tokens/authorization-code-grant",
+          "https://shopify.dev/docs/apps/launch/distribution",
+          "https://shopify.dev/docs/apps/build/storefront-mcp"
+        ],
+        "notes": "Shopify's primary Admin and Storefront surfaces are GraphQL. API calls use OAuth-derived Admin tokens or independently issued Storefront access tokens; a client API key is not accepted as the API credential. Custom distribution is available without App Store review. Shopify owns Storefront MCP."
+      },
+      "filled": true
+    },
+    {
+      "slug": "stripe",
+      "app": "Stripe",
+      "category": "Fintech",
+      "primary_docs_url": "https://docs.stripe.com/api/authentication",
+      "selection_reason": "high-usage catalog priority",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": ["API Key", "OAuth2"],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": ["API Key", "OAuth2"],
+        "access_model": "Gated",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://docs.stripe.com/api/authentication",
+          "https://docs.stripe.com/connect/oauth-reference",
+          "https://docs.stripe.com/get-started/account/set-up",
+          "https://docs.stripe.com/mcp"
+        ],
+        "notes": "Stripe REST accepts secret or restricted API keys and Connect supports OAuth. Stripe explicitly requires business verification before services can be used on a live account, so test keys alone do not make production access Self-Serve under the rubric. Stripe hosts its MCP server."
+      },
+      "correction": {
+        "access_note": "Test keys are immediate, but live Stripe services require business verification and account activation.",
+        "buildability": "Hard",
+        "recommended_next_action": "Needs Outreach",
+        "main_blocker": "Production use requires Stripe business verification and activation of the applicable live service."
+      },
+      "filled": true
+    },
+    {
+      "slug": "jira",
+      "app": "Jira",
+      "category": "Productivity/PM",
+      "primary_docs_url": "https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/",
+      "selection_reason": "high-usage catalog priority",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": ["OAuth2", "Basic Auth", "API Key"],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": ["OAuth2", "API Key"],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/",
+          "https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps/",
+          "https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/"
+        ],
+        "notes": "Jira Cloud REST accepts a self-created API token through Basic transport and supports OAuth 2.0 3LO. Basic Auth is not an independent credential in this case, so the exact credential set is API Key plus OAuth2. Sharing an unreviewed 3LO app is allowed with a warning. Atlassian Rovo MCP supports Jira."
+      },
+      "filled": true
+    },
+    {
+      "slug": "google-ads",
+      "app": "Google Ads",
+      "category": "Ads/Marketing",
+      "primary_docs_url": "https://developers.google.com/google-ads/api/docs/oauth/overview",
+      "selection_reason": "high-usage catalog priority",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": ["OAuth2", "Other Token"],
+        "access_model": "Gated",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Needs Outreach",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": ["OAuth2", "API Key", "Service Account"],
+        "access_model": "Gated",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://developers.google.com/google-ads/api/docs/oauth/overview",
+          "https://developers.google.com/google-ads/api/docs/api-policy/developer-token",
+          "https://developers.google.com/google-ads/api/docs/developer-toolkit/mcp-server"
+        ],
+        "notes": "Google Ads requires OAuth 2.0 plus a developer token on every API call and documents both authorized-user and service-account workflows. Developer-token applications can be restricted to test access or require review for broader production levels. Google publishes the MCP server guide."
+      },
+      "filled": true
+    },
+    {
+      "slug": "whatsapp-business",
+      "app": "WhatsApp Business",
+      "category": "Comms",
+      "primary_docs_url": "https://developers.facebook.com/documentation/business-messaging/whatsapp/get-started",
+      "selection_reason": "high-usage catalog priority",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": ["OAuth2", "Bearer Token"],
+        "access_model": "Gated",
+        "existing_mcp": "Community",
+        "recommended_next_action": "Needs Outreach",
+        "confidence": 0.9
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": ["OAuth2", "Bearer Token"],
+        "access_model": "Gated",
+        "existing_mcp": "Community",
+        "evidence_urls": [
+          "https://developers.facebook.com/documentation/business-messaging/whatsapp/get-started",
+          "https://developers.facebook.com/documentation/business-messaging/whatsapp/embedded-signup/overview",
+          "https://developers.facebook.com/documentation/development/create-an-app/whatsapp-use-case#permissions-and-features",
+          "https://github.com/mattcoatsworth/Whatsapp-MCP-Server"
+        ],
+        "notes": "WhatsApp Cloud API uses permanent system-user access tokens and Facebook Login for Business onboarding. Tech-provider production access requires business verification and App Review. The checked MCP server is owned by a community GitHub account, not Meta."
+      },
+      "filled": true
+    }
   ]
 }

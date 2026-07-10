@@ -68,3 +68,43 @@ The WhatsApp Business API (now exclusively Cloud API) is built on Meta's Graph A
   "main_blocker": "API exists but requires Meta business verification + app review before production access."
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "WhatsApp Business",
+  "category": "Comms",
+  "one_liner": "The WhatsApp Business Platform provides a Cloud API for sending messages, managing templates, and handling business...",
+  "auth_methods": [
+    "OAuth2",
+    "Bearer Token"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Production access requires Meta business verification, an approved WhatsApp Business account, and App Review."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Community",
+  "composio_toolkit": "No",
+  "buildability": "Hard",
+  "main_blocker": "Requires Meta business verification and App Review before production access is granted.",
+  "recommended_next_action": "Needs Outreach",
+  "evidence_urls": [
+    "https://developers.facebook.com/documentation/business-messaging/whatsapp/get-started",
+    "https://developers.facebook.com/documentation/business-messaging/whatsapp/embedded-signup/overview",
+    "https://developers.facebook.com/documentation/development/create-an-app/whatsapp-use-case#permissions-and-features",
+    "https://github.com/mattcoatsworth/Whatsapp-MCP-Server"
+  ],
+  "confidence": 0.9,
+  "verification_status": "Hand-Checked",
+  "slug": "whatsapp-business",
+  "primary_docs_url": "https://developers.facebook.com/documentation/business-messaging/whatsapp/get-started",
+  "rate_limit_note": "Cloud API supports up to 1,000 messages per second, subject to conversation-based pricing and tier limits.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

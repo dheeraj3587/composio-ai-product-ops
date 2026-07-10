@@ -175,9 +175,10 @@ python research.py --verify --sample 24         # 6) blind re-search; facts rema
 python research.py --handcheck-template 24      # 8) create risk-biased worksheet
 # Fill official-doc truth + evidence URLs in handcheck/handcheck.json.
 python research.py --fold-handcheck             # 9) current ground-truth metric
-python research.py --accuracy-movement          # 10) first-pass vs current on same truth
-python research.py --metrics                    # 11) rebuild all derived metrics
-python research.py --build-report               # 12) publish only after review
+python research.py --apply-handcheck            # 10) apply recorded truth after scoring
+python research.py --accuracy-movement          # 11) first-pass vs current on same truth
+python research.py --metrics                    # 12) rebuild all derived metrics
+python research.py --build-report               # 13) publish only after review
 ```
 
 - **Safe fresh state:** `--fresh-run` preflights dependencies, keys, and concurrency before it archives
@@ -229,6 +230,7 @@ or point a Vercel project at the repo with **Root Directory = `report`** (no bui
 | `--verify [--sample N]` | blind re-search audit; writes evidence/provenance but never changes rows |
 | `--handcheck-template [N]` | generate a hand-check worksheet (default 18) |
 | `--fold-handcheck` | LOOP 3: fold filled hand-check truth into metrics (per-field accuracy + misses) |
+| `--apply-handcheck` | apply filled current-rubric truth after preserving the pre-correction score |
 | `--accuracy-movement` | score first-pass snapshot vs post-verification results vs hand truth |
 | `--metrics` | rebuild `metrics.json` (patterns + headline numbers) |
 | `--build-report` | copy results/metrics into `report/` and write `data.js` |

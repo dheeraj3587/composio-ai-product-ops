@@ -623,6 +623,61 @@ class HandcheckTests(unittest.TestCase):
             metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
             self.assertEqual(metrics["handcheck_historical"]["snapshot"]["accuracy"], 0.951)
 
+    def test_apply_handcheck_revalidates_dependent_decision(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            results_path = root / "results.json"
+            metrics_path = root / "metrics.json"
+            handcheck_path = root / "handcheck.json"
+            record = valid_record()
+            record["access_model"] = {"kind": "Self-Serve", "note": "Test keys only."}
+            record["buildability"] = "Easy"
+            record["recommended_next_action"] = "Build Now"
+            record["main_blocker"] = ""
+            results_path.write_text(json.dumps([record]), encoding="utf-8")
+            metrics_path.write_text("{}", encoding="utf-8")
+            handcheck_path.write_text(json.dumps({
+                "access_rubric": handcheck.ACCESS_RUBRIC,
+                "rows": [{
+                    "slug": "dealcloud",
+                    "app": "DealCloud",
+                    "filled": True,
+                    "truth": {
+                        "api_type": "REST",
+                        "auth_methods": ["OAuth2"],
+                        "access_model": "Gated",
+                        "existing_mcp": "Official",
+                        "evidence_urls": ["https://docs.example.com/api"],
+                        "notes": "Production requires customer approval.",
+                    },
+                    "correction": {
+                        "access_note": "Production requires an existing customer account.",
+                        "buildability": "Hard",
+                        "recommended_next_action": "Partner-Gated",
+                        "main_blocker": "Existing customer account required.",
+                    },
+                }],
+            }), encoding="utf-8")
+            with (
+                mock.patch.object(config, "RESULTS_PATH", results_path),
+                mock.patch.object(config, "METRICS_PATH", metrics_path),
+                mock.patch.object(config, "HANDCHECK_PATH", handcheck_path),
+                mock.patch.object(
+                    handcheck.pipeline, "load_apps", return_value=[{"slug": "dealcloud"}]
+                ),
+                mock.patch.object(handcheck.verify, "rebuild_metrics", return_value={}),
+                mock.patch.object(handcheck.synthesis, "append_final_state"),
+                mock.patch("builtins.print"),
+            ):
+                count = handcheck.apply_corrections()
+
+            corrected = json.loads(results_path.read_text(encoding="utf-8"))[0]
+            self.assertEqual(count, 1)
+            self.assertEqual(corrected["auth_methods"], ["OAuth2"])
+            self.assertEqual(corrected["access_model"]["kind"], "Gated")
+            self.assertEqual(corrected["existing_mcp"], "Official")
+            self.assertEqual(corrected["recommended_next_action"], "Partner-Gated")
+
 
 if __name__ == "__main__":
     unittest.main()

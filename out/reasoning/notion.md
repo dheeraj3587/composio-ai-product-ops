@@ -62,3 +62,42 @@ Notion provides a REST API and an official MCP server. Auth methods include OAut
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Notion",
+  "category": "Productivity/PM",
+  "one_liner": "Notion provides a comprehensive REST API and an official hosted MCP server for integrating AI tools and external apps.",
+  "auth_methods": [
+    "OAuth2",
+    "Personal Access Token"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can create internal connections or public OAuth apps directly from the Notion Developer Portal without manual approval."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://developers.notion.com/reference/authentication",
+    "https://developers.notion.com/guides/get-started/personal-access-tokens",
+    "https://developers.notion.com/guides/mcp/overview"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "notion",
+  "primary_docs_url": "https://developers.notion.com/reference/authentication",
+  "rate_limit_note": "Request limits exist and are documented in the API reference, though specific thresholds are not detailed in the fetched snippets.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

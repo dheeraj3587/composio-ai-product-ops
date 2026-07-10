@@ -58,8 +58,8 @@ function renderStatus() {
   const q = metrics.quality || {};
   const lines = [
     ["Source audit", q.source_audit_complete ? `${q.source_audited_rows} / ${p.n || rows.length}` : "Incomplete"],
-    ["Browser docs", q.browser_evidence_pages ? `${q.browser_evidence_pages} pages` : "Pending"],
-    ["Human check", h.n ? `${h.n} rows` : "Pending"],
+    ["Human checked", h.n ? `${h.n} apps` : "Pending"],
+    ["Accuracy", h.n ? pct(h.accuracy) : "Pending"],
   ];
   $("status-lines").innerHTML = lines.map(([label, value]) => `
     <div class="status-line"><b>${esc(label)}</b><span>${esc(value)}</span></div>
@@ -142,14 +142,14 @@ function renderMetrics() {
   const p = metrics.patterns || {};
   const access = p.access_model || {};
   const toolkit = p.composio_toolkit || {};
-  const q = metrics.quality || {};
+  const h = metrics.handcheck || {};
   const actions = p.recommended_next_action || {};
   const data = [
     [access["Self-Serve"] || 0, "self-serve paths"],
     [p.build_now || 0, "ready to build"],
     [actions["Needs Outreach"] || 0, "needs outreach"],
     [toolkit.No || 0, "Composio gaps"],
-    [q.source_audited_rows || 0, "source-audited"],
+    [h.n ? pct(h.accuracy) : "Pending", "human check"],
   ];
   $("metrics").innerHTML = data.map(([value, label]) => `
     <article class="metric">
@@ -333,7 +333,7 @@ function renderVerification() {
   const unresolved = metrics.unresolved_failures || [];
   const q = metrics.quality || {};
   const handText = h.n
-    ? `${h.n} official-doc checks: API ${pct(h.api_type_accuracy)}, auth ${pct(h.auth_accuracy)}, access ${pct(h.access_accuracy)}. Overall ${pct(h.accuracy)}; ${(h.misses || []).length} mismatches shown below.`
+    ? `${h.n} official-doc checks: API ${pct(h.api_type_accuracy)}, auth ${pct(h.auth_accuracy)}, access ${pct(h.access_accuracy)}${h.mcp_accuracy != null ? `, MCP ${pct(h.mcp_accuracy)}` : ""}. Overall ${pct(h.accuracy)}; ${(h.misses || []).length} mismatches shown below.`
     : "Independent human adjudication is pending for this fresh run. The legacy score was not carried forward because its access rubric was different.";
   const blindText = v.n_verified
     ? `${v.n_verified} fresh-source re-checks; agreement ${pct(v.overall_agreement_rate)}. This measures reproducibility, not accuracy.`
@@ -389,8 +389,10 @@ function renderVerification() {
   $("verification-grid").innerHTML = cards.join("");
 
   const warnings = [];
-  if (!h.n || !v.n_verified) {
+  if (!h.n) {
     warnings.push("Independent accuracy is still pending. The 100/100 source-audit pass must not be presented as a human accuracy score.");
+  } else if (!v.n_verified) {
+    warnings.push("Blind re-search agreement is pending; the human accuracy score above is the current ground-truth metric.");
   }
   if (unresolved.length) {
     warnings.push(`Unresolved pipeline failures: ${unresolved.map((f) => `${f.slug} (${f.phase})`).join(", ")}. These apps were not guessed.`);

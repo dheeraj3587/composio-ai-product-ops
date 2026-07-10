@@ -2,20 +2,20 @@
   "patterns": {
     "n": 100,
     "buildability": {
-      "Moderate": 7,
-      "Easy": 75,
-      "Hard": 16,
+      "Hard": 18,
+      "Easy": 74,
+      "Moderate": 6,
       "Blocked": 2
     },
     "recommended_next_action": {
-      "Build Now": 76,
-      "Partner-Gated": 4,
-      "Needs Outreach": 18,
+      "Partner-Gated": 5,
+      "Build Now": 74,
+      "Needs Outreach": 19,
       "Blocked": 2
     },
     "access_model": {
-      "Self-Serve": 78,
-      "Gated": 22
+      "Gated": 24,
+      "Self-Serve": 76
     },
     "api_type": {
       "REST": 94,
@@ -38,37 +38,37 @@
       ],
       [
         "API Key",
-        50
+        48
+      ],
+      [
+        "Bearer Token",
+        19
       ],
       [
         "Personal Access Token",
         17
       ],
       [
-        "Bearer Token",
-        17
-      ],
-      [
         "Basic Auth",
-        11
+        10
       ],
       [
         "Other Token",
-        6
+        5
+      ],
+      [
+        "Service Account",
+        3
       ],
       [
         "Bot Token",
-        2
-      ],
-      [
-        "None / Not Applicable",
         2
       ]
     ],
     "access_by_category": {
       "CRM": {
-        "Self-Serve": 9,
-        "Gated": 1
+        "Gated": 2,
+        "Self-Serve": 8
       },
       "Support": {
         "Gated": 2,
@@ -98,8 +98,8 @@
         "Self-Serve": 10
       },
       "Fintech": {
-        "Self-Serve": 6,
-        "Gated": 4
+        "Gated": 5,
+        "Self-Serve": 5
       },
       "AI/Meeting-tools": {
         "Gated": 2,
@@ -109,14 +109,14 @@
     "top_blockers": [
       [
         "None",
-        48
+        47
       ],
       [
         "None.",
         10
       ],
       [
-        "Requires setting up a connected app and OAuth flow.",
+        "Production API access requires an existing customer on a supported paid edition or an API access add-on.",
         1
       ],
       [
@@ -132,16 +132,16 @@
         1
       ]
     ],
-    "build_now": 76,
-    "partner_gated": 4,
+    "build_now": 74,
+    "partner_gated": 5,
     "avg_confidence": 0.912
   },
   "n_results": 100,
   "unresolved_failures": [],
   "headline_accuracy": {
     "hand_checked_accuracy": {
-      "value": null,
-      "n": null,
+      "value": 0.825,
+      "n": 10,
       "label": "Current hand-checked accuracy (ground truth)"
     },
     "automated_agreement": {
@@ -158,5 +158,261 @@
     "source_audited_rows": 100,
     "browser_evidence_pages": 8,
     "browser_evidence_apps": 6
+  },
+  "handcheck": {
+    "metric_scope": "Current results at fold time",
+    "method": "Human comparison against official docs for api_type, exact canonical auth set, production access, and MCP ownership. No historical agent values are substituted.",
+    "access_rubric": "Self-Serve only when a new developer can obtain credentials usable in production without manual approval, partnership, business verification, or already being a paying customer. A sandbox or trial alone is not production Self-Serve; otherwise use Gated.",
+    "selection": "Ten reviewer-priority, broadly adopted apps from the catalog, spanning CRM, developer tools, collaboration, commerce, advertising, and messaging.",
+    "n": 10,
+    "api_type_accuracy": 1.0,
+    "mcp_accuracy": 1.0,
+    "auth_accuracy": 0.5,
+    "access_accuracy": 0.8,
+    "accuracy": 0.825,
+    "misses": [
+      {
+        "slug": "salesforce",
+        "app": "Salesforce",
+        "field": "access_model",
+        "current": "Self-Serve",
+        "truth": "Gated",
+        "notes": "Connect REST uses OAuth and the Salesforce DX MCP is vendor-owned. API access is enabled in paid production editions; the free Developer Edition is documented as a development/testing environment before moving changes to production, so the strict production rubric is Gated."
+      },
+      {
+        "slug": "hubspot",
+        "app": "HubSpot",
+        "field": "auth_methods",
+        "current": [
+          "OAuth2",
+          "API Key"
+        ],
+        "truth": [
+          "OAuth2",
+          "Bearer Token"
+        ],
+        "notes": "HubSpot documents OAuth and independently issued service keys sent as Bearer credentials. A standard account can be free and is explicitly the production environment. HubSpot publishes its own remote MCP server."
+      },
+      {
+        "slug": "notion",
+        "app": "Notion",
+        "field": "auth_methods",
+        "current": [
+          "OAuth2",
+          "Personal Access Token",
+          "API Key"
+        ],
+        "truth": [
+          "OAuth2",
+          "Personal Access Token"
+        ],
+        "notes": "Notion documents OAuth for public connections and personal access tokens for user-scoped API access. It does not document a separate API-key credential for the REST API. Workspace owners can create PATs on the free plan. Notion MCP is hosted by Notion."
+      },
+      {
+        "slug": "shopify",
+        "app": "Shopify",
+        "field": "auth_methods",
+        "current": [
+          "OAuth2",
+          "API Key"
+        ],
+        "truth": [
+          "OAuth2",
+          "Bearer Token"
+        ],
+        "notes": "Shopify's primary Admin and Storefront surfaces are GraphQL. API calls use OAuth-derived Admin tokens or independently issued Storefront access tokens; a client API key is not accepted as the API credential. Custom distribution is available without App Store review. Shopify owns Storefront MCP."
+      },
+      {
+        "slug": "stripe",
+        "app": "Stripe",
+        "field": "access_model",
+        "current": "Self-Serve",
+        "truth": "Gated",
+        "notes": "Stripe REST accepts secret or restricted API keys and Connect supports OAuth. Stripe explicitly requires business verification before services can be used on a live account, so test keys alone do not make production access Self-Serve under the rubric. Stripe hosts its MCP server."
+      },
+      {
+        "slug": "jira",
+        "app": "Jira",
+        "field": "auth_methods",
+        "current": [
+          "OAuth2",
+          "Basic Auth",
+          "API Key"
+        ],
+        "truth": [
+          "OAuth2",
+          "API Key"
+        ],
+        "notes": "Jira Cloud REST accepts a self-created API token through Basic transport and supports OAuth 2.0 3LO. Basic Auth is not an independent credential in this case, so the exact credential set is API Key plus OAuth2. Sharing an unreviewed 3LO app is allowed with a warning. Atlassian Rovo MCP supports Jira."
+      },
+      {
+        "slug": "google-ads",
+        "app": "Google Ads",
+        "field": "auth_methods",
+        "current": [
+          "OAuth2",
+          "Other Token"
+        ],
+        "truth": [
+          "OAuth2",
+          "API Key",
+          "Service Account"
+        ],
+        "notes": "Google Ads requires OAuth 2.0 plus a developer token on every API call and documents both authorized-user and service-account workflows. Developer-token applications can be restricted to test access or require review for broader production levels. Google publishes the MCP server guide."
+      }
+    ],
+    "checked": [
+      {
+        "slug": "salesforce",
+        "app": "Salesforce",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": false
+      },
+      {
+        "slug": "hubspot",
+        "app": "HubSpot",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "slack",
+        "app": "Slack",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "github",
+        "app": "GitHub",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "notion",
+        "app": "Notion",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "shopify",
+        "app": "Shopify",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "stripe",
+        "app": "Stripe",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": false
+      },
+      {
+        "slug": "jira",
+        "app": "Jira",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "google-ads",
+        "app": "Google Ads",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "whatsapp-business",
+        "app": "WhatsApp Business",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      }
+    ],
+    "generated": "2026-07-11",
+    "note": "This is a current score. Earlier published/as-measured snapshots are stored separately."
+  },
+  "accuracy_movement": {
+    "method": "Field-level accuracy against one hand-verified truth set, comparing the archived first pass to current results. Auth uses exact canonical-set equality.",
+    "n": 10,
+    "first_pass_accuracy": 0.825,
+    "post_verification_accuracy": 1.0,
+    "improved_apps": [
+      "salesforce",
+      "hubspot",
+      "notion",
+      "shopify",
+      "stripe",
+      "jira",
+      "google-ads"
+    ],
+    "regressed_apps": [],
+    "per_app": [
+      {
+        "slug": "salesforce",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "hubspot",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "slack",
+        "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "github",
+        "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "notion",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "shopify",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "stripe",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "jira",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "google-ads",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "whatsapp-business",
+        "first_pass": "4/4",
+        "current": "4/4"
+      }
+    ],
+    "generated": "2026-07-11"
   }
 }

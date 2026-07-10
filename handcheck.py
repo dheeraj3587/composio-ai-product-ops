@@ -49,6 +49,7 @@ def generate_template(n: int = 18) -> dict:
                 "api_type": "",
                 "auth_methods": [],
                 "access_model": "",
+                "existing_mcp": "",
                 "evidence_urls": [],
                 "notes": "",
             },
@@ -58,7 +59,7 @@ def generate_template(n: int = 18) -> dict:
     payload = {
         "_instructions": (
             "For each row, inspect official docs and fill truth.api_type, canonical auth_methods, "
-            "production access_model, evidence_urls, and notes; then set filled=true. " +
+            "production access_model, existing_mcp, evidence_urls, and notes; then set filled=true. " +
             ACCESS_RUBRIC + " Run: python research.py --fold-handcheck"
         ),
         "auth_vocabulary": normalize.CANONICAL,
@@ -90,6 +91,9 @@ def _validated_truth(row: dict) -> dict:
     api_type = truth.get("api_type")
     if api_type and api_type not in {"REST", "GraphQL", "SDK", "SOAP", "MCP-only", "None"}:
         raise ValueError(f"{row.get('slug')}: invalid truth.api_type={api_type!r}")
+    existing_mcp = truth.get("existing_mcp")
+    if existing_mcp and existing_mcp not in {"Official", "Community", "None"}:
+        raise ValueError(f"{row.get('slug')}: invalid truth.existing_mcp={existing_mcp!r}")
     evidence_urls = truth.get("evidence_urls")
     if not isinstance(evidence_urls, list) or not evidence_urls or any(
         not isinstance(url, str) or not url.startswith(("http://", "https://"))
@@ -117,7 +121,7 @@ def fold() -> dict:
     results = config.load_json(config.RESULTS_PATH) or []
     by_slug = {record["slug"]: record for record in results}
 
-    n = api_n = api_hits = auth_hits = access_hits = 0
+    n = api_n = api_hits = mcp_n = mcp_hits = auth_hits = access_hits = 0
     misses, checked = [], []
     for row in rows:
         slug = row["slug"]
@@ -144,6 +148,17 @@ def fold() -> dict:
                     "current": record.get("api_type"), "truth": truth["api_type"],
                     "notes": truth.get("notes", ""),
                 })
+        mcp_ok = None
+        if truth.get("existing_mcp"):
+            mcp_n += 1
+            mcp_ok = record.get("existing_mcp") == truth["existing_mcp"]
+            mcp_hits += int(mcp_ok)
+            if not mcp_ok:
+                misses.append({
+                    "slug": slug, "app": row.get("app", slug), "field": "existing_mcp",
+                    "current": record.get("existing_mcp"), "truth": truth["existing_mcp"],
+                    "notes": truth.get("notes", ""),
+                })
         if not auth_ok:
             misses.append({
                 "slug": slug, "app": row.get("app", slug), "field": "auth_methods",
@@ -163,6 +178,7 @@ def fold() -> dict:
             "slug": slug,
             "app": row.get("app", slug),
             "api_ok": api_ok,
+            "mcp_ok": mcp_ok,
             "auth_ok": auth_ok,
             "access_ok": access_ok,
         })
@@ -173,20 +189,21 @@ def fold() -> dict:
         sorted(by_slug.values(), key=lambda record: order.get(record["slug"], 10_000)),
     )
 
-    total = 2 * n + api_n
+    total = 2 * n + api_n + mcp_n
     handcheck = {
         "metric_scope": "Current results at fold time",
         "method": (
-            "Human comparison against official docs for api_type, exact canonical auth set, and "
-            "production access. No historical agent values are substituted."
+            "Human comparison against official docs for api_type, exact canonical auth set, "
+            "production access, and MCP ownership. No historical agent values are substituted."
         ),
         "access_rubric": payload.get("access_rubric") or ACCESS_RUBRIC,
         "selection": payload.get("selection") or "Risk-biased, category-spread sample.",
         "n": n,
         "api_type_accuracy": round(api_hits / api_n, 3) if api_n else None,
+        "mcp_accuracy": round(mcp_hits / mcp_n, 3) if mcp_n else None,
         "auth_accuracy": round(auth_hits / n, 3) if n else None,
         "access_accuracy": round(access_hits / n, 3) if n else None,
-        "accuracy": round((api_hits + auth_hits + access_hits) / total, 3) if total else None,
+        "accuracy": round((api_hits + auth_hits + access_hits + mcp_hits) / total, 3) if total else None,
         "misses": misses,
         "checked": checked,
         "generated": dt.date.today().isoformat(),
@@ -205,6 +222,7 @@ def fold() -> dict:
     print(
         f"handcheck CURRENT n={n}: api_type={handcheck['api_type_accuracy']} "
         f"auth={handcheck['auth_accuracy']} access={handcheck['access_accuracy']} "
+        f"mcp={handcheck['mcp_accuracy']} "
         f"overall={handcheck['accuracy']} misses={len(misses)}"
     )
     return handcheck
@@ -218,7 +236,68 @@ def _score_record(record: dict, truth: dict) -> tuple[int, int]:
     ]
     if truth.get("api_type"):
         checks.append(("api_type", record.get("api_type") == truth.get("api_type")))
+    if truth.get("existing_mcp"):
+        checks.append(("existing_mcp", record.get("existing_mcp") == truth.get("existing_mcp")))
     return sum(int(ok) for _, ok in checks), len(checks)
+
+
+def apply_corrections() -> int:
+    """Apply only filled current-rubric truth after recording the hand-check score."""
+    payload = config.load_json(config.HANDCHECK_PATH) or {}
+    _require_current_rubric(payload)
+    rows = [row for row in payload.get("rows", []) if row.get("filled")]
+    if not rows:
+        raise SystemExit("handcheck.json has no filled rows")
+
+    results = config.load_json(config.RESULTS_PATH) or []
+    by_slug = {record["slug"]: record for record in results}
+    allowed_overrides = {
+        "one_liner", "api_breadth", "buildability", "main_blocker",
+        "recommended_next_action", "rate_limit_note", "confidence",
+    }
+    corrected = 0
+    for row in rows:
+        slug = row["slug"]
+        record = by_slug.get(slug)
+        if not record:
+            continue
+        truth = _validated_truth(row)
+        correction = row.get("correction") or {}
+        unknown = set(correction) - allowed_overrides - {"access_note"}
+        if unknown:
+            raise ValueError(f"{slug}: unsupported correction fields={sorted(unknown)}")
+
+        record["api_type"] = truth["api_type"]
+        record["auth_methods"] = truth["auth_methods"]
+        record["access_model"] = {
+            "kind": truth["access_model"],
+            "note": str(
+                correction.get("access_note")
+                or record.get("access_model", {}).get("note")
+                or truth["notes"]
+            ).strip(),
+        }
+        if truth.get("existing_mcp"):
+            record["existing_mcp"] = truth["existing_mcp"]
+        record["evidence_urls"] = list(dict.fromkeys(truth["evidence_urls"]))
+        record["primary_docs_url"] = record["evidence_urls"][0]
+        for key in allowed_overrides:
+            if key in correction:
+                record[key] = correction[key]
+        record["verification_status"] = "Hand-Checked"
+        validate_record(record)
+        synthesis._validate_semantics(record)
+        synthesis.append_final_state(record, reason="current human handcheck correction")
+        corrected += 1
+
+    order = {app["slug"]: index for index, app in enumerate(pipeline.load_apps())}
+    config.save_json(
+        config.RESULTS_PATH,
+        sorted(by_slug.values(), key=lambda record: order.get(record["slug"], 10_000)),
+    )
+    verify.rebuild_metrics()
+    print(f"applied current human handcheck truth to {corrected} rows")
+    return corrected
 
 
 def accuracy_movement() -> dict:

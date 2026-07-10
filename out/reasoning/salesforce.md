@@ -58,3 +58,41 @@ Salesforce provides a REST API accessible via OAuth2. Developer Edition orgs off
   "last_verified": "2026-07-11"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Salesforce",
+  "category": "CRM",
+  "one_liner": "Salesforce is a leading CRM platform offering extensive REST APIs and official MCP servers for AI agents.",
+  "auth_methods": [
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Free Developer Edition supports development and testing; production API access requires a supported paid edition or API add-on."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Hard",
+  "main_blocker": "Production API access requires an existing customer on a supported paid edition or an API access add-on.",
+  "recommended_next_action": "Partner-Gated",
+  "evidence_urls": [
+    "https://developer.salesforce.com/docs/platform/connect-rest-api/guide/intro_using_oauth.html",
+    "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest_compatible_editions.htm",
+    "https://github.com/salesforcecli/mcp"
+  ],
+  "confidence": 0.8,
+  "verification_status": "Hand-Checked",
+  "slug": "salesforce",
+  "primary_docs_url": "https://developer.salesforce.com/docs/platform/connect-rest-api/guide/intro_using_oauth.html",
+  "rate_limit_note": "API limits are typically based on the Salesforce edition and user licenses.",
+  "last_verified": "2026-07-11"
+}
+```
+<!-- final-state:end -->

@@ -7,23 +7,23 @@
       "OAuth2"
     ],
     "access_model": {
-      "kind": "Self-Serve",
-      "note": "Developer Edition orgs are free and have API access enabled by default."
+      "kind": "Gated",
+      "note": "Free Developer Edition supports development and testing; production API access requires a supported paid edition or API add-on."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "Official",
     "composio_toolkit": "Yes",
-    "buildability": "Moderate",
-    "main_blocker": "Requires setting up a connected app and OAuth flow.",
-    "recommended_next_action": "Build Now",
+    "buildability": "Hard",
+    "main_blocker": "Production API access requires an existing customer on a supported paid edition or an API access add-on.",
+    "recommended_next_action": "Partner-Gated",
     "evidence_urls": [
       "https://developer.salesforce.com/docs/platform/connect-rest-api/guide/intro_using_oauth.html",
       "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest_compatible_editions.htm",
       "https://github.com/salesforcecli/mcp"
     ],
     "confidence": 0.8,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "salesforce",
     "primary_docs_url": "https://developer.salesforce.com/docs/platform/connect-rest-api/guide/intro_using_oauth.html",
     "rate_limit_note": "API limits are typically based on the Salesforce edition and user licenses.",
@@ -35,7 +35,7 @@
     "one_liner": "HubSpot provides a comprehensive CRM platform with robust REST APIs and an official MCP server for AI integrations.",
     "auth_methods": [
       "OAuth2",
-      "API Key"
+      "Bearer Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -51,11 +51,11 @@
     "evidence_urls": [
       "https://developers.hubspot.com/docs/api-reference/latest/authentication/manage-oauth-tokens",
       "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/authentication/account-service-keys",
-      "https://developers.hubspot.com/mcp",
-      "https://developers.hubspot.com/docs/apps/developer-platform/build-apps/integrate-with-the-remote-hubspot-mcp-server"
+      "https://developers.hubspot.com/docs/getting-started/account-types",
+      "https://developers.hubspot.com/ai-tools/mcp"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "hubspot",
     "primary_docs_url": "https://developers.hubspot.com/docs/api-reference/latest/authentication/manage-oauth-tokens",
     "rate_limit_note": "Service keys and OAuth apps are subject to standard API limits based on the developer platform version.",
@@ -646,14 +646,14 @@
     "main_blocker": "",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://api.slack.com/quickstart",
-      "https://docs.slack.dev/legacy/legacy-authentication/",
+      "https://docs.slack.dev/quickstart/",
+      "https://docs.slack.dev/authentication/installing-with-oauth/",
       "https://docs.slack.dev/ai/slack-mcp-server/"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "slack",
-    "primary_docs_url": "https://api.slack.com/quickstart",
+    "primary_docs_url": "https://docs.slack.dev/quickstart/",
     "rate_limit_note": "Tiered rate limits apply; for example, Tier 4 allows 100+ requests per minute.",
     "last_verified": "2026-07-10"
   },
@@ -866,14 +866,15 @@
     "main_blocker": "Requires Meta business verification and App Review before production access is granted.",
     "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
-      "https://developers.facebook.com/docs/whatsapp/business-management-api/get-started/",
-      "https://developers.facebook.com/docs/whatsapp/on-premises/reference",
+      "https://developers.facebook.com/documentation/business-messaging/whatsapp/get-started",
+      "https://developers.facebook.com/documentation/business-messaging/whatsapp/embedded-signup/overview",
+      "https://developers.facebook.com/documentation/development/create-an-app/whatsapp-use-case#permissions-and-features",
       "https://github.com/mattcoatsworth/Whatsapp-MCP-Server"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "whatsapp-business",
-    "primary_docs_url": "https://developers.facebook.com/docs/whatsapp/business-management-api/get-started/",
+    "primary_docs_url": "https://developers.facebook.com/documentation/business-messaging/whatsapp/get-started",
     "rate_limit_note": "Cloud API supports up to 1,000 messages per second, subject to conversation-based pricing and tier limits.",
     "last_verified": "2026-07-10"
   },
@@ -949,7 +950,8 @@
     "one_liner": "The Google Ads API allows developers to programmatically manage and automate Google Ads campaigns and accounts.",
     "auth_methods": [
       "OAuth2",
-      "Other Token"
+      "API Key",
+      "Service Account"
     ],
     "access_model": {
       "kind": "Gated",
@@ -964,10 +966,11 @@
     "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
       "https://developers.google.com/google-ads/api/docs/oauth/overview",
+      "https://developers.google.com/google-ads/api/docs/api-policy/developer-token",
       "https://developers.google.com/google-ads/api/docs/developer-toolkit/mcp-server"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "google-ads",
     "primary_docs_url": "https://developers.google.com/google-ads/api/docs/oauth/overview",
     "rate_limit_note": "Operation limits are determined by the access level granted to the developer token (e.g., Basic Access vs. Standard Access).",
@@ -1261,7 +1264,7 @@
     "one_liner": "Shopify provides a comprehensive commerce platform with GraphQL APIs and official MCP support for AI integrations.",
     "auth_methods": [
       "OAuth2",
-      "API Key"
+      "Bearer Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1276,12 +1279,12 @@
     "recommended_next_action": "Build Now",
     "evidence_urls": [
       "https://shopify.dev/docs/api/usage/authentication",
-      "https://shopify.dev/docs/apps/build/authentication-authorization/client-secrets",
-      "https://shopify.dev/docs/apps/build/storefront-mcp",
-      "https://tenten.co/shopifymcp/docs/mcp-resources/official-mcp-servers"
+      "https://shopify.dev/docs/apps/build/authentication-authorization/access-tokens/authorization-code-grant",
+      "https://shopify.dev/docs/apps/launch/distribution",
+      "https://shopify.dev/docs/apps/build/storefront-mcp"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "shopify",
     "primary_docs_url": "https://shopify.dev/docs/api/usage/authentication",
     "rate_limit_note": "Apps can have a maximum of 100 active storefront access tokens per shop.",
@@ -1886,11 +1889,10 @@
     "recommended_next_action": "Build Now",
     "evidence_urls": [
       "https://docs.github.com/en/rest/authentication/authenticating-to-the-rest-api",
-      "https://github.com/github/github-mcp-server",
-      "https://github.blog/ai-and-ml/generative-ai/a-practical-guide-on-how-to-use-the-github-mcp-server/"
+      "https://github.com/github/github-mcp-server"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "github",
     "primary_docs_url": "https://docs.github.com/en/rest/authentication/authenticating-to-the-rest-api",
     "rate_limit_note": "Rate limits apply to the REST API, with higher limits granted to authenticated requests.",
@@ -2190,8 +2192,7 @@
     "one_liner": "Notion provides a comprehensive REST API and an official hosted MCP server for integrating AI tools and external apps.",
     "auth_methods": [
       "OAuth2",
-      "Personal Access Token",
-      "API Key"
+      "Personal Access Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2205,15 +2206,14 @@
     "main_blocker": "None",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://developers.notion.com",
       "https://developers.notion.com/reference/authentication",
-      "https://developers.notion.com/guides/get-started/authorization",
+      "https://developers.notion.com/guides/get-started/personal-access-tokens",
       "https://developers.notion.com/guides/mcp/overview"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "notion",
-    "primary_docs_url": "https://developers.notion.com",
+    "primary_docs_url": "https://developers.notion.com/reference/authentication",
     "rate_limit_note": "Request limits exist and are documented in the API reference, though specific thresholds are not detailed in the fetched snippets.",
     "last_verified": "2026-07-10"
   },
@@ -2285,7 +2285,6 @@
     "one_liner": "Jira provides a comprehensive REST API and an official MCP server for integrating project management workflows.",
     "auth_methods": [
       "OAuth2",
-      "Basic Auth",
       "API Key"
     ],
     "access_model": {
@@ -2300,14 +2299,14 @@
     "main_blocker": "None",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://developer.atlassian.com/server/jira/platform/oauth/",
       "https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/",
+      "https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps/",
       "https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "jira",
-    "primary_docs_url": "https://developer.atlassian.com/server/jira/platform/oauth/",
+    "primary_docs_url": "https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/",
     "rate_limit_note": "Rate limiting applies to the REST API, with specific documentation available for Bulk Operation APIs.",
     "last_verified": "2026-07-10"
   },
@@ -2510,23 +2509,24 @@
       "OAuth2"
     ],
     "access_model": {
-      "kind": "Self-Serve",
-      "note": "Developers can sign up and immediately access test mode API keys and the official MCP server without manual approval."
+      "kind": "Gated",
+      "note": "Test keys are immediate, but live Stripe services require business verification and account activation."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "Official",
     "composio_toolkit": "Yes",
-    "buildability": "Easy",
-    "main_blocker": "None",
-    "recommended_next_action": "Build Now",
+    "buildability": "Hard",
+    "main_blocker": "Production use requires Stripe business verification and activation of the applicable live service.",
+    "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
       "https://docs.stripe.com/api/authentication",
-      "https://docs.stripe.com/api?=",
+      "https://docs.stripe.com/connect/oauth-reference",
+      "https://docs.stripe.com/get-started/account/set-up",
       "https://docs.stripe.com/mcp"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "stripe",
     "primary_docs_url": "https://docs.stripe.com/api/authentication",
     "rate_limit_note": "Not explicitly detailed in the fetched evidence, but standard API limits apply.",

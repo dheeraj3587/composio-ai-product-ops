@@ -66,3 +66,43 @@ The documentation clearly states that OAuth 2.0 and a developer token are requir
   "main_blocker": "Requires a developer token approval + OAuth; not instant self-serve."
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Google Ads",
+  "category": "Ads/Marketing",
+  "one_liner": "The Google Ads API allows developers to programmatically manage and automate Google Ads campaigns and accounts.",
+  "auth_methods": [
+    "OAuth2",
+    "API Key",
+    "Service Account"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Production access requires an approved developer token and an application review to grant appropriate access levels."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Hard",
+  "main_blocker": "Requires an application review and an approved developer token to access production environments.",
+  "recommended_next_action": "Needs Outreach",
+  "evidence_urls": [
+    "https://developers.google.com/google-ads/api/docs/oauth/overview",
+    "https://developers.google.com/google-ads/api/docs/api-policy/developer-token",
+    "https://developers.google.com/google-ads/api/docs/developer-toolkit/mcp-server"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "google-ads",
+  "primary_docs_url": "https://developers.google.com/google-ads/api/docs/oauth/overview",
+  "rate_limit_note": "Operation limits are determined by the access level granted to the developer token (e.g., Basic Access vs. Standard Access).",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

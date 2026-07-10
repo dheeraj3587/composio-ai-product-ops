@@ -59,3 +59,43 @@ Stripe's documentation clearly outlines a REST API authenticated via API keys an
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Stripe",
+  "category": "Fintech",
+  "one_liner": "Stripe provides a comprehensive REST API and an official MCP server for integrating payments, billing, and financial...",
+  "auth_methods": [
+    "API Key",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Test keys are immediate, but live Stripe services require business verification and account activation."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Hard",
+  "main_blocker": "Production use requires Stripe business verification and activation of the applicable live service.",
+  "recommended_next_action": "Needs Outreach",
+  "evidence_urls": [
+    "https://docs.stripe.com/api/authentication",
+    "https://docs.stripe.com/connect/oauth-reference",
+    "https://docs.stripe.com/get-started/account/set-up",
+    "https://docs.stripe.com/mcp"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "stripe",
+  "primary_docs_url": "https://docs.stripe.com/api/authentication",
+  "rate_limit_note": "Not explicitly detailed in the fetched evidence, but standard API limits apply.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

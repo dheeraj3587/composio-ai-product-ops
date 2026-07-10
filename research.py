@@ -207,6 +207,12 @@ def cmd_metrics() -> None:
     verify.rebuild_metrics()
 
 
+def cmd_apply_handcheck() -> None:
+    import handcheck
+
+    handcheck.apply_corrections()
+
+
 def cmd_build_report() -> None:
     dst = config.REPORT_DIR / "data"
     dst.mkdir(parents=True, exist_ok=True)
@@ -312,6 +318,11 @@ def main() -> None:
         action="store_true",
         help="fold filled hand-check truth into metrics.json",
     )
+    p.add_argument(
+        "--apply-handcheck",
+        action="store_true",
+        help="apply filled current-rubric truth after recording the hand-check score",
+    )
     p.add_argument("--build-report", action="store_true", help="copy data into report/")
     p.add_argument("--recheck", help="comma-separated slugs to re-research and MERGE into results.json")
     p.add_argument("--accuracy-movement", action="store_true",
@@ -357,6 +368,8 @@ def main() -> None:
         import handcheck
 
         handcheck.fold()
+    elif args.apply_handcheck:
+        cmd_apply_handcheck()
     elif args.accuracy_movement:
         import handcheck
 

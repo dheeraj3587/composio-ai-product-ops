@@ -655,7 +655,7 @@
       h1 { font-size: 34px; }
     }
   </style>
-  <link rel="stylesheet" href="theme.css?v=20260711" />
+  <link rel="stylesheet" href="theme.css?v=20260711-2" />
 <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -796,14 +796,14 @@
           <ul class="human-list">
             <li><b>Preseed:</b> a hypothesis narrows the search; current evidence wins.</li>
             <li><b>Fresh run:</b> all 100 rows passed schema, citation, identity, and source-quality checks.</li>
-            <li><b>Human accuracy:</b> pending; the historical score was not reused across a changed access rubric.</li>
+            <li><b>Human accuracy:</b> 10 high-usage apps checked against official docs; all seven pre-correction misses remain visible.</li>
             <li><b>MCP audit:</b> first-party MCP pages are checked separately from normal API documentation.</li>
           </ul>
         </div>
         <div class="proof">
           <h3>Known limits</h3>
           <ul class="human-list">
-            <li><b>Accuracy:</b> source-audit coverage is not a substitute for independent human adjudication.</li>
+            <li><b>Accuracy:</b> 82.5% before corrections and 100% after applying the same verified truth set.</li>
             <li><b>Dynamic access:</b> partner rules, paid tiers, and approval requirements can change after this snapshot.</li>
             <li><b>Browser evidence:</b> analyst summaries are stored only for official pages that direct HTTP could not read cleanly.</li>
             <li><b>Coverage source:</b> Composio SDK/catalog lookup owns the toolkit-overlap field.</li>
@@ -869,6 +869,8 @@ python research.py --build-report</pre>
           <p>Expand the hand-check and run live-doc verification.</p>
           <pre>python research.py --handcheck-template 18
 python research.py --fold-handcheck
+python research.py --apply-handcheck
+python research.py --accuracy-movement
 .venv-browser/bin/python browser_verify.py --sample 12</pre>
         </div>
       </div>
@@ -877,8 +879,8 @@ python research.py --fold-handcheck
     <footer class="panel footer" id="footer"></footer>
   </main>
 
-  <script src="data.js?v=20260711"></script>
-  <script src="app.js?v=20260711"></script>
+  <script src="data.js?v=20260711-2"></script>
+  <script src="app.js?v=20260711-2"></script>
 </body>
 
 </html>

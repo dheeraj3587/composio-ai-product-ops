@@ -58,3 +58,41 @@ Slack offers a robust, self-serve developer platform with a REST API and an offi
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Slack",
+  "category": "Comms",
+  "one_liner": "Slack provides a comprehensive REST API and an official MCP server for building apps and AI agents.",
+  "auth_methods": [
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can create apps and obtain credentials directly from the Slack API portal without manual approval for basic development."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://docs.slack.dev/quickstart/",
+    "https://docs.slack.dev/authentication/installing-with-oauth/",
+    "https://docs.slack.dev/ai/slack-mcp-server/"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "slack",
+  "primary_docs_url": "https://docs.slack.dev/quickstart/",
+  "rate_limit_note": "Tiered rate limits apply; for example, Tier 4 allows 100+ requests per minute.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->
