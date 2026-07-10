@@ -1,0 +1,102 @@
+{
+  "totals_usd": {
+    "perplexity": 0.015,
+    "google": 0.022683
+  },
+  "events": [
+    {
+      "timestamp": "2026-07-10T08:28:17.279438+00:00",
+      "provider": "perplexity",
+      "operation": "search_preflight",
+      "estimated_cost_usd": 0.005,
+      "metadata": {
+        "query_count": 2,
+        "note": "provider integration preflight"
+      }
+    },
+    {
+      "timestamp": "2026-07-10T08:28:39.550674+00:00",
+      "provider": "perplexity",
+      "operation": "search",
+      "estimated_cost_usd": 0.005,
+      "metadata": {
+        "query_count": 2,
+        "result_count": 8
+      }
+    },
+    {
+      "timestamp": "2026-07-10T08:32:27.475366+00:00",
+      "provider": "google",
+      "operation": "failed_structured_smoke",
+      "estimated_cost_usd": 0.0025,
+      "metadata": {
+        "max_output_tokens": 256,
+        "reason": "truncated_json_conservative_estimate"
+      }
+    },
+    {
+      "timestamp": "2026-07-10T08:33:19.418774+00:00",
+      "provider": "google",
+      "operation": "generate_content",
+      "estimated_cost_usd": 0.000201,
+      "metadata": {
+        "model": "gemini-3.5-flash",
+        "prompt_tokens": 26,
+        "answer_tokens": 18,
+        "thought_tokens": 0,
+        "finish_reason": "FinishReason.STOP"
+      }
+    },
+    {
+      "timestamp": "2026-07-10T08:38:29.896779+00:00",
+      "provider": "google",
+      "operation": "generate_content",
+      "estimated_cost_usd": 0.0017925,
+      "metadata": {
+        "model": "gemini-3.1-pro-preview",
+        "prompt_tokens": 19,
+        "answer_tokens": 11,
+        "thought_tokens": 185,
+        "finish_reason": "FinishReason.STOP"
+      }
+    },
+    {
+      "timestamp": "2026-07-10T08:39:29.379821+00:00",
+      "provider": "google",
+      "operation": "pricing_adjustment",
+      "estimated_cost_usd": 0.0005975,
+      "metadata": {
+        "reason": "gemini-3.1-pro-preview smoke repriced at official Pro rates"
+      }
+    },
+    {
+      "timestamp": "2026-07-10T08:41:20.183849+00:00",
+      "provider": "perplexity",
+      "operation": "search",
+      "estimated_cost_usd": 0.005,
+      "metadata": {
+        "query_count": 1,
+        "result_count": 8
+      }
+    },
+    {
+      "timestamp": "2026-07-10T08:41:39.155412+00:00",
+      "provider": "google",
+      "operation": "generate_content",
+      "estimated_cost_usd": 0.017592,
+      "metadata": {
+        "model": "gemini-3.1-pro-preview",
+        "prompt_tokens": 5166,
+        "answer_tokens": 304,
+        "thought_tokens": 301,
+        "input_usd_per_million": 2.0,
+        "output_usd_per_million": 12.0,
+        "finish_reason": "FinishReason.STOP"
+      }
+    }
+  ],
+  "budgets_usd": {
+    "perplexity": 2.0,
+    "google": 8.0
+  }
+}

@@ -22,6 +22,7 @@ Needs BROWSER_USE_API_KEY in .env.
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import json
 import os
 from pathlib import Path
@@ -31,6 +32,8 @@ from dotenv import load_dotenv
 from pydantic import BaseModel
 
 from browser_use_sdk import BrowserUse
+
+import normalize
 
 load_dotenv()
 ROOT = Path(__file__).resolve().parent
@@ -45,7 +48,7 @@ class AppVerdict(BaseModel):
     slug: str
     app: str
     has_public_api: bool
-    api_type: str  # REST | GraphQL | SDK | SOAP | MCP-only | None
+    api_type: Literal["REST", "GraphQL", "SDK", "SOAP", "MCP-only", "None"]
     auth_methods: list[str]
     access_model: Literal["Self-Serve", "Gated"]
     evidence_url: str
@@ -78,13 +81,29 @@ def build_batch_task(chunk: list[dict]) -> str:
     return (
         "You are verifying developer-API facts. For EACH app below, find its official "
         "API documentation (navigate past the marketing homepage to the real docs), then "
-        "determine: has_public_api (bool), api_type (REST/GraphQL/SDK/SOAP/None), "
-        "auth_methods (list, e.g. OAuth2/API key/token), access_model ('Self-Serve' if a "
-        "developer can self-issue free credentials, else 'Gated' if it needs approval / a "
-        "paid plan / business verification / being an existing customer), the exact "
+        "determine: has_public_api (bool), api_type (REST/GraphQL/SDK/SOAP/MCP-only/None), "
+        f"auth_methods (use only {normalize.CANONICAL}), access_model ('Self-Serve' only if a "
+        "new developer can obtain credentials usable in PRODUCTION without approval, partnership, "
+        "business verification, or already being a paying customer; a sandbox alone is not "
+        "Self-Serve; otherwise use 'Gated'), the exact "
         "evidence_url you used, and a short note.\n\nApps:\n" + "\n".join(lines) +
-        "\n\nReturn one verdict per app, reusing the exact slug given."
+        "\n\nOAuth2 is a grant scheme: do not also add Bearer Token merely because an OAuth "
+        "access token uses a Bearer header. Return one verdict per app, reusing the exact slug."
     )
+
+
+def _comparison(first_pass: dict, browser: dict) -> dict:
+    matches = {
+        "api_type": first_pass.get("api_type") == browser.get("api_type"),
+        "auth_methods": normalize.auth_sets_equal(
+            first_pass.get("auth_methods", []), browser.get("auth_methods", []), strict=True
+        ),
+        "access_model": first_pass.get("access_model") == browser.get("access_model"),
+    }
+    return {
+        "matches": matches,
+        "disagreed_fields": [field for field, matched in matches.items() if not matched],
+    }
 
 
 def _to_dict(out) -> dict:
@@ -148,27 +167,86 @@ def main() -> None:
                              llm=args.llm, max_steps=args.max_steps)
             data = _to_dict(out)
             verdicts = data.get("verdicts", []) if isinstance(data, dict) else []
-            for v in verdicts:
-                slug = v.get("slug", "")
-                r = fp.get(slug, {})
-                results.append({
-                    "slug": slug, "app": v.get("app") or r.get("app", ""),
-                    "first_pass": {"api_type": r.get("api_type"),
-                                   "auth_methods": r.get("auth_methods"),
-                                   "access_model": (r.get("access_model") or {}).get("kind"),
-                                   "recommended_next_action": r.get("recommended_next_action"),
-                                   "confidence": r.get("confidence")},
-                    "browser": v,
-                })
-                print(f"   {slug}: api={v.get('api_type')} access={v.get('access_model')} "
-                      f"auth={v.get('auth_methods')}")
+            expected = {r["slug"] for r in chunk}
+            seen, invalid = set(), {}
+            for raw_verdict in verdicts:
+                raw_slug = raw_verdict.get("slug", "") if isinstance(raw_verdict, dict) else ""
+                try:
+                    verdict = AppVerdict.model_validate(raw_verdict).model_dump()
+                    verdict["auth_methods"] = normalize.normalize_auth_list(
+                        verdict.get("auth_methods", []), strict=True
+                    )
+                    slug = verdict["slug"]
+                    if slug not in expected:
+                        raise ValueError(f"unexpected slug {slug!r}")
+                    if slug in seen:
+                        raise ValueError(f"duplicate verdict for {slug}")
+                    if not verdict["auth_methods"]:
+                        raise ValueError(f"{slug}: empty auth_methods")
+                    if not verdict["evidence_url"].startswith(("http://", "https://")):
+                        raise ValueError(f"{slug}: evidence_url must be absolute HTTP(S)")
+                    if not verdict["notes"].strip():
+                        raise ValueError(f"{slug}: notes must explain the decision")
+                    if verdict["api_type"] == "None":
+                        if verdict["has_public_api"]:
+                            raise ValueError(f"{slug}: api_type=None contradicts has_public_api=true")
+                        if verdict["auth_methods"] != ["None / Not Applicable"]:
+                            raise ValueError(f"{slug}: api_type=None requires not-applicable auth")
+                    elif "None / Not Applicable" in verdict["auth_methods"]:
+                        raise ValueError(f"{slug}: usable surface cannot have not-applicable auth")
+
+                    r = fp[slug]
+                    first_pass = {
+                        "api_type": r.get("api_type"),
+                        "auth_methods": r.get("auth_methods"),
+                        "access_model": (r.get("access_model") or {}).get("kind"),
+                        "recommended_next_action": r.get("recommended_next_action"),
+                        "confidence": r.get("confidence"),
+                    }
+                    comparison = _comparison(first_pass, verdict)
+                    results.append({
+                        "slug": slug, "app": verdict.get("app") or r.get("app", ""),
+                        "first_pass": first_pass,
+                        "browser": verdict,
+                        "comparison": comparison,
+                        "adjudication": {
+                            "status": "Pending" if comparison["disagreed_fields"] else "Not Needed",
+                            "notes": "",
+                            "evidence_urls": [],
+                            "applied_to_results": False,
+                        },
+                        "browser_model": args.llm,
+                        "generated": dt.date.today().isoformat(),
+                    })
+                    seen.add(slug)
+                    print(f"   {slug}: api={verdict.get('api_type')} "
+                          f"access={verdict.get('access_model')} auth={verdict.get('auth_methods')} "
+                          f"disagrees={comparison['disagreed_fields']}")
+                except Exception as verdict_error:
+                    invalid[raw_slug] = str(verdict_error)[:200]
+                    print(f"   invalid verdict {raw_slug or '(unknown)'}: {verdict_error}")
+            for r in chunk:
+                if r["slug"] not in seen:
+                    error = invalid.get(r["slug"], "No valid verdict returned for this app")
+                    results.append({
+                        "slug": r["slug"], "app": r["app"],
+                        "first_pass": {
+                            "api_type": r["api_type"],
+                            "auth_methods": r.get("auth_methods", []),
+                            "access_model": r["access_model"]["kind"],
+                        },
+                        "browser": {"error": error},
+                        "generated": dt.date.today().isoformat(),
+                    })
         except Exception as e:
             print(f"   TASK ERROR: {str(e)[:200]}")
             for r in chunk:
                 results.append({"slug": r["slug"], "app": r["app"],
                                 "first_pass": {"api_type": r["api_type"],
+                                               "auth_methods": r.get("auth_methods", []),
                                                "access_model": r["access_model"]["kind"]},
-                                "browser": {"error": str(e)[:200]}})
+                                "browser": {"error": str(e)[:200]},
+                                "generated": dt.date.today().isoformat()})
         OUT.parent.mkdir(parents=True, exist_ok=True)
         # merge prior + this run's verdicts (new overrides prior for the same slug)
         merged = {**prior, **{x["slug"]: x for x in results if x.get("slug")}}

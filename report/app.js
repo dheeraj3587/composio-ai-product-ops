@@ -329,6 +329,7 @@ function renderVerification() {
   const h = metrics.handcheck || {};
   const v = metrics.verification || {};
   const am = metrics.accuracy_movement || {};
+  const unresolved = metrics.unresolved_failures || [];
   const handText = h.n
     ? `${h.n} official-doc checks: API ${pct(h.api_type_accuracy)}, auth ${pct(h.auth_accuracy)}, access ${pct(h.access_accuracy)}. Overall ${pct(h.accuracy)}; ${(h.misses || []).length} mismatches shown below.`
     : "No hand-check rows have been folded yet. This should be completed before final submission.";
@@ -336,8 +337,14 @@ function renderVerification() {
     ? `${v.n_verified} fresh-source re-checks; agreement ${pct(v.overall_agreement_rate)}. This measures reproducibility, not accuracy.`
     : "No blind re-search agreement has been recorded yet.";
   const bu = metrics.browser_use || {};
+  const browserDisagreements = bu.n_disagreements != null
+    ? bu.n_disagreements
+    : bu.n_corrections_found;
+  const browserAccepted = bu.n_adjudicated_corrections;
   const browserText = bu.n_checked
-    ? `${bu.n_checked} live-doc checks found ${bu.n_corrections_found} first-pass issues${bu.corrected_apps && bu.corrected_apps.length ? ": " + bu.corrected_apps.join(", ") : ""}.`
+    ? (browserAccepted != null
+      ? `${bu.n_checked} live-doc checks produced ${browserDisagreements} disagreements; ${browserAccepted} became accepted corrections after human adjudication.`
+      : `${bu.n_checked} live-doc checks produced ${browserDisagreements} disagreements. This legacy snapshot did not store field-level adjudication state.`)
     : "Browser Use Cloud loop not yet recorded for this run.";
   const moveText = (am.first_pass_accuracy != null)
     ? `Measured sample: ${pct(am.first_pass_accuracy)} first pass to ${pct(am.post_verification_accuracy)} after review. ${(am.improved_apps || []).length} improved; ${(am.regressed_apps || []).length} regressed.`
@@ -374,11 +381,17 @@ function renderVerification() {
   }
   $("verification-grid").innerHTML = cards.join("");
 
+  const warnings = [];
   if (!h.n || !v.n_verified) {
+    warnings.push("Verification is incomplete: fill the hand-check and run blind re-search before submission.");
+  }
+  if (unresolved.length) {
+    warnings.push(`Unresolved pipeline failures: ${unresolved.map((f) => `${f.slug} (${f.phase})`).join(", ")}. These apps were not guessed.`);
+  }
+  if (warnings.length) {
     $("verification-warning").innerHTML = `
       <div class="warning">
-        This page is honest about unfinished verification: the dataset can be reviewed,
-        but the final submission should include filled hand-check and blind re-search metrics.
+        ${esc(warnings.join(" "))}
       </div>
     `;
   } else {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One-time correction pass over out/results.json.
+"""Legacy migration that reproduces the currently published reviewed snapshot.
 
 Four things:
   1. Normalize every record's auth_methods to the canonical set (normalize.py).
@@ -18,12 +18,15 @@ Four things:
      as the honest as-measured number; the shipped rows carry the truth.
 
 Re-validates every record against the locked schema, then saves results.json.
-Run:  python corrections.py
+This is not part of a fresh research run. New runs should use the hardened
+pipeline, retain verification disagreements, and fold only adjudicated fixes.
+Run only when reproducing the legacy snapshot: python corrections.py
 """
 from __future__ import annotations
 
 import config
 import normalize
+import synthesis
 from schema import validate_record
 
 # slug -> partial field overrides (only the fields we change)
@@ -112,8 +115,12 @@ OVERRIDES: dict[str, dict] = {
         "buildability": "Easy",
         "recommended_next_action": "Build Now",
         "primary_docs_url": "https://www.plain.com/docs/graphql/authentication",
-        "evidence_urls": ["https://www.plain.com/docs/graphql/authentication", "https://docs.plain.com"],
-        "confidence": 0.85,
+        "evidence_urls": [
+            "https://www.plain.com/docs/graphql/authentication",
+            "https://www.plain.com/docs/graphql/introduction",
+            "https://help.plain.com/article/mcp-server",
+        ],
+        "confidence": 0.9,
     },
     "salesforce": {
         "api_type": "REST",
@@ -384,15 +391,6 @@ OVERRIDES: dict[str, dict] = {
             "https://support.usepylon.com/articles/2407390554-connecting-to-the-pylon-mcp-server",
         ],
         "confidence": 0.88,
-    },
-    "plain": {
-        "primary_docs_url": "https://www.plain.com/docs/graphql/authentication",
-        "evidence_urls": [
-            "https://www.plain.com/docs/graphql/authentication",
-            "https://www.plain.com/docs/graphql/introduction",
-            "https://help.plain.com/article/mcp-server",
-        ],
-        "confidence": 0.9,
     },
     "bigcommerce": {
         "existing_mcp": "Community",
@@ -756,10 +754,6 @@ def apply() -> None:
     if not rows:
         raise SystemExit("out/results.json missing")
     changed_auth = 0
-    # first-pass synthesis self-scores, used to undo the weak blind-re-search confidence
-    # penalty on solid, NON-corrected apps (e.g. Vercel/Airtable/Neo4j were 0.9 -> 0.576).
-    fp = {r["slug"]: r.get("confidence")
-          for r in (config.load_json(config.OUT_DIR / "results_firstpass.json") or [])}
     for r in rows:
         # 1) normalize auth on EVERY record
         before = list(r.get("auth_methods", []))
@@ -784,14 +778,11 @@ def apply() -> None:
         # replace one-liners the OLD synthesis truncated mid-word with full sentences
         if r["slug"] in ONE_LINERS:
             r["one_liner"] = ONE_LINERS[r["slug"]]
-        # undo the weak-model verify penalty: restore first-pass self-score where an
-        # app that has NO manual override was dragged down by the blind re-search pass.
-        if r["slug"] not in OVERRIDES and fp.get(r["slug"]) and fp[r["slug"]] > r.get("confidence", 0):
-            r["confidence"] = fp[r["slug"]]
         # cap over-confident self-scores (nothing from doc-scraping is 100% certain)
         r["confidence"] = round(min(float(r.get("confidence", 0.5)), 0.95), 3)
         # re-validate against the locked schema
         validate_record(r)
+        synthesis.append_final_state(r, reason="legacy corrections.py migration")
 
     config.save_json(config.RESULTS_PATH, rows)
     print(f"normalized auth on {changed_auth} records; applied {len(OVERRIDES)} per-app overrides; "

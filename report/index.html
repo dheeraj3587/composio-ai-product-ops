@@ -772,22 +772,22 @@
         <div class="flow-step">
           <span class="step-no">Stage 2 · docs_research.py</span>
           <b>Evidence collection</b>
-          <p>Search, direct documentation fetches, and a dedicated vendor-MCP probe.</p>
+          <p>Ranked official-doc searches reserve fetch slots for auth and production-access evidence.</p>
         </div>
         <div class="flow-step">
           <span class="step-no">Stage 3 · synthesis.py</span>
           <b>Schema synthesis</b>
-          <p>LLM fills the analytical fields. It can cite only fetched URLs; weak evidence caps confidence.</p>
+          <p>The LLM cites fetched URLs. Code rejects invalid labels, invented links, and contradictory decisions.</p>
         </div>
         <div class="flow-step">
           <span class="step-no">Stage 4 · verify.py + browser_verify.py</span>
           <b>Independent checks</b>
-          <p>Fresh-query re-search and a live-doc browser check independently test the first pass.</p>
+          <p>Fresh-query and live-browser checks record disagreements without changing researched rows.</p>
         </div>
         <div class="flow-step">
-          <span class="step-no">Stage 5 · handcheck.py + corrections.py</span>
-          <b>Human review</b>
-          <p>Official docs decide disputed fields. Corrections are explicit and repeatable.</p>
+          <span class="step-no">Stage 5 · handcheck.py</span>
+          <b>Human adjudication</b>
+          <p>Official docs decide disputed fields; current accuracy stays separate from historical snapshots.</p>
         </div>
       </div>
       <div class="proof-grid">
@@ -796,7 +796,7 @@
           <ul class="human-list">
             <li><b>Preseed:</b> a hypothesis narrows the search; current evidence wins.</li>
             <li><b>27 hand-checks:</b> API type, auth, and access are checked against official docs.</li>
-            <li><b>Disagreements:</b> production access rules override a browser's shallow self-serve reading.</li>
+            <li><b>Disagreements:</b> production access is adjudicated before any model output becomes a correction.</li>
             <li><b>MCP audit:</b> first-party MCP pages are checked separately from normal API documentation.</li>
           </ul>
         </div>

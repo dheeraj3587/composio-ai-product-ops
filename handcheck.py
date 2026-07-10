@@ -1,15 +1,4 @@
-"""Hand-check harness (Flag E — time-boxed to the two highest-risk fields).
-
-generate_template(n):
-  pick n apps biased to preseeded + low-confidence, spread across categories,
-  and write handcheck/handcheck.json with the AGENT's values + blank TRUTH fields
-  for a human to fill (auth_methods, access_model) in ~5 min/app.
-
-fold():
-  compare human truth vs agent for the filled rows, compute hand-checked accuracy
-  (the ground-truth number, Flag B), mark those records verification_status=
-  'Hand-Checked' in results.json, and write metrics['handcheck'].
-"""
+"""Risk-biased human hand-check harness and current-vs-historical metrics."""
 from __future__ import annotations
 
 import datetime as dt
@@ -17,133 +6,182 @@ import datetime as dt
 import config
 import normalize
 import pipeline
+import synthesis
 import verify
 from schema import validate_record
 
 
-AUTH_FOLDED_AFTER_HANDCHECK = {
-    "dealcloud": ["API Key", "Other Token"],
-    "notion": ["OAuth2", "Bearer Token"],
-    "slack": ["OAuth2", "Bot Token", "Other Token"],
-}
-
-HANDCHECK_NOTE = (
-    "Three historic auth misses (DealCloud, Notion, Slack) were subsequently folded "
-    "back into the matrix via corrections.py. Cloudflare remains a measured auth "
-    "discrepancy. Accuracy is reported as measured at hand-check time, with all four "
-    "misses shown rather than hidden."
-)
-
-ACCURACY_MOVEMENT_NOTE = (
-    "Scored with both sides canonicalized, so the delta counts factual fixes only. "
-    "The label-normalization pass (e.g. 'OAuth 2.0' -> 'OAuth2', 8 fields on this "
-    "sample) is data hygiene and is deliberately NOT counted as accuracy movement. "
-    "Measured before the 3 hand-check auth folds; the shipped matrix carries those fixes."
+ACCESS_RUBRIC = (
+    "Self-Serve only when a new developer can obtain credentials usable in production without "
+    "manual approval, partnership, business verification, or already being a paying customer. "
+    "A sandbox or trial alone is not production Self-Serve; otherwise use Gated."
 )
 
 
 def generate_template(n: int = 18) -> dict:
     results = config.load_json(config.RESULTS_PATH) or []
     if not results:
-        raise SystemExit("no results.json — run `python research.py --all` first")
+        raise SystemExit("no results.json - run `python research.py --all` first")
     preseed = pipeline.load_preseed_map()
-    sample = verify._select_sample(results, n, preseed)  # preseed + low-conf + category spread
+    sample = verify._select_sample(results, n, preseed)
 
     rows = []
-    for r in sample:
+    for record in sample:
         rows.append({
-            "slug": r["slug"], "app": r["app"], "category": r["category"],
-            "primary_docs_url": r.get("primary_docs_url", ""),
-            "preseeded": r["slug"] in preseed,
+            "slug": record["slug"],
+            "app": record["app"],
+            "category": record["category"],
+            "primary_docs_url": record.get("primary_docs_url", ""),
+            "preseeded": record["slug"] in preseed,
+            "selection_reason": (
+                "preseeded/low-confidence, category-spread risk sample"
+                if record["slug"] in preseed or record["confidence"] < 0.7
+                else "category-spread control"
+            ),
             "agent": {
-                "auth_methods": r.get("auth_methods", []),
-                "access_model": r["access_model"]["kind"],
-                "recommended_next_action": r["recommended_next_action"],
-                "confidence": r["confidence"],
+                "api_type": record.get("api_type"),
+                "auth_methods": record.get("auth_methods", []),
+                "access_model": record["access_model"]["kind"],
+                "recommended_next_action": record["recommended_next_action"],
+                "confidence": record["confidence"],
             },
-            "truth": {"auth_methods": [], "access_model": "", "next_action": "", "notes": ""},
+            "truth": {
+                "api_type": "",
+                "auth_methods": [],
+                "access_model": "",
+                "evidence_urls": [],
+                "notes": "",
+            },
             "filled": False,
         })
 
     payload = {
-        "_instructions": ("For each row, open primary_docs_url and verify (~5 min). Fill "
-                          "truth.auth_methods (list) and truth.access_model ('Self-Serve' or "
-                          "'Gated'); add notes for any miss; set filled=true. Then run: "
-                          "python research.py --fold-handcheck"),
+        "_instructions": (
+            "For each row, inspect official docs and fill truth.api_type, canonical auth_methods, "
+            "production access_model, evidence_urls, and notes; then set filled=true. " +
+            ACCESS_RUBRIC + " Run: python research.py --fold-handcheck"
+        ),
+        "auth_vocabulary": normalize.CANONICAL,
+        "access_rubric": ACCESS_RUBRIC,
+        "selection": "Risk-biased (preseeded + low-confidence) with category spread and controls.",
         "generated": dt.date.today().isoformat(),
         "rows": rows,
     }
     config.ensure_dirs()
-    # NEVER clobber human-filled ground truth: if handcheck.json already has
-    # filled rows, write the fresh template alongside it instead.
     existing = config.load_json(config.HANDCHECK_PATH) or {}
-    if any(r.get("filled") for r in existing.get("rows", [])):
-        alt = config.HANDCHECK_PATH.with_name("handcheck.template.json")
-        config.save_json(alt, payload)
-        print(f"handcheck.json already contains filled truth — wrote template to {alt} instead")
+    if any(row.get("filled") for row in existing.get("rows", [])):
+        alternate = config.HANDCHECK_PATH.with_name("handcheck.template.json")
+        config.save_json(alternate, payload)
+        print(f"handcheck.json already contains filled truth - wrote template to {alternate}")
         return payload
     config.save_json(config.HANDCHECK_PATH, payload)
     print(f"wrote {len(rows)} hand-check rows -> {config.HANDCHECK_PATH}")
     return payload
 
 
+def _validated_truth(row: dict) -> dict:
+    truth = row.get("truth") or {}
+    auth = normalize.normalize_auth_list(truth.get("auth_methods") or [], strict=True)
+    if not auth:
+        raise ValueError(f"{row.get('slug')}: filled row has no truth.auth_methods")
+    access = truth.get("access_model")
+    if access not in {"Self-Serve", "Gated"}:
+        raise ValueError(f"{row.get('slug')}: invalid truth.access_model={access!r}")
+    api_type = truth.get("api_type")
+    if api_type and api_type not in {"REST", "GraphQL", "SDK", "SOAP", "MCP-only", "None"}:
+        raise ValueError(f"{row.get('slug')}: invalid truth.api_type={api_type!r}")
+    evidence_urls = truth.get("evidence_urls")
+    if not isinstance(evidence_urls, list) or not evidence_urls or any(
+        not isinstance(url, str) or not url.startswith(("http://", "https://"))
+        for url in evidence_urls
+    ):
+        raise ValueError(f"{row.get('slug')}: truth.evidence_urls needs at least one official URL")
+    if not str(truth.get("notes") or "").strip():
+        raise ValueError(f"{row.get('slug')}: truth.notes must explain the check")
+    return {**truth, "auth_methods": auth, "access_model": access}
+
+
+def _require_current_rubric(payload: dict) -> None:
+    if payload.get("access_rubric") != ACCESS_RUBRIC:
+        raise SystemExit(
+            "handcheck.json uses the legacy trial-access rubric. Generate/fill a fresh template "
+            "before computing current metrics. The old score remains historical evidence."
+        )
+
+
 def fold() -> dict:
-    """Score CURRENT results.json against hand-verified truth (per field) + list misses."""
+    """Score the current results only; never substitute historical agent values."""
     payload = config.load_json(config.HANDCHECK_PATH) or {}
-    rows = [r for r in payload.get("rows", []) if r.get("filled")]
+    _require_current_rubric(payload)
+    rows = [row for row in payload.get("rows", []) if row.get("filled")]
     results = config.load_json(config.RESULTS_PATH) or []
-    by_slug = {r["slug"]: r for r in results}
+    by_slug = {record["slug"]: record for record in results}
 
     n = api_n = api_hits = auth_hits = access_hits = 0
-    misses = []
-    checked = []
+    misses, checked = [], []
     for row in rows:
-        slug, truth = row["slug"], row["truth"]
-        rec = by_slug.get(slug)
-        if not rec:
+        slug = row["slug"]
+        record = by_slug.get(slug)
+        if not record:
             continue
+        truth = _validated_truth(row)
         n += 1
-        rec["verification_status"] = "Hand-Checked"
-        # Canonicalize BOTH sides before comparing. verify._auth_agree squashes
-        # raw strings, so comparing canonical truth against raw record labels
-        # would count pure label-format differences ("OAuth 2.0" vs "OAuth2")
-        # as factual misses.
-        cur_auth = normalize.normalize_auth_list(rec.get("auth_methods", []))
-        measured_auth = normalize.normalize_auth_list(
-            AUTH_FOLDED_AFTER_HANDCHECK.get(slug, cur_auth)
-        )
-        truth_auth = normalize.normalize_auth_list(truth.get("auth_methods") or [])
-        aa = verify._auth_agree(measured_auth, truth_auth)
-        cur_access = (rec.get("access_model") or {}).get("kind")
-        ac = (cur_access == truth.get("access_model"))
-        auth_hits += int(aa)
-        access_hits += int(ac)
+        current_auth = normalize.normalize_auth_list(record.get("auth_methods", []), strict=True)
+        auth_ok = verify._auth_agree(current_auth, truth["auth_methods"])
+        current_access = (record.get("access_model") or {}).get("kind")
+        access_ok = current_access == truth["access_model"]
+        auth_hits += int(auth_ok)
+        access_hits += int(access_ok)
+
+        api_ok = None
         if truth.get("api_type"):
             api_n += 1
-            ok = rec.get("api_type") == truth.get("api_type")
-            api_hits += int(ok)
-            if not ok:
-                misses.append({"slug": slug, "app": row.get("app", slug), "field": "api_type",
-                               "current": rec.get("api_type"), "truth": truth.get("api_type"),
-                               "notes": truth.get("notes", "")})
-        if not aa:
-            misses.append({"slug": slug, "app": row.get("app", slug), "field": "auth_methods",
-                           "current": measured_auth, "truth": truth_auth, "notes": truth.get("notes", "")})
-        if not ac:
-            misses.append({"slug": slug, "app": row.get("app", slug), "field": "access_model",
-                           "current": cur_access, "truth": truth.get("access_model"), "notes": truth.get("notes", "")})
-        checked.append({"slug": slug, "app": row.get("app", slug),
-                        "api_ok": (rec.get("api_type") == truth.get("api_type")) if truth.get("api_type") else None,
-                        "auth_ok": bool(aa), "access_ok": bool(ac)})
+            api_ok = record.get("api_type") == truth["api_type"]
+            api_hits += int(api_ok)
+            if not api_ok:
+                misses.append({
+                    "slug": slug, "app": row.get("app", slug), "field": "api_type",
+                    "current": record.get("api_type"), "truth": truth["api_type"],
+                    "notes": truth.get("notes", ""),
+                })
+        if not auth_ok:
+            misses.append({
+                "slug": slug, "app": row.get("app", slug), "field": "auth_methods",
+                "current": current_auth, "truth": truth["auth_methods"],
+                "notes": truth.get("notes", ""),
+            })
+        if not access_ok:
+            misses.append({
+                "slug": slug, "app": row.get("app", slug), "field": "access_model",
+                "current": current_access, "truth": truth["access_model"],
+                "notes": truth.get("notes", ""),
+            })
+        record["verification_status"] = "Hand-Checked"
+        validate_record(record)
+        synthesis.append_final_state(record, reason="current handcheck fold")
+        checked.append({
+            "slug": slug,
+            "app": row.get("app", slug),
+            "api_ok": api_ok,
+            "auth_ok": auth_ok,
+            "access_ok": access_ok,
+        })
 
-    order = {a["slug"]: i for i, a in enumerate(pipeline.load_apps())}
-    config.save_json(config.RESULTS_PATH, sorted(by_slug.values(), key=lambda r: order.get(r["slug"], 10_000)))
+    order = {app["slug"]: index for index, app in enumerate(pipeline.load_apps())}
+    config.save_json(
+        config.RESULTS_PATH,
+        sorted(by_slug.values(), key=lambda record: order.get(record["slug"], 10_000)),
+    )
 
     total = 2 * n + api_n
-    hc = {
-        "method": ("Human cross-check vs official docs on api_type + auth_methods + access_model "
-                   "(both auth sides normalized to canonical labels before comparison). "
-                   "Misses shown, not hidden."),
+    handcheck = {
+        "metric_scope": "Current results at fold time",
+        "method": (
+            "Human comparison against official docs for api_type, exact canonical auth set, and "
+            "production access. No historical agent values are substituted."
+        ),
+        "access_rubric": payload.get("access_rubric") or ACCESS_RUBRIC,
+        "selection": payload.get("selection") or "Risk-biased, category-spread sample.",
         "n": n,
         "api_type_accuracy": round(api_hits / api_n, 3) if api_n else None,
         "auth_accuracy": round(auth_hits / n, 3) if n else None,
@@ -152,86 +190,93 @@ def fold() -> dict:
         "misses": misses,
         "checked": checked,
         "generated": dt.date.today().isoformat(),
-        "note": HANDCHECK_NOTE,
+        "note": "This is a current score. Earlier published/as-measured snapshots are stored separately.",
     }
     metrics = config.load_json(config.METRICS_PATH, default={}) or {}
-    metrics["handcheck"] = hc
+    previous = metrics.get("handcheck")
+    if previous and previous != handcheck and "handcheck_historical" not in metrics:
+        metrics["handcheck_historical"] = {
+            "label": "Prior published hand-check snapshot",
+            "snapshot": previous,
+        }
+    metrics["handcheck"] = handcheck
     config.save_json(config.METRICS_PATH, metrics)
     verify.rebuild_metrics()
-    print(f"handcheck n={n}: api_type={hc['api_type_accuracy']} auth={hc['auth_accuracy']} "
-          f"access={hc['access_accuracy']} overall={hc['accuracy']} misses={len(misses)}")
-    return hc
+    print(
+        f"handcheck CURRENT n={n}: api_type={handcheck['api_type_accuracy']} "
+        f"auth={handcheck['auth_accuracy']} access={handcheck['access_accuracy']} "
+        f"overall={handcheck['accuracy']} misses={len(misses)}"
+    )
+    return handcheck
 
 
-def _score_record(rec: dict, truth: dict, measured_auth_override: list[str] | None = None):
-    """Field-level match of a record against hand truth (api_type + auth + access).
-
-    Both auth lists are canonicalized first so the score reflects FACTUAL
-    correctness, not label formatting. (The original version canonicalized only
-    the truth side, which penalized first-pass records for spellings like
-    "OAuth 2.0" vs "OAuth2" / "API Token" vs "API Key" and inflated the apparent
-    movement. The original 17-app sample overstated movement because several
-    first-pass misses were label artifacts, not wrong facts.)"""
+def _score_record(record: dict, truth: dict) -> tuple[int, int]:
+    canonical_truth = normalize.normalize_auth_list(truth.get("auth_methods") or [], strict=True)
     checks = [
-        ("auth_methods", verify._auth_agree(normalize.normalize_auth_list(
-            measured_auth_override if measured_auth_override is not None else rec.get("auth_methods", [])
-        ),
-                                            normalize.normalize_auth_list(truth.get("auth_methods") or []))),
-        ("access_model", (rec.get("access_model", {}) or {}).get("kind") == truth.get("access_model")),
+        ("auth_methods", verify._auth_agree(record.get("auth_methods", []), canonical_truth)),
+        ("access_model", (record.get("access_model") or {}).get("kind") == truth.get("access_model")),
     ]
     if truth.get("api_type"):
-        checks.append(("api_type", rec.get("api_type") == truth.get("api_type")))
-    hits = sum(1 for _, ok in checks if ok)
-    return hits, len(checks)
+        checks.append(("api_type", record.get("api_type") == truth.get("api_type")))
+    return sum(int(ok) for _, ok in checks), len(checks)
 
 
 def accuracy_movement() -> dict:
-    """Score first-pass snapshot vs post-verification results against hand truth,
-    to show accuracy moved up because of the verification loops (Flag B / rubric)."""
-    hc = config.load_json(config.HANDCHECK_PATH) or {}
-    rows = [r for r in hc.get("rows", []) if r.get("filled")]
-    fp = {r["slug"]: r for r in (config.load_json(config.OUT_DIR / "results_firstpass.json") or [])}
-    cur = {r["slug"]: r for r in (config.load_json(config.RESULTS_PATH) or [])}
-    if not rows or not fp:
+    """Compare archived first-pass and current results against the same hand truth."""
+    payload = config.load_json(config.HANDCHECK_PATH) or {}
+    _require_current_rubric(payload)
+    rows = [row for row in payload.get("rows", []) if row.get("filled")]
+    first_pass = {
+        record["slug"]: record
+        for record in (config.load_json(config.OUT_DIR / "results_firstpass.json") or [])
+    }
+    current = {record["slug"]: record for record in (config.load_json(config.RESULTS_PATH) or [])}
+    if not rows or not first_pass:
         raise SystemExit("need filled handcheck.json + out/results_firstpass.json")
 
-    fh = ft = ch = ct = 0
+    first_hits = first_total = current_hits = current_total = 0
     per_app, improved, regressed = [], [], []
     for row in rows:
-        slug, truth = row["slug"], row["truth"]
-        if slug not in fp or slug not in cur:
+        slug = row["slug"]
+        if slug not in first_pass or slug not in current:
             continue
-        h1, t1 = _score_record(fp[slug], truth)
-        h2, t2 = _score_record(cur[slug], truth, AUTH_FOLDED_AFTER_HANDCHECK.get(slug))
-        fh += h1; ft += t1; ch += h2; ct += t2
-        per_app.append({"slug": slug, "first_pass": f"{h1}/{t1}", "post_verification": f"{h2}/{t2}"})
-        if h2 > h1:
+        truth = _validated_truth(row)
+        before_hits, before_total = _score_record(first_pass[slug], truth)
+        after_hits, after_total = _score_record(current[slug], truth)
+        first_hits += before_hits
+        first_total += before_total
+        current_hits += after_hits
+        current_total += after_total
+        per_app.append({
+            "slug": slug,
+            "first_pass": f"{before_hits}/{before_total}",
+            "current": f"{after_hits}/{after_total}",
+        })
+        if after_hits > before_hits:
             improved.append(slug)
-        elif h2 < h1:
+        elif after_hits < before_hits:
             regressed.append(slug)
-        cur[slug]["verification_status"] = "Hand-Checked"
 
-    order = {a["slug"]: i for i, a in enumerate(pipeline.load_apps())}
-    config.save_json(config.RESULTS_PATH, sorted(cur.values(), key=lambda r: order.get(r["slug"], 10_000)))
-
-    mv = {
-        "method": ("Field-level accuracy (api_type + auth_methods + access_model) vs hand-verified "
-                   "truth, comparing the first-pass snapshot to the post-verification results. "
-                   "Both sides canonicalized before comparison, so the delta reflects factual "
-                   "corrections only — label normalization (e.g. 'OAuth 2.0' -> 'OAuth2') is "
-                   "counted separately, not as accuracy."),
-        "n": len(rows),
-        "first_pass_accuracy": round(fh / ft, 3) if ft else None,
-        "post_verification_accuracy": round(ch / ct, 3) if ct else None,
+    movement = {
+        "method": (
+            "Field-level accuracy against one hand-verified truth set, comparing the archived "
+            "first pass to current results. Auth uses exact canonical-set equality."
+        ),
+        "n": len(per_app),
+        "first_pass_accuracy": round(first_hits / first_total, 3) if first_total else None,
+        "post_verification_accuracy": round(current_hits / current_total, 3) if current_total else None,
         "improved_apps": improved,
         "regressed_apps": regressed,
         "per_app": per_app,
-        "note": ACCURACY_MOVEMENT_NOTE,
+        "generated": dt.date.today().isoformat(),
     }
     metrics = config.load_json(config.METRICS_PATH, default={}) or {}
-    metrics["accuracy_movement"] = mv
+    metrics["accuracy_movement"] = movement
     config.save_json(config.METRICS_PATH, metrics)
     verify.rebuild_metrics()
-    print(f"ACCURACY MOVEMENT | first-pass {mv['first_pass_accuracy']} -> "
-          f"post-verification {mv['post_verification_accuracy']} (n={len(rows)}) | improved: {improved}")
-    return mv
+    print(
+        f"ACCURACY MOVEMENT | first-pass {movement['first_pass_accuracy']} -> "
+        f"current {movement['post_verification_accuracy']} (n={len(per_app)}) | "
+        f"improved: {improved}; regressed: {regressed}"
+    )
+    return movement

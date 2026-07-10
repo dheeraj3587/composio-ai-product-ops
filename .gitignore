@@ -13,6 +13,7 @@ venv/
 
 # Caches (regenerable) — but KEEP results.json/metrics.json/reasoning (deliverables/evidence)
 out/cache/
+out/archive/
 
 # OS / editor
 .DS_Store

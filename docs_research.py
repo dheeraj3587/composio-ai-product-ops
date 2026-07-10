@@ -1,24 +1,24 @@
-"""Documentation research via web SEARCH + direct FETCH (no browser automation).
+"""Documentation research via Perplexity Search SDK + direct HTTP fetch.
 
 Gathers raw evidence for one app: search hits + fetched page text. Returns an
 Evidence dict whose ``fetched_urls`` is the WHITELIST synthesis may cite
 (Flag D: evidence_urls must be real, fetched, resolving URLs — never invented).
 
-Search providers (auto-detected, first that works wins):
-  - Tavily             (TAVILY_API_KEY)   clean JSON, preferred
-  - Serper             (SERPER_API_KEY)   Google results
-  - DuckDuckGo HTML    (keyless)          fallback, no key required
-
 HTML is reduced to text with the stdlib html.parser (no bs4 dependency).
 """
 from __future__ import annotations
 
+import datetime as dt
+import hashlib
 import html
+import json
 import os
 import re
+import threading
 import time
+from functools import lru_cache
 from html.parser import HTMLParser
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import urlparse
 
 import requests
 
@@ -155,59 +155,82 @@ def url_resolves(url: str, timeout: int = 10) -> bool:
 
 
 # --------------------------------------------------------------------------- #
-# search providers
+# Perplexity Search API (official SDK, one paid provider only)
 # --------------------------------------------------------------------------- #
-def _search_tavily(query: str, k: int):
-    key = os.getenv("TAVILY_API_KEY")
+@lru_cache(maxsize=1)
+def _perplexity_client():
+    key = os.getenv("PERPLEXITY_API_KEY", "")
     if not key:
+        raise RuntimeError("PERPLEXITY_API_KEY is not set")
+    from perplexity import Perplexity
+
+    return Perplexity(api_key=key, max_retries=3, timeout=30.0)
+
+
+def _search_cache_path(queries: list[str], k: int):
+    payload = json.dumps({"v": 1, "queries": queries, "k": k}, sort_keys=True)
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return config.CACHE_DIR / "perplexity_search" / f"{digest}.json"
+
+
+def _cached_search(queries: list[str], k: int) -> list[dict] | None:
+    path = _search_cache_path(queries, k)
+    cached = config.load_json(path)
+    if not cached:
         return None
-    r = requests.post("https://api.tavily.com/search",
-                      json={"api_key": key, "query": query, "max_results": k}, timeout=20)
-    r.raise_for_status()
-    return [{"title": x.get("title", ""), "url": x.get("url", ""), "snippet": x.get("content", "")}
-            for x in r.json().get("results", [])]
-
-
-def _search_serper(query: str, k: int):
-    key = os.getenv("SERPER_API_KEY")
-    if not key:
+    try:
+        generated = dt.datetime.fromisoformat(cached["generated"])
+    except (KeyError, TypeError, ValueError):
         return None
-    r = requests.post("https://google.serper.dev/search",
-                      headers={"X-API-KEY": key, "Content-Type": "application/json"},
-                      json={"q": query, "num": k}, timeout=20)
-    r.raise_for_status()
-    return [{"title": x.get("title", ""), "url": x.get("link", ""), "snippet": x.get("snippet", "")}
-            for x in r.json().get("organic", [])][:k]
+    max_age = dt.timedelta(days=float(os.getenv("PERPLEXITY_SEARCH_CACHE_DAYS", "7")))
+    if dt.datetime.now(dt.timezone.utc) - generated > max_age:
+        return None
+    return cached.get("results") or []
 
 
-def _search_ddg(query: str, k: int):
-    r = requests.get("https://html.duckduckgo.com/html/", params={"q": query},
-                     headers=UA, timeout=20)
-    r.raise_for_status()
+def search_many(queries: list[str], k: int = 6) -> list[dict]:
+    """Run related queries in one paid Search API request and cache the result."""
+    clean_queries = list(dict.fromkeys(query.strip() for query in queries if query.strip()))
+    if not clean_queries:
+        return []
+    cached = _cached_search(clean_queries, k)
+    if cached is not None:
+        return cached
+
+    import usage_tracker
+
+    request_cost = 0.005  # official Search API price: $5 / 1,000 requests
+    usage_tracker.ensure_budget("perplexity", request_cost)
+    response = _perplexity_client().search.create(
+        query=clean_queries if len(clean_queries) > 1 else clean_queries[0],
+        max_results=k,
+        max_tokens=min(8_000, max(2_000, k * 1_000)),
+        max_tokens_per_page=1_000,
+    )
     results = []
-    for m in re.finditer(r'<a[^>]+class="result__a"[^>]+href="([^"]+)"[^>]*>(.*?)</a>', r.text, re.S):
-        href = m.group(1)
-        title = re.sub(r"<[^>]+>", "", m.group(2))
-        if "duckduckgo.com/l/" in href:
-            href = parse_qs(urlparse(href).query).get("uddg", [href])[0]
-        results.append({"title": html.unescape(title).strip(), "url": href, "snippet": ""})
-        if len(results) >= k:
-            break
+    for item in response.results:
+        results.append({
+            "title": str(getattr(item, "title", "") or ""),
+            "url": str(getattr(item, "url", "") or ""),
+            "snippet": str(getattr(item, "snippet", "") or "")[:4_000],
+            "date": str(getattr(item, "date", "") or ""),
+            "last_updated": str(getattr(item, "last_updated", "") or ""),
+            "search_provider": "perplexity",
+        })
+    config.save_json(_search_cache_path(clean_queries, k), {
+        "generated": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "queries": clean_queries,
+        "results": results,
+    })
+    usage_tracker.record("perplexity", "search", request_cost, {
+        "query_count": len(clean_queries),
+        "result_count": len(results),
+    })
     return results
 
 
 def search(query: str, k: int = 6) -> list[dict]:
-    for fn in (_search_tavily, _search_serper):
-        try:
-            res = fn(query, k)
-            if res:
-                return res
-        except Exception:
-            pass
-    try:
-        return _search_ddg(query, k) or []
-    except Exception:
-        return []
+    return search_many([query], k=k)
 
 
 # --------------------------------------------------------------------------- #
@@ -229,23 +252,138 @@ def _derived_doc_urls(hint_url: str) -> list[str]:
             f"https://api.{apex}", f"https://{apex}/developers", f"https://{apex}/docs"]
 
 
-def _candidate_urls(hint_url: str, search_results: list[dict]) -> list[str]:
+def _apex_host(url: str) -> str:
+    host = urlparse(url).netloc.lower().split(":", 1)[0]
+    if host.startswith("www."):
+        host = host[4:]
+    parts = host.split(".")
+    return ".".join(parts[-2:]) if len(parts) >= 2 else host
+
+
+def _candidate_score(result: dict, hint_url: str = "", app: str = "", slug: str = "") -> int:
+    """Rank likely first-party, claim-bearing documentation pages."""
+    url = result.get("url", "")
+    title = result.get("title", "")
+    snippet = result.get("snippet", "")
+    text = f"{url} {title} {snippet}".lower()
+    host = urlparse(url).netloc.lower()
+    path = urlparse(url).path.lower()
+    score = 0
+
+    for token, weight in (
+        ("auth", 9), ("oauth", 9), ("getting-started", 7), ("quickstart", 7),
+        ("api", 6), ("developer", 5), ("reference", 4), ("access", 4),
+        ("credential", 4), ("production", 3), ("sandbox", 3),
+    ):
+        if token in path or token in title.lower():
+            score += weight
+
+    hint_apex = _apex_host(hint_url)
+    if hint_apex and (host == hint_apex or host.endswith("." + hint_apex)):
+        score += 22
+    app_key = re.sub(r"[^a-z0-9]", "", app.lower())
+    if app_key and app_key in re.sub(r"[^a-z0-9]", "", text):
+        score += 8
+    for part in [p for p in slug.lower().split("-") if len(p) >= 4][:2]:
+        if part in text:
+            score += 4
+
+    if any(prefix in host for prefix in ("docs.", "developer.", "developers.", "api.")):
+        score += 8
+    if any(bad in host for bad in (
+        "medium.com", "dev.to", "stackshare.io", "zapier.com", "merge.dev",
+        "rollout.com", "getknit.dev", "apideck.com", "stackoverflow.com",
+    )):
+        score -= 25
+    if any(bad in text for bad in ("top 10", "alternatives", "integration guide by")):
+        score -= 8
+    return score
+
+
+def _dedupe_search_results(groups: list[list[dict]]) -> list[dict]:
+    by_url: dict[str, dict] = {}
+    for group in groups:
+        for result in group:
+            url = result.get("url", "")
+            if url.startswith("http") and url not in by_url:
+                by_url[url] = result
+    return list(by_url.values())
+
+
+def _candidate_urls(hint_url: str, search_results: list[dict], app: str = "",
+                    slug: str = "") -> list[str]:
+    """Choose a balanced fetch set.
+
+    At least half of the available slots are reserved for exact search results.
+    Previously the hint plus six guessed doc roots consumed every slot, which
+    meant the authentication page found by search was never fetched.
+    """
+    ranked = sorted(
+        search_results,
+        key=lambda result: _candidate_score(result, hint_url, app, slug),
+        reverse=True,
+    )
+    searched = []
+    for result in ranked:
+        url = result.get("url", "")
+        if url.startswith("http") and url not in searched:
+            searched.append(url)
+
     urls: list[str] = []
-    if hint_url:
-        urls.append(hint_url)
-    for u in _derived_doc_urls(hint_url):  # likely developer-doc subdomains/paths
-        if u not in urls:
-            urls.append(u)
 
-    def score(u: str) -> int:
-        u = u.lower()
-        return sum(tok in u for tok in ("docs", "developer", "developers", "api", "reference"))
+    def add(url: str) -> None:
+        if url and url.startswith("http") and url not in urls and len(urls) < MAX_FETCH:
+            urls.append(url)
 
-    for r in sorted(search_results, key=lambda r: -score(r.get("url", ""))):
-        u = r.get("url", "")
-        if u.startswith("http") and u not in urls:
-            urls.append(u)
-    return urls[:MAX_FETCH]
+    add(hint_url)
+    reserved_search_slots = min(len(searched), max(3, MAX_FETCH // 2))
+    for url in searched[:reserved_search_slots]:
+        add(url)
+    for url in _derived_doc_urls(hint_url):
+        add(url)
+    for url in searched[reserved_search_slots:]:
+        add(url)
+    return urls
+
+
+def support_tags(text: str, url: str = "") -> list[str]:
+    """Identify which claim families a fetched page can plausibly support."""
+    haystack = f"{url} {text}".lower()
+    tags = []
+    patterns = {
+        "api": (r"\bapi\b", r"\brest\b", r"graphql", r"endpoint", r"\bsdk\b"),
+        "auth": (r"oauth", r"authenticat", r"authoriz", r"api.?key", r"token", r"credential"),
+        "access": (
+            r"production", r"sandbox", r"request access", r"approval", r"app review",
+            r"business verification", r"paid plan", r"existing customer", r"partner",
+            r"self.?serve", r"sign.?up", r"free trial", r"developer account",
+            r"account settings", r"create (an )?api key", r"generate (an )?(access )?token",
+        ),
+        "mcp": (r"\bmcp\b", r"model context protocol"),
+    }
+    for tag, expressions in patterns.items():
+        if any(re.search(expression, haystack) for expression in expressions):
+            tags.append(tag)
+    return tags
+
+
+def _source_kind(url: str, hint_url: str, search_urls: set[str]) -> str:
+    if url in search_urls:
+        return "search_result"
+    if url == hint_url:
+        return "hint"
+    return "derived_guess"
+
+
+def _annotate_fetch(item: dict, hint_url: str, search_lookup: dict[str, dict],
+                    app: str, slug: str) -> dict:
+    result = search_lookup.get(item["url"], {"url": item["url"]})
+    return {
+        **item,
+        "source_kind": _source_kind(item["url"], hint_url, set(search_lookup)),
+        "relevance_score": _candidate_score(result, hint_url, app, slug),
+        "support_tags": support_tags(item.get("text", ""), item["url"]) if item.get("ok") else [],
+    }
 
 
 def _mcp_score(url: str, title: str, app: str, slug: str) -> int:
@@ -312,7 +450,7 @@ def gather_mcp_evidence(app: str, slug: str = "", k: int = 8, max_fetch: int = 4
             continue
         f = fetch(u)
         if f["ok"]:
-            fetched.append(f)
+            fetched.append({**f, "support_tags": support_tags(f.get("text", ""), u)})
         time.sleep(0.2)
     return {
         "query": q,
@@ -325,37 +463,87 @@ def gather_mcp_evidence(app: str, slug: str = "", k: int = 8, max_fetch: int = 4
 def gather_evidence(app: str, slug: str, hint_url: str = "", category: str = "",
                     query: str | None = None, log: bool = True) -> dict:
     """Search + fetch → raw Evidence dict (no LLM here; cheap & deterministic)."""
-    q = query or f"{app} API documentation authentication developer"
-    results = search(q, k=6)
-    candidates = _candidate_urls(hint_url, results)
+    queries = [
+        query or f"{app} official API authentication developer documentation",
+        f"{app} API production access approval credentials official documentation",
+    ]
+    results = _dedupe_search_results([search_many(queries, k=8)])
+    candidates = _candidate_urls(hint_url, results, app=app, slug=slug)
+    search_lookup = {result["url"]: result for result in results if result.get("url")}
 
     fetched = []
     for u in candidates:
-        fetched.append(fetch(u))
+        fetched.append(_annotate_fetch(fetch(u), hint_url, search_lookup, app, slug))
         time.sleep(0.2)
 
     ok_urls = [f["url"] for f in fetched if f["ok"]]
-    degraded = len(ok_urls) == 0
-    if degraded and log:
-        _log_failure(slug, f"no fetchable docs; query={q!r}; candidates={candidates}")
-
     mcp = gather_mcp_evidence(app, slug)
+    supported_topics = sorted({
+        tag
+        for item in [*fetched, *mcp.get("fetched", [])]
+        if item.get("ok")
+        for tag in item.get("support_tags", [])
+    })
+    adequate = bool(
+        ("api" in supported_topics and ({"auth", "access"} & set(supported_topics)))
+        or ("mcp" in supported_topics and "auth" in supported_topics)
+    )
+    degraded = not adequate
+    if degraded and log:
+        _log_failure(
+            slug,
+            "insufficient claim-bearing evidence; "
+            f"queries={queries!r}; topics={supported_topics}; candidates={candidates}",
+            phase="evidence",
+        )
 
     return {
-        "app": app, "slug": slug, "category": category, "query": q,
+        "app": app, "slug": slug, "category": category, "query": queries[0],
+        "queries": queries,
         "search_results": results,
         "fetched": fetched,
         # Flag D whitelist for evidence_urls (MCP-probe pages are citable too)
         "fetched_urls": ok_urls + [u for u in mcp["fetched_urls"] if u not in ok_urls],
+        "supported_topics": supported_topics,
+        "evidence_quality": "adequate" if adequate else "degraded",
         "degraded": degraded,
         "mcp": mcp,
     }
 
 
-def _log_failure(slug: str, msg: str) -> None:
+_failure_lock = threading.Lock()
+
+
+def _log_failure(slug: str, msg: str, phase: str = "research") -> None:
+    """Append audit history and update the current unresolved failure state."""
     config.ensure_dirs()
-    with open(config.FAILURES_PATH, "a", encoding="utf-8") as fh:
-        fh.write(f"{slug}\t{msg}\n")
+    timestamp = dt.datetime.now(dt.timezone.utc).isoformat()
+    key = f"{slug}:{phase}"
+    with _failure_lock:
+        with open(config.FAILURES_PATH, "a", encoding="utf-8") as fh:
+            fh.write(f"{timestamp}\tFAILED\t{phase}\t{slug}\t{msg}\n")
+        state = config.load_json(config.FAILURE_STATE_PATH, default={}) or {}
+        state[key] = {
+            "slug": slug,
+            "phase": phase,
+            "message": msg,
+            "updated": timestamp,
+        }
+        config.save_json(config.FAILURE_STATE_PATH, state)
+
+
+def resolve_failure(slug: str, phase: str) -> None:
+    """Clear one recovered failure without erasing its event-history entry."""
+    key = f"{slug}:{phase}"
+    with _failure_lock:
+        state = config.load_json(config.FAILURE_STATE_PATH, default={}) or {}
+        if key not in state:
+            return
+        state.pop(key)
+        config.save_json(config.FAILURE_STATE_PATH, state)
+        timestamp = dt.datetime.now(dt.timezone.utc).isoformat()
+        with open(config.FAILURES_PATH, "a", encoding="utf-8") as fh:
+            fh.write(f"{timestamp}\tRESOLVED\t{phase}\t{slug}\n")
 
 
 if __name__ == "__main__":  # live smoke (needs network)

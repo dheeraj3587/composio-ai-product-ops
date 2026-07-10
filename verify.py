@@ -1,174 +1,294 @@
-"""Verification (Flag A) + honest metrics (Flag B).
+"""Auditable blind re-search verification and report metrics.
 
-Flag A — BLIND RE-SEARCH FROM SCRATCH (not a re-fetch):
-  For a sample of records we independently re-derive the two highest-risk fields
-  (auth_methods, access_model) using a FRESH, differently-phrased query, fetching
-  pages that EXCLUDE the stored evidence URLs, and asking the LLM blind (it never
-  sees pass-1's answer). This catches wrong-PAGE errors, not just wrong-reading —
-  re-fetching the stored URL would only re-confirm a correlated error.
-
-Flag B — two clearly-labeled numbers:
-  * hand-checked accuracy (ground truth, from handcheck.json)  -> the real accuracy
-  * automated blind-re-search AGREEMENT rate (this module)     -> NOT accuracy
+Automated verification measures reproducibility. It never changes a researched
+record or its confidence; a disagreement becomes an adjudication item until a
+human accepts or rejects it against official documentation.
 """
 from __future__ import annotations
 
 import collections
 import datetime as dt
-import re
+import json
+import os
+from typing import Literal
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
+
+from pydantic import BaseModel
 
 import config
 import docs_research
+import normalize
 import pipeline
-from schema import validate_record
 
-VERIFY_SYSTEM = (
-    "You independently determine ONLY two things about an app's API from the "
-    "evidence provided: (1) auth_methods (list, e.g. OAuth2, API Key, PAT), and "
-    "(2) access_model — whether obtaining API access is 'Self-Serve' (instant "
-    "signup/keys) or 'Gated' (approval, business verification, or existing paid "
-    "account required). Use ONLY the evidence. Return strict JSON with keys "
-    "auth_methods (list) and access_model ({kind:'Self-Serve'|'Gated', note})."
-)
+VERIFY_SYSTEM = f"""Independently derive auth_methods and production access from fetched official documentation.
 
-
-def _blind_query(app: str) -> str:
-    return (f"How do developers authenticate with the {app} API and is API access "
-            f"self-serve or does it require approval or a paid account")
+- Use only the supplied evidence and return strict JSON with exactly auth_methods and access_model.
+- auth_methods must use only: {normalize.CANONICAL}.
+- OAuth2 is the grant scheme; do not add Bearer Token just because an OAuth token uses a Bearer header.
+- Self-Serve means a new developer can obtain credentials usable in production without manual approval, partnership, business verification, or already being a paying customer.
+- A sandbox/trial alone is not production Self-Serve. Otherwise use Gated.
+- access_model must be {{"kind":"Self-Serve"|"Gated","note":"..."}}.
+- If the evidence cannot establish a field, explain that in the note rather than guessing."""
 
 
-def _norm_auth(items) -> set[str]:
-    return {re.sub(r"[^a-z0-9]", "", str(x).lower()) for x in (items or []) if str(x).strip()}
+class VerificationAccess(BaseModel):
+    kind: Literal["Self-Serve", "Gated"]
+    note: str
 
 
-def _auth_agree(a, b) -> bool:
-    na, nb = _norm_auth(a), _norm_auth(b)
-    if not na and not nb:
-        return True
-    if not na or not nb:
+class VerificationOutput(BaseModel):
+    auth_methods: list[str]
+    access_model: VerificationAccess
+
+
+def _blind_queries(app: str) -> list[str]:
+    return [
+        f"{app} official API authentication OAuth API key developer documentation",
+        f"{app} API production access approval sandbox existing customer official documentation",
+    ]
+
+
+def _auth_agree(left, right) -> bool:
+    """Exact canonical-set equality, used for accuracy/agreement scoring."""
+    return normalize.auth_sets_equal(left, right)
+
+
+def _auth_overlap(left, right) -> bool:
+    """A weaker diagnostic only; never presented as exact agreement."""
+    return normalize.auth_sets_overlap(left, right)
+
+
+def _canonical_verdict(parsed: dict) -> dict:
+    if set(parsed) != {"auth_methods", "access_model"}:
+        raise ValueError("verifier must return exactly auth_methods and access_model")
+    if not isinstance(parsed.get("auth_methods"), list):
+        raise ValueError("verifier auth_methods must be a list")
+    auth = normalize.normalize_auth_list(parsed["auth_methods"], strict=True)
+    if not auth:
+        raise ValueError("verifier auth_methods must not be empty")
+    access = parsed.get("access_model")
+    if not isinstance(access, dict) or set(access) != {"kind", "note"}:
+        raise ValueError("verifier access_model must contain exactly kind and note")
+    kind = str(access.get("kind") or "").strip()
+    if kind not in {"Self-Serve", "Gated"}:
+        raise ValueError("verifier access_model.kind must be Self-Serve or Gated")
+    note = str(access.get("note") or "").strip()
+    if not note:
+        raise ValueError("verifier access_model.note must explain production access")
+    return {"auth_methods": auth, "access_model": {"kind": kind, "note": note}}
+
+
+def _url_identity(url: str) -> str:
+    """Canonical page identity so fragments/trailing slashes cannot bypass exclusion."""
+    parsed = urlparse(url)
+    query = urlencode(sorted(
+        (key, value)
+        for key, value in parse_qsl(parsed.query, keep_blank_values=True)
+        if not key.lower().startswith("utm_")
+    ))
+    path = parsed.path.rstrip("/") or "/"
+    return urlunparse((parsed.scheme.lower(), parsed.netloc.lower(), path, "", query, ""))
+
+
+def _safe_auth_equal(left, right) -> bool:
+    try:
+        return normalize.auth_sets_equal(left, right, strict=True)
+    except ValueError:
         return False
-    return len(na & nb) > 0 and len(na ^ nb) <= 1
 
 
-def _rederive(app: str, exclude_urls: set[str], model: str | None, lead: str | None = None):
-    """Independent, blind re-derivation. Returns (parsed, used_urls, query) or None."""
-    q = _blind_query(app)
-    results = docs_research.search(q, k=8)
-    cands = [r["url"] for r in results
-             if r.get("url", "").startswith("http") and r["url"] not in exclude_urls][:3]
-    fetched = [docs_research.fetch(u) for u in cands]
-    ok = [f for f in fetched if f["ok"]]
-    if not ok:
-        return None  # cannot verify blindly -> honestly skip
-    ev = "\n\n".join(f"URL: {f['url']}\nTEXT: {f['text'][:2500]}" for f in ok)
+def _rederive(app: str, exclude_urls: set[str], model: str | None,
+              lead: str | None = None) -> dict | None:
+    """Blindly re-derive two fields and retain the complete evidence trace."""
+    queries = _blind_queries(app)
+    search_results = docs_research._dedupe_search_results([
+        docs_research.search_many(queries, k=8)
+    ])
+    candidates = docs_research._candidate_urls("", search_results, app=app)
+    excluded_identities = {_url_identity(url) for url in exclude_urls}
+    candidates = [
+        url for url in candidates if _url_identity(url) not in excluded_identities
+    ]
+
+    fetched = []
+    for url in candidates:
+        item = docs_research.fetch(url)
+        if item.get("ok"):
+            item["support_tags"] = docs_research.support_tags(item.get("text", ""), url)
+            fetched.append(item)
+        if len(fetched) >= 4:
+            break
+    topics = {tag for item in fetched for tag in item.get("support_tags", [])}
+    if not fetched or not ({"auth", "access"} & topics):
+        return None
+
+    evidence_text = "\n\n".join(
+        f"URL: {item['url']}\nTOPICS: {','.join(item['support_tags']) or 'none'}\n"
+        f"TEXT: {item['text'][:2800]}"
+        for item in fetched
+    )
     messages = [
         {"role": "system", "content": VERIFY_SYSTEM},
-        {"role": "user", "content": f"APP: {app}\n\nEVIDENCE:\n{ev}\n\nReturn the strict JSON now."},
+        {
+            "role": "user",
+            "content": f"APP: {app}\n\nFETCHED EVIDENCE:\n{evidence_text}\n\nReturn strict JSON now.",
+        },
     ]
-    parsed, _ = config.llm_json(messages, model=model, lead=lead)
-    return parsed, [f["url"] for f in ok], q
+    parsed, _ = config.llm_json(
+        messages, model=model, lead=lead, response_schema=VerificationOutput
+    )
+    try:
+        verdict = _canonical_verdict(parsed)
+    except ValueError as exc:
+        repair_messages = [
+            *messages,
+            {"role": "assistant", "content": json.dumps(parsed, ensure_ascii=False)},
+            {
+                "role": "user",
+                "content": f"Validation failed: {exc}. Return the complete corrected JSON only.",
+            },
+        ]
+        repaired, _ = config.llm_json(
+            repair_messages,
+            model=model,
+            lead=lead,
+            response_schema=VerificationOutput,
+        )
+        verdict = _canonical_verdict(repaired)
+    used_urls = [item["url"] for item in fetched]
+    stored_hosts = {urlparse(url).netloc.lower() for url in exclude_urls}
+    used_hosts = {urlparse(url).netloc.lower() for url in used_urls}
+    return {
+        "verdict": verdict,
+        "queries": queries,
+        "used_urls": used_urls,
+        "model": config.last_llm_used() or model or config.PRIMARY_MODEL,
+        "source_independence": {
+            "no_exact_url_reused": not bool(
+                {_url_identity(url) for url in used_urls} & excluded_identities
+            ),
+            "same_host_as_pass_1": bool(stored_hosts & used_hosts),
+            "excluded_url_count": len(exclude_urls),
+        },
+    }
 
 
 def _select_sample(results: list[dict], k: int, preseed: dict) -> list[dict]:
-    """Round-robin across categories; within each, preseeded + low-confidence first
-    (Flag C triage)."""
+    """Risk-biased, category-spread sampling."""
     buckets: dict[str, list] = collections.defaultdict(list)
-    for r in sorted(results, key=lambda r: (r["slug"] not in preseed, r["confidence"])):
-        buckets[r["category"]].append(r)
+    for record in sorted(results, key=lambda row: (row["slug"] not in preseed, row["confidence"])):
+        buckets[record["category"]].append(record)
     order = list(buckets)
-    picked, i = [], 0
+    picked, index = [], 0
     while len(picked) < k and any(buckets.values()):
-        cat = order[i % len(order)]
-        if buckets[cat]:
-            picked.append(buckets[cat].pop(0))
-        i += 1
-        if i > 100_000:
-            break
+        category = order[index % len(order)]
+        if buckets[category]:
+            picked.append(buckets[category].pop(0))
+        index += 1
     return picked
 
 
 def run_verification(sample_size: int | None = None, model: str | None = None) -> dict:
     results = config.load_json(config.RESULTS_PATH) or []
     if not results:
-        raise SystemExit("no results.json — run `python research.py --all` first")
-    by_slug = {r["slug"]: r for r in results}
+        raise SystemExit("no results.json - run `python research.py --all` first")
     preseed = pipeline.load_preseed_map()
+    sample = (
+        results
+        if not sample_size or sample_size >= len(results)
+        else _select_sample(results, sample_size, preseed)
+    )
 
-    if not sample_size or sample_size >= len(results):
-        sample = results  # verify everything -> agreement rate n = len(results)
-    else:
-        sample = _select_sample(results, sample_size, preseed)
-
-    n = auth_hits = access_hits = 0
-    skipped = 0
-    conf_before = conf_after = 0.0
+    n = exact_auth_hits = overlap_auth_hits = access_hits = skipped = 0
     disagreements: list[dict] = []
-    providers = config.keyed_shard_providers()
+    checks: list[dict] = []
 
-    for i, r in enumerate(sample):
-        exclude = set(r.get("evidence_urls", []))
-        if r.get("primary_docs_url"):
-            exclude.add(r["primary_docs_url"])
-        lead = providers[i % len(providers)] if len(providers) > 1 else None
+    for record in sample:
+        excluded = set(record.get("evidence_urls", []))
+        if record.get("primary_docs_url"):
+            excluded.add(record["primary_docs_url"])
         try:
-            out = _rederive(r["app"], exclude, model, lead=lead)
-        except Exception as e:  # a bad app shouldn't crash the whole pass
-            docs_research._log_failure(r["slug"], f"verify error: {type(e).__name__}: {e}")
+            derived = _rederive(record["app"], excluded, model, lead=None)
+        except Exception as exc:
+            docs_research._log_failure(
+                record["slug"], f"verify error: {type(exc).__name__}: {exc}", phase="verify"
+            )
             skipped += 1
             continue
-        if out is None:
+        if derived is None:
+            docs_research._log_failure(
+                record["slug"],
+                "blind verification found no independent claim-bearing source",
+                phase="verify",
+            )
             skipped += 1
             continue
-        parsed, _used, _q = out
+
+        verifier = derived["verdict"]
+        docs_research.resolve_failure(record["slug"], "verify")
+        exact_auth = _auth_agree(record.get("auth_methods", []), verifier["auth_methods"])
+        overlap_auth = _auth_overlap(record.get("auth_methods", []), verifier["auth_methods"])
+        access = record["access_model"]["kind"] == verifier["access_model"]["kind"]
         n += 1
+        exact_auth_hits += int(exact_auth)
+        overlap_auth_hits += int(overlap_auth)
+        access_hits += int(access)
 
-        after_auth = parsed.get("auth_methods") or []
-        after_access = parsed.get("access_model") or {}
-        if isinstance(after_access, str):
-            after_access = {"kind": "Gated" if "gat" in after_access.lower() else "Self-Serve"}
-        after_kind = after_access.get("kind")
-
-        aa = _auth_agree(r.get("auth_methods", []), after_auth)
-        ac = (r["access_model"]["kind"] == after_kind)
-        auth_hits += int(aa)
-        access_hits += int(ac)
-
-        # recalibrate confidence from the independent second opinion
-        conf_before += r["confidence"]
-        if aa and ac:
-            newc = min(0.98, round(r["confidence"] + 0.05, 3))
-        elif not aa and not ac:
-            newc = round(r["confidence"] * 0.6, 3)
-        else:
-            newc = round(r["confidence"] * 0.8, 3)
-        conf_after += newc
-        by_slug[r["slug"]]["confidence"] = newc
-
-        if not aa:
-            disagreements.append({"slug": r["slug"], "app": r["app"], "field": "auth_methods",
-                                  "before": r.get("auth_methods", []), "after": after_auth})
-        if not ac:
-            disagreements.append({"slug": r["slug"], "app": r["app"], "field": "access_model",
-                                  "before": r["access_model"]["kind"], "after": after_kind})
-
-    # persist confidence-adjusted, re-validated records
-    updated = [validate_record(by_slug[r["slug"]]).model_dump(mode="json") for r in results]
-    config.save_json(config.RESULTS_PATH, updated)
+        agreement = {
+            "auth_methods_exact": exact_auth,
+            "auth_methods_overlap": overlap_auth,
+            "access_model": access,
+        }
+        check = {
+            "slug": record["slug"],
+            "app": record["app"],
+            "model": derived["model"],
+            "queries": derived["queries"],
+            "used_urls": derived["used_urls"],
+            "source_independence": derived["source_independence"],
+            "before": {
+                "auth_methods": record.get("auth_methods", []),
+                "access_model": record["access_model"],
+                "confidence": record["confidence"],
+            },
+            "verifier": verifier,
+            "agreement": agreement,
+            "adjudication": "Pending" if not (exact_auth and access) else "Not Needed",
+        }
+        checks.append(check)
+        if not exact_auth:
+            disagreements.append({
+                "slug": record["slug"], "app": record["app"], "field": "auth_methods",
+                "before": record.get("auth_methods", []), "verifier": verifier["auth_methods"],
+                "status": "Pending adjudication",
+            })
+        if not access:
+            disagreements.append({
+                "slug": record["slug"], "app": record["app"], "field": "access_model",
+                "before": record["access_model"]["kind"],
+                "verifier": verifier["access_model"]["kind"],
+                "status": "Pending adjudication",
+            })
 
     verification = {
-        "method": ("Blind re-search from scratch: fresh differently-phrased query, "
-                   "independent fetch EXCLUDING stored evidence URLs, LLM blind to the "
-                   "pass-1 answer. Re-derived fields: auth_methods, access_model."),
+        "method": (
+            "Blind re-search with two fresh queries, independent fetched URLs, and a model blind "
+            "to pass-1 values. Automated output is retained as a disagreement, never auto-folded."
+        ),
         "n_verified": n,
         "n_skipped_no_independent_source": skipped,
-        "auth_methods_agreement_rate": round(auth_hits / n, 3) if n else None,
+        "auth_methods_exact_agreement_rate": round(exact_auth_hits / n, 3) if n else None,
+        "auth_methods_overlap_rate": round(overlap_auth_hits / n, 3) if n else None,
+        "auth_methods_agreement_rate": round(exact_auth_hits / n, 3) if n else None,
         "access_model_agreement_rate": round(access_hits / n, 3) if n else None,
-        "overall_agreement_rate": round((auth_hits + access_hits) / (2 * n), 3) if n else None,
-        "avg_confidence_before": round(conf_before / n, 3) if n else None,
-        "avg_confidence_after": round(conf_after / n, 3) if n else None,
+        "overall_agreement_rate": round((exact_auth_hits + access_hits) / (2 * n), 3) if n else None,
+        "confidence_policy": "Verification does not mutate record confidence or facts before adjudication.",
+        "checks": checks,
         "disagreements": disagreements,
-        "caveat": ("Agreement rate is NOT accuracy — it measures whether an independent "
-                   "second pass reproduced pass 1. True accuracy is the hand-checked number."),
+        "caveat": (
+            "Agreement is reproducibility, not accuracy. Human checks against official docs are the "
+            "accuracy measure. Auth scoring uses exact canonical sets."
+        ),
         "generated": dt.date.today().isoformat(),
     }
     metrics = config.load_json(config.METRICS_PATH, default={}) or {}
@@ -176,56 +296,109 @@ def run_verification(sample_size: int | None = None, model: str | None = None) -
     config.save_json(config.METRICS_PATH, metrics)
     rebuild_metrics()
 
-    print(f"verified {n} (skipped {skipped}); auth agree "
-          f"{verification['auth_methods_agreement_rate']}, access agree "
-          f"{verification['access_model_agreement_rate']}, overall "
-          f"{verification['overall_agreement_rate']}; disagreements={len(disagreements)}")
+    print(
+        f"verified {n} (skipped {skipped}); exact auth agree "
+        f"{verification['auth_methods_exact_agreement_rate']}, access agree "
+        f"{verification['access_model_agreement_rate']}, overall "
+        f"{verification['overall_agreement_rate']}; pending disagreements={len(disagreements)}"
+    )
     return verification
 
 
+def _browser_row_comparison(row: dict) -> dict | None:
+    first_pass = row.get("first_pass", {})
+    browser = row.get("browser", {})
+    if browser.get("error"):
+        return None
+    matches = {
+        "api_type": first_pass.get("api_type") == browser.get("api_type"),
+        "auth_methods": _safe_auth_equal(
+            first_pass.get("auth_methods", []), browser.get("auth_methods", [])
+        ),
+        "access_model": first_pass.get("access_model") == browser.get("access_model"),
+    }
+    return {
+        "matches": matches,
+        "disagreed_fields": [field for field, matched in matches.items() if not matched],
+    }
+
+
 def _browser_use_summary() -> dict:
-    """Summarize the Browser Use Cloud verification loop (out/browser_verification.json),
-    if present, so the report can name it as a distinct, real loop."""
     data = config.load_json(config.OUT_DIR / "browser_verification.json", default=[]) or []
+    if isinstance(data, dict):
+        data = data.get("rows", [])
     if not data:
         return {}
-    corrected = []
+
+    disagreed_apps = []
+    field_counts = collections.Counter()
+    accepted_apps = []
+    n_valid = 0
     for row in data:
-        fp, b = row.get("first_pass", {}), row.get("browser", {})
-        if fp.get("api_type") != b.get("api_type") or fp.get("access_model") != b.get("access_model"):
-            corrected.append(row.get("slug"))
+        comparison = row.get("comparison") or _browser_row_comparison(row)
+        if comparison is None:
+            continue
+        n_valid += 1
+        fields = comparison.get("disagreed_fields", [])
+        if fields:
+            disagreed_apps.append(row.get("slug"))
+            field_counts.update(fields)
+        adjudication = row.get("adjudication") or {}
+        status = adjudication.get("status") if isinstance(adjudication, dict) else adjudication
+        applied = adjudication.get("applied_to_results") if isinstance(adjudication, dict) else False
+        if status == "Accepted Correction" and applied is True:
+            accepted_apps.append(row.get("slug"))
+
     return {
-        "method": ("A cloud browser agent (Browser Use Cloud) independently navigated each app's "
-                   "live developer docs and re-derived API type, auth, and access model — a channel "
-                   "independent of the pipeline's own search+fetch and LLM synthesis."),
-        "n_checked": len(data),
-        "n_corrections_found": len(corrected),
-        "corrected_apps": corrected,
+        "method": (
+            "A cloud browser agent independently navigated live developer docs and re-derived API "
+            "type, canonical auth, and production access. Disagreements require human adjudication."
+        ),
+        "n_checked": n_valid,
+        "n_disagreements": len(disagreed_apps),
+        "disagreed_apps": disagreed_apps,
+        "field_disagreements": dict(field_counts),
+        "n_adjudicated_corrections": len(accepted_apps),
+        "adjudicated_correction_apps": accepted_apps,
+        # Compatibility keys for the current report renderer. Their meaning is
+        # now strictly "accepted correction", never raw model disagreement.
+        "n_corrections_found": len(accepted_apps),
+        "corrected_apps": accepted_apps,
     }
 
 
 def rebuild_metrics() -> dict:
-    """Recompute patterns from current results.json and assemble the two labeled numbers."""
     results = config.load_json(config.RESULTS_PATH) or []
     metrics = config.load_json(config.METRICS_PATH, default={}) or {}
     metrics["patterns"] = pipeline.compute_aggregates(results)
     metrics["n_results"] = len(results)
-    bu = _browser_use_summary()
-    if bu:
-        metrics["browser_use"] = bu
-    ver = metrics.get("verification", {})
-    hc = metrics.get("handcheck", {})
+    failure_state = config.load_json(config.FAILURE_STATE_PATH, default={}) or {}
+    metrics["unresolved_failures"] = sorted(
+        failure_state.values(), key=lambda item: (item.get("slug", ""), item.get("phase", ""))
+    )
+    browser_summary = _browser_use_summary()
+    if browser_summary:
+        metrics["browser_use"] = browser_summary
+    verification = metrics.get("verification", {})
+    handcheck = metrics.get("handcheck", {})
     metrics["headline_accuracy"] = {
         "hand_checked_accuracy": {
-            "value": hc.get("accuracy"), "n": hc.get("n"),
-            "label": "Hand-checked accuracy (ground truth)"},
+            "value": handcheck.get("accuracy"),
+            "n": handcheck.get("n"),
+            "label": "Current hand-checked accuracy (ground truth)",
+        },
         "automated_agreement": {
-            "value": ver.get("overall_agreement_rate"), "n": ver.get("n_verified"),
-            "label": "Automated blind re-search agreement (not accuracy)"},
+            "value": verification.get("overall_agreement_rate"),
+            "n": verification.get("n_verified"),
+            "label": "Automated blind re-search agreement (not accuracy)",
+        },
     }
-    import os
-    metrics["repo_url"] = os.getenv("REPO_URL", "https://github.com/dheeraj3587/composio-ai-product-ops")
-    metrics["live_url"] = os.getenv("LIVE_URL", "https://composio-ai-product-ops.vercel.app")
+    metrics["repo_url"] = os.getenv(
+        "REPO_URL", "https://github.com/dheeraj3587/composio-ai-product-ops"
+    )
+    metrics["live_url"] = os.getenv(
+        "LIVE_URL", "https://composio-ai-product-ops.vercel.app"
+    )
     metrics["generated"] = dt.date.today().isoformat()
     config.save_json(config.METRICS_PATH, metrics)
     return metrics

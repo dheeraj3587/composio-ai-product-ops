@@ -47,8 +47,14 @@ def research_app(app: dict, model: str | None = None, log: bool = True,
         meta["app"], meta["slug"], hint_url=meta["hint_url"], category=meta["category"])
     rec, reasoning = synthesis.synthesize(
         meta, evidence, composio_signal, preseed=preseed, model=model, write_log=log, lead=lead)
-    info = {"preseed_used": bool(preseed), "degraded": evidence["degraded"],
-            "n_fetched": len(evidence["fetched_urls"]), "query": evidence["query"]}
+    info = {
+        "preseed_used": bool(preseed),
+        "degraded": evidence["degraded"],
+        "evidence_quality": evidence.get("evidence_quality"),
+        "supported_topics": evidence.get("supported_topics", []),
+        "n_fetched": len(evidence["fetched_urls"]),
+        "queries": evidence.get("queries") or [evidence["query"]],
+    }
     return rec, info
 
 
@@ -82,19 +88,16 @@ def run_batch(slugs: list[str] | None = None, workers: int = 6,
     todo = [a for a in apps if a["slug"] not in existing]
     results = dict(existing)
 
-    providers = config.keyed_shard_providers() if shard else []
-    sharding = len(providers) > 1 and not model
-    mode = ("shard across " + "+".join(providers)) if sharding else f"model={model or config.OPENROUTER_MODEL}"
+    mode = f"google-native:{model or config.PRIMARY_MODEL}"
     print(f"batch: {len(apps)} requested, {len(existing)} cached, {len(todo)} to run "
           f"(workers={workers}, {mode})")
 
-    def work(a: dict, idx: int):
-        lead = providers[idx % len(providers)] if sharding else None
-        rec, info = research_app(a, model=model, lead=lead)
-        return a["slug"], rec.model_dump(mode="json"), info, lead
+    def work(a: dict):
+        rec, info = research_app(a, model=model, lead=None)
+        return a["slug"], rec.model_dump(mode="json"), info, None
 
     with cf.ThreadPoolExecutor(max_workers=workers) as ex:
-        futs = {ex.submit(work, a, i): a for i, a in enumerate(todo)}
+        futs = {ex.submit(work, a): a for a in todo}
         for fut in cf.as_completed(futs):
             a = futs[fut]
             try:
@@ -102,12 +105,17 @@ def run_batch(slugs: list[str] | None = None, workers: int = 6,
                 results[slug] = rec
                 with _write_lock:
                     _save(results)
+                docs_research.resolve_failure(slug, "pipeline")
+                if not info["degraded"]:
+                    docs_research.resolve_failure(slug, "evidence")
                 flag = " [degraded]" if info["degraded"] else ""
                 via = f" via {lead}" if lead else ""
                 print(f"[ok] {slug}: {rec['buildability']}/{rec['recommended_next_action']} "
                       f"conf={rec['confidence']}{via}{flag}")
             except Exception as e:  # honest failure log — never silently guess
-                docs_research._log_failure(a["slug"], f"pipeline error: {type(e).__name__}: {e}")
+                docs_research._log_failure(
+                    a["slug"], f"pipeline error: {type(e).__name__}: {e}", phase="pipeline"
+                )
                 print(f"[FAIL] {a['slug']}: {type(e).__name__}: {e}")
 
     ordered = _ordered(results)

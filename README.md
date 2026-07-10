@@ -15,7 +15,7 @@ clear cross-app patterns second, honest verification third.
 ## Headline results (current run)
 
 - **100 / 100 apps** researched, schema-valid, every row backed by a real, resolving evidence URL.
-- **Hand-checked accuracy: 95.1% as measured** (n=27, field-level over api_type + auth + access) —
+- **Hand-checked accuracy: 95.1% as measured in the published snapshot** (n=27, field-level over api_type + auth + access) —
   the ground-truth number. Four measured auth discrepancies are shown openly: DealCloud, Notion,
   Slack, and Cloudflare. The first three are tracked as historical corrections; Cloudflare remains visible.
 - **Accuracy moved 84.0% → 95.1%** on the 27-app hand-check sample *because of the verification loops*
@@ -23,8 +23,9 @@ clear cross-app patterns second, honest verification third.
   Both sides are label-canonicalized, so the delta counts **factual fixes only**; label formatting is
   data hygiene, not accuracy. Misses are shown, not hidden.
 - **Blind re-search agreement: ~59%** (n≈21) — labeled as *reproducibility, not accuracy*.
-- **Browser-Use Cloud loop:** 12 apps re-checked against live docs; caught **6** first-pass errors
-  static fetch missed (e.g. Copper and Plain, which the first pass had wrongly marked "no API").
+- **Browser-Use Cloud loop:** 12 apps re-checked against live docs. The published snapshot's legacy
+  summary recorded **6 API/access disagreements**; hardened runs now retain all three field comparisons
+  and require an explicit human adjudication before any disagreement is called a correction.
 - **existing_mcp false-negative sweep:** the first batch derived `existing_mcp` from API-reference
   pages (which rarely mention MCP) and marked **30 official MCP servers as "None"** across two
   review sweeps — including GitHub, Stripe, Cloudflare, Slack, Airtable, Ramp, Twilio, Salesforce,
@@ -68,15 +69,15 @@ Generated outputs land in `out/` and are baked into `report/` for deploy.
 research.py (offline CLI = the agent)
   data/apps.json + data/preseed.json
      ├─ composio_lookup.py   composio_toolkit (Yes/No) via Composio SDK / public catalog
-     ├─ docs_research.py     web SEARCH + direct FETCH (+ developer-subdomain probing,
-     │                        + a dedicated "official MCP server" probe for existing_mcp)
-     ├─ synthesis.py         LLM (OpenAI-compatible) -> locked schema + reasoning log
-     │                        cites ONLY fetched, resolving URLs — no invented sources
-     ├─ verify.py            LOOP 1: BLIND re-search from scratch -> agreement + metrics.json
-     └─ pipeline.py          orchestration: concurrent, resumable, optional provider sharding
+     ├─ docs_research.py     two-query SEARCH + balanced/ranked direct FETCH, claim-topic checks,
+     │                        + a dedicated "official MCP server" probe for existing_mcp
+     ├─ synthesis.py         LLM -> strict semantic validation + one constrained repair
+     │                        cites ONLY fetched URLs; invalid enums/contradictions are rejected
+     ├─ verify.py            LOOP 1: BLIND re-search -> auditable disagreements (never auto-folded)
+     └─ pipeline.py          orchestration: concurrent, resumable, one pinned synthesis model
   browser_verify.py          LOOP 2: Browser Use Cloud agent on live docs (isolated .venv-browser)
-  handcheck.py               LOOP 3: human check on 27 apps -> ground-truth accuracy + movement
-  corrections.py             documented, re-runnable migration: auth normalization + per-app fixes
+  handcheck.py               LOOP 3: current human-check accuracy + separate historical snapshots
+  corrections.py             legacy migration used only to reproduce the published reviewed snapshot
         ↓
 report/index.html + app.js   renders baked-in data.js  (Findings → Matrix → Agent → Verification → Proof)
 ```
@@ -84,32 +85,35 @@ report/index.html + app.js   renders baked-in data.js  (Findings → Matrix → 
 No second hosted backend, no Docker, no live headless-browser server in production — the report is a
 static page rendering baked-in JSON.
 
-### LLM layer — configurable, OpenAI-compatible, multi-provider
+### Paid research layer — Perplexity Search + native Google Gen AI
 
-`config.py` supports any OpenAI-compatible provider and an **ordered fallback chain** (`llm_json()`
-tries each tier until one succeeds), with optional **round-robin sharding** across providers to beat
-free-tier rate limits.
+`docs_research.py` uses the official Perplexity Search SDK to discover candidate documentation. It
+batches related queries into one request, caches responses for seven days, and then fetches pages
+directly before they can enter the citation whitelist. Search snippets alone are never accepted as
+evidence.
 
-**Current / recommended config (`.env`):** OpenRouter with a paid model —
-`anthropic/claude-opus-4.8` → `openai/gpt-5-mini` → `google/gemini-2.5-flash`.
-Providers wired: `openrouter`, `zenmux`, `google` (Gemini), `agentrouter`. Configure via
-`LLM_PROVIDER` / `LLM_MODEL` / `LLM_FALLBACK_*` / `LLM_FALLBACK2_*`, `LLM_SHARD_PROVIDERS`,
-or a single `LLM_CHAIN="provider:model, provider:model"`. Permanent 4xx (e.g. a 402 "needs
-balance") are not retried; a tier that returns empty output falls through to the next.
+`config.py` uses the native Google Gen AI SDK with Pydantic response schemas. The fresh-run model is
+`gemini-3.1-pro-preview` with medium thinking: one pinned model keeps judgments comparable across all
+100 apps, while deterministic validators remain the final authority for schema, semantics, and
+citations. There is intentionally no gateway fallback or cross-model sharding.
+
+Every paid call is recorded in `out/usage.json`. Default run caps are $2 for Perplexity and $8 for
+Google; the pipeline refuses a call whose conservative estimate would cross its provider cap.
 
 ---
 
 ## Verification (three loops + honest numbers)
 
-1. **Blind re-search from scratch** (`verify.py`) — issues a *fresh, differently-phrased* query and
-   fetches pages that **exclude the stored URLs**, then re-derives `auth_methods` + `access_model`
-   **without seeing pass-1's answer**. Catches wrong-*page* errors, not just wrong-reading.
-   (Re-fetching the stored URL would only re-confirm a correlated error.)
+1. **Blind re-search from scratch** (`verify.py`) — issues two fresh queries, fetches pages that
+   **exclude the stored URLs**, then re-derives canonical `auth_methods` + production `access_model`
+   **without seeing pass-1's answer**. Every check stores its queries, fetched URLs, answering model,
+   before/verifier values, and source-independence metadata. It never mutates records or confidence.
 2. **Browser Use Cloud** (`browser_verify.py`) — a cloud browser agent independently navigates each
-   app's live developer docs and re-derives api_type/auth/access. Independent of the pipeline's own
-   search+fetch *and* LLM, so it catches JS-rendered docs and marketing-homepage misses.
-3. **Human hand-check** (`handcheck.py`) — a person verifies api_type + auth + access on 27 apps
-   against real docs. This is the **ground-truth accuracy** number; misses are listed in `metrics.json`.
+   app's live developer docs and re-derives api_type/auth/access. Output uses the same controlled
+   vocabulary and production-access rule; disagreements remain `Pending` until human adjudication.
+3. **Human hand-check** (`handcheck.py`) — a person verifies api_type + exact canonical auth set +
+   production access against official docs. This is the **ground-truth accuracy** number. Current and
+   historical snapshots are stored separately; scoring never swaps in old agent values.
 
 Two clearly-labeled numbers: **hand-checked accuracy** (ground truth) vs **automated blind re-search
 agreement** (reproducibility). `confidence` is a self-scored triage signal, **not** an accuracy claim.
@@ -141,32 +145,40 @@ cp .env.example .env       # then edit .env
 
 | Key | Purpose |
 |-----|---------|
-| `OPENROUTER_API_KEY` | LLM provider (recommended primary). Default model `anthropic/claude-opus-4.8` |
-| `LLM_MODEL` / `LLM_FALLBACK_MODEL` / `LLM_FALLBACK2_MODEL` | chain, e.g. `anthropic/claude-opus-4.8` → `openai/gpt-5-mini` → `gemini-2.5-flash` |
+| `PERPLEXITY_API_KEY` | Perplexity Search API for documentation discovery |
+| `GOOGLE_GENAI_API_KEY` | Native Google Gen AI synthesis and verification |
+| `GOOGLE_GENAI_MODEL` | Pinned synthesis model; default `gemini-3.1-pro-preview` |
+| `PERPLEXITY_RUN_BUDGET_USD` / `GOOGLE_RUN_BUDGET_USD` | Per-run safety caps; defaults `$2` / `$8` |
 | `COMPOSIO_API_KEY` | Composio toolkit lookup (recommended; HTTP-catalog fallback if absent) |
-| `GOOGLE_API_KEY` / `ZENMUX_API_KEY` / `AGENTROUTER_API_KEY` | *optional* extra providers for the chain / sharding |
 | `BROWSER_USE_API_KEY` | *optional* — Browser Use Cloud verification loop (`browser_verify.py`) |
-| `TAVILY_API_KEY` / `SERPER_API_KEY` | *optional* better search; keyless DuckDuckGo is the default |
 
-### Run end-to-end
+### Fresh run end-to-end
 
 ```bash
-python research.py --app stripe        # 1) sanity-check one app live (prints record; no writes)
-python research.py --limit 5           # 2) small dry run
-python research.py --all               # 3) research all 100 (concurrent + resumable)
-python research.py --verify            # 4) LOOP 1: blind re-search -> metrics.json
-python research.py --handcheck-template 18   # 5) generate hand-check worksheet
-#    ...fill truth in handcheck/handcheck.json (~5 min/app)...
-python research.py --fold-handcheck    # 6) LOOP 3: fold hand-checked ground truth
-python research.py --accuracy-movement # 7) first-pass vs post-verification accuracy delta
-python research.py --build-report      # 8) bake data into report/ (writes data.js)
+python research.py --app stripe             # 1) live sanity check; does not merge a results row
+python research.py --all --fresh-run         # 2) archive old state, research all 100
+# If any app failed: rerun --all, then capture the complete snapshot once:
+python research.py --snapshot-first-pass        # 3) only needed after an interrupted fresh run
+python research.py --verify --sample 24         # 4) blind re-search; facts remain unchanged
+.venv-browser/bin/python browser_verify.py --sample 12 --batch-size 6  # 5) live-doc loop
+python research.py --handcheck-template 24      # 6) create risk-biased worksheet
+# Fill official-doc truth + evidence URLs in handcheck/handcheck.json.
+python research.py --fold-handcheck             # 7) current ground-truth metric
+python research.py --accuracy-movement          # 8) first-pass vs current on same truth
+python research.py --metrics                    # 9) rebuild all derived metrics
+python research.py --build-report               # 10) publish only after review
 ```
 
+- **Safe fresh state:** `--fresh-run` archives generated results, metrics, reasoning, browser output,
+  and hand-check truth under ignored `out/archive/<timestamp>/`; it deliberately leaves `report/`
+  unchanged until `--build-report`.
+- **Immutable baseline:** a complete fresh run writes `results_firstpass.json` automatically. If the
+  run was interrupted, resume it and call `--snapshot-first-pass`; that command refuses to overwrite.
 - **Resumable:** `--all` skips apps already in `results.json`; re-run after interruption.
-- **Honest failures:** unresearched/ambiguous apps are logged to `out/failures.log`, never guessed.
-- **Corrections migration:** `python corrections.py` re-applies auth normalization + the documented,
-  evidence-backed per-app fixes (Otter MCP, Copper/Plain APIs, Binance/DealCloud MCP, weak-evidence
-  confidence, etc.) and re-validates all 100 against the locked schema. Re-run it after any `--no-resume`.
+- **Honest failures:** current unresolved failures live in `out/failures.json`; append-only
+  `out/failures.log` keeps failed/resolved history. Ambiguous apps are never guessed.
+- **No automatic correction fold:** verification outputs disagreements for adjudication. `corrections.py`
+  is retained only to reproduce the legacy published snapshot and is not part of a fresh run.
 
 ### Loop 2 — Browser Use Cloud (isolated env)
 
@@ -176,7 +188,8 @@ Kept in a separate venv so its heavy deps don't touch the pipeline:
 python -m venv .venv-browser && .venv-browser/bin/pip install browser-use
 .venv-browser/bin/python browser_verify.py --sample 12 --batch-size 6   # ~2 cloud tasks
 ```
-Writes `out/browser_verification.json`; `--build-report` folds its summary into the report.
+Writes `out/browser_verification.json` with field comparisons and adjudication state; `--metrics`
+summarizes disagreements separately from accepted corrections.
 
 ### View locally / deploy
 
@@ -196,14 +209,31 @@ or point a Vercel project at the repo with **Root Directory = `report`** (no bui
 | `--all` | research all 100 (concurrent, resumable) |
 | `--slugs a,b,c` | research a subset |
 | `--limit N` | research the first N apps |
-| `--recheck a,b,c` | re-research given slugs and **merge** into results.json (keeps the rest + corrections) |
-| `--verify [--sample N]` | LOOP 1 blind re-search verification (default: all records) |
+| `--recheck a,b,c` | re-research given slugs and **merge** into results.json (keeps all other rows) |
+| `--fresh-run` | with `--all`, archive generated state and start clean without touching `report/` |
+| `--snapshot-first-pass` | capture a complete baseline once; refuses incomplete data or overwrite |
+| `--verify [--sample N]` | blind re-search audit; writes evidence/provenance but never changes rows |
 | `--handcheck-template [N]` | generate a hand-check worksheet (default 18) |
 | `--fold-handcheck` | LOOP 3: fold filled hand-check truth into metrics (per-field accuracy + misses) |
 | `--accuracy-movement` | score first-pass snapshot vs post-verification results vs hand truth |
 | `--metrics` | rebuild `metrics.json` (patterns + headline numbers) |
 | `--build-report` | copy results/metrics into `report/` and write `data.js` |
-| `--workers N` · `--model M` · `--no-resume` · `--no-shard` | knobs |
+| `--workers N` · `--model M` · `--no-resume` | execution knobs (`--no-shard` is compatibility-only) |
+
+---
+
+## Regression checks
+
+```bash
+pip install -r requirements-dev.txt
+python -m unittest discover -s tests -v
+ruff check *.py tests demo
+python -m compileall -q *.py tests demo
+```
+
+The focused suite covers evidence-slot starvation, claim-topic detection, strict auth normalization,
+LLM repair, non-mutating verification, browser disagreement semantics, fresh-run archival, failure
+recovery state, and current-only hand-check scoring.
 
 ---
 
@@ -214,10 +244,11 @@ or point a Vercel project at the repo with **Root Directory = `report`** (no bui
   with a fresh search and **trusts evidence over the prior**, logging contradictions.
 - **Hand-check** (27 apps): a human verifies api_type + auth + access against real docs; hits and
   misses are shown in the report and `metrics.json`, not hidden.
-- **Browser-verification fold:** the Browser Use Cloud loop flagged disagreements; a human adjudicated
-  each against official docs (e.g. WhatsApp/Pinterest kept **Gated** despite the browser calling them
-  self-serve, because production needs verification/review) and folded corrections via `corrections.py`.
-- **Thin/unfetchable docs:** logged to `failures.log`; those records get capped confidence.
+- **Browser adjudication:** Browser Use Cloud flags disagreements; a human must accept/reject each
+  against official docs. New output stores that decision explicitly. The published legacy snapshot
+  used `corrections.py`; fresh runs do not auto-apply that migration.
+- **Thin/unfetchable docs:** retained in current failure state; synthesized degraded records cap
+  confidence, while no-fetched-source cases fail instead of guessing.
 
 ## Honest limitations
 
@@ -230,25 +261,29 @@ or point a Vercel project at the repo with **Root Directory = `report`** (no bui
   prevented going forward by the dedicated MCP probe in `docs_research.py`. Remaining
   `None`/`Community` rows have not all been re-swept by hand — treat that field as verified-on-fix,
   not hand-checked.
-- Self-scored `confidence` can be miscalibrated — that's exactly why the **hand-checked** number, not
-  confidence, is the accuracy claim.
-- The dataset was produced by a mix of models (free-tier during the batch, plus targeted re-checks); it
-  is trustworthy because it was **verified**, not because of the model that produced it.
+- Self-scored `confidence` can be miscalibrated. Automated verification no longer changes it; the
+  **hand-checked** number, not confidence, is the accuracy claim.
+- The published snapshot was produced by a mix of models. The next fresh run pins
+  `gemini-3.1-pro-preview`; every reasoning/check artifact records the exact model used. Because this
+  model is a preview, a later rerun should first repeat the one-app smoke test.
+- The published hand-check file used a looser trial-access rule. New templates define access by
+  production usability and keep current metrics separate from historical snapshots.
 
 ## Repo layout
 
 ```
 composio/
 ├── research.py            CLI (the agent entry point)
-├── config.py  schema.py   multi-provider LLM chain + paths; locked Pydantic schema
+├── config.py  schema.py   native Google Gen AI + paths; locked Pydantic schema
+├── usage_tracker.py       paid-call ledger and per-provider run caps
 ├── normalize.py           canonical auth-label normalization
 ├── composio_lookup.py  docs_research.py  synthesis.py  pipeline.py  verify.py  handcheck.py
-├── corrections.py         documented, re-runnable per-app corrections migration
+├── corrections.py         legacy migration for reproducing the published reviewed snapshot
 ├── browser_verify.py      Browser Use Cloud verification loop (runs in .venv-browser)
 ├── data/       apps.json  preseed.json
 ├── handcheck/  handcheck.json                                       (hand-verified truth)
-├── out/        results.json  metrics.json  browser_verification.json
-│               results_firstpass.json  failures.log  reasoning/<slug>.md   (generated)
+├── out/        results.json  metrics.json  usage.json  browser_verification.json  archive/ (ignored)
+│               results_firstpass.json  failures.json  failures.log  reasoning/<slug>.md
 ├── report/     index.html  app.js  data.js  vercel.json             (static site)
 ├── demo/       composio_demo.py                                     (optional read-only tool-call)
 └── plan.md  requirements.txt  .env.example  .gitignore
