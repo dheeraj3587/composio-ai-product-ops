@@ -1,17 +1,65 @@
-# Vonage — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Vonage - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Vonage official API authentication developer documentation", "Vonage API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://developer.vonage.com | HTTP 200 | hint | topics=api,auth,access
+- https://developer.vonage.com/en/getting-started/concepts/authentication | HTTP 200 | search_result | topics=api,auth,access
+- https://developer.vonage.com/en/verify/concepts/authentication | HTTP 200 | search_result | topics=api,auth,access
+- https://developer.vonage.com/en/conversation/guides/user-authentication | HTTP 200 | search_result | topics=api,auth,access
+- https://developers.vonage.com | HTTP 0 | derived_guess | topics=none
+- https://docs.vonage.com | HTTP 0 | derived_guess | topics=none
 
 ## Model reasoning
-developer.vonage.com evidence shows public Communication APIs (Voice, Video, Messaging, Verify) with REST endpoints, client/server SDKs, API Dashboard and free-trial language, supporting Easy self-serve buildability. Separate VCC docs confirm REST Authentication API that issues bearer tokens from account credentials with scopes across many resources (Agents, Interactions, etc.), confirming Broad breadth. No MCP mentioned. Preseed was none so neither confirmed nor contradicted. No rate-limit or heavy-review details appear; main_blocker empty and next_action Build Now. Confidence slightly reduced because primary portal snippets omit exact main-API key/JWT mechanics (only VCC bearer is explicit) yet overall docs and dashboard make integration clearly feasible.
+The documentation clearly outlines self-serve access to API keys upon account creation. Authentication methods include Basic Auth, API Key, Bearer Token (JWT), and OAuth2. Vonage provides official MCP servers for both documentation and API bindings, making it highly buildable and ready for integration.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — API Dashboard and free trial on developer portal; VCC needs account credentials to mint bearer tokens
+- access_model: **Self-Serve** - Developers can create a Vonage account and immediately access API keys and secrets from the dashboard for production use.
 - recommended_next_action: **Build Now**
-- confidence: **0.82**
+- confidence: **0.95**
 
-## Evidence URLs (whitelist-enforced)
-- https://developer.vonage.com
-- https://docs-vcc.atlassian.net/wiki/spaces/VCCA/pages/3565224134/Authentication+API
-- https://www.vonage.ca/en/communications-apis/verify/developer/
-- https://docs-vcc.atlassian.net/wiki/spaces/VCCA/pages/3567190030/How+to+authenticate+with+a+Vonage+Contact+Center+VCC+API
+## Evidence URLs
+- https://developer.vonage.com/en/getting-started/concepts/authentication
+- https://developer.vonage.com/en/verify/concepts/authentication
+- https://developer.vonage.com/en/mcp-server/overview
+- https://developer.vonage.com/en/mcp-server/conceptual-guides/introduction-to-vonage-mcp
+
+## Generated record
+```json
+{
+  "app": "Vonage",
+  "category": "Comms",
+  "one_liner": "Vonage provides a broad suite of communication APIs for voice, video, messaging, and verification, along with...",
+  "auth_methods": [
+    "Basic Auth",
+    "API Key",
+    "Bearer Token",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can create a Vonage account and immediately access API keys and secrets from the dashboard for production use."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "No",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://developer.vonage.com/en/getting-started/concepts/authentication",
+    "https://developer.vonage.com/en/verify/concepts/authentication",
+    "https://developer.vonage.com/en/mcp-server/overview",
+    "https://developer.vonage.com/en/mcp-server/conceptual-guides/introduction-to-vonage-mcp"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "vonage",
+  "primary_docs_url": "https://developer.vonage.com/en/getting-started/concepts/authentication",
+  "rate_limit_note": "No specific rate limit details were found in the provided documentation snippets.",
+  "last_verified": "2026-07-10"
+}
+```

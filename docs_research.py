@@ -55,13 +55,24 @@ MCP_OFFICIAL_SEEDS = {
     "gorgias": ["https://docs.gorgias.com/en-US/connect-your-ai-assistant-to-the-gorgias-mcp-6310546"],
     "podio": ["https://docs.sharefile.com/en-us/podio/using-podio/general-features/podio-mcp-server.html"],
     "quickbooks": ["https://github.com/intuit/quickbooks-online-mcp-server"],
-    "salesforce": ["https://developer.salesforce.com/docs/platform/hosted-mcp-servers/overview"],
+    "salesforce": [
+        "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/overview",
+        "https://github.com/salesforcecli/mcp",
+    ],
     "snowflake": ["https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-mcp"],
     "woocommerce": ["https://developer.woocommerce.com/docs/features/mcp/"],
     "zoho-crm": ["https://www.zoho.com/crm/developer/docs/mcp/overview.html"],
     "zoho-cliq": ["https://www.zoho.com/cliq/help/platform/zoho-cliq-mcp.html"],
     "systeme-io": ["https://help.systeme.io/article/9489-how-to-use-systeme-ios-mcp"],
     "consensus": ["https://docs.consensus.app/docs/mcp"],
+    "lark": [
+        "https://github.com/larksuite/lark-openapi-mcp",
+        "https://open.larksuite.com/document/mcp_open_tools/call-feishu-mcp-server-in-remote-mode",
+    ],
+    "neo4j": [
+        "https://neo4j.com/developer/genai-ecosystem/model-context-protocol-mcp/",
+        "https://github.com/neo4j/mcp",
+    ],
     "xero": ["https://github.com/xeroapi/xero-mcp-server"],
     "attio": ["https://docs.attio.com/mcp/overview"],
     "close": ["https://help.close.com/docs/mcp-server"],
@@ -77,7 +88,6 @@ MCP_OFFICIAL_SEEDS = {
     "bright-data": ["https://brightdata.com/ai/mcp-server"],
     "clay": ["https://www.clay.com/mcp"],
     "supabase": ["https://supabase.com/docs/guides/ai-tools/mcp"],
-    "neo4j": ["https://neo4j.com/developer/genai-ecosystem/model-context-protocol-mcp/"],
     "datadog": ["https://docs.datadoghq.com/mcp_server/"],
     "notion": ["https://developers.notion.com/guides/mcp/overview"],
     "asana": ["https://developers.asana.com/docs/using-asanas-mcp-server"],
@@ -90,6 +100,62 @@ MCP_OFFICIAL_SEEDS = {
     "devin": ["https://docs.devin.ai/work-with-devin/devin-mcp"],
     "higgsfield": ["https://higgsfield.ai/mcp", "https://higgsfield.ai/cli"],
     "youtube-transcript": ["https://transcriptapi.com/blog/youtube-mcp-server-setup-connect-claude"],
+    "pitchbook": [
+        "https://pitchbook.com/media/press-releases/"
+        "pitchbook-announces-new-essential-mcp-integration-with-perplexity-expanding-access-to-ai-powered-verifiable-market-intelligence"
+    ],
+}
+
+ACCESS_OFFICIAL_SEEDS = {
+    # Claim-bearing pages that explain how credentials are enabled or obtained.
+    "salesforce": [
+        "https://developer.salesforce.com/docs/platform/connect-rest-api/guide/intro_using_oauth.html",
+        "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest_compatible_editions.htm",
+    ],
+    "plain": ["https://help.plain.com/article/api-quickstart"],
+    "telegram": ["https://core.telegram.org/api/auth"],
+    "pinterest": [
+        "https://github.com/pinterest/api-quickstart/blob/main/nodejs/README.md"
+    ],
+    "gumroad": [
+        "https://gumroad.com/api",
+        "https://gumroad.com/help/article/280-create-application-api",
+    ],
+    "fanbasis": ["https://apidocs.fan/"],
+    "clay": [
+        "https://community.clay.com/x/support/5cwjpgptccda/authenticating-an-api-key-in-clay-steps-beyond-cur"
+    ],
+    "snowflake": [
+        "https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/authentication",
+        "https://signup.snowflake.com/",
+    ],
+    "harvest": [
+        "https://support.getharvest.com/hc/en-us/articles/360048180732-The-Harvest-API",
+        "https://help.getharvest.com/api-v2/authentication-api/authentication/authentication/",
+    ],
+    "notebooklm": [
+        "https://docs.cloud.google.com/gemini/enterprise/notebooklm-enterprise/docs/set-up-notebooklm"
+    ],
+    "dealcloud": ["https://api.docs.dealcloud.com/docs/apikeys"],
+    "mrscraper": ["https://docs.mrscraper.com/docs/features/activating-api"],
+    "waterfall": ["https://waterfall.io"],
+    "salesforce-commerce-cloud": [
+        "https://developer.salesforce.com/docs/commerce/commerce-api/guide/authorization.html",
+        "https://developer.salesforce.com/docs/commerce/account-manager/guide/account-manager-get-started.html",
+    ],
+    "paygent-connect": ["https://www.gopaygent.com/"],
+    "pitchbook": ["https://pitchbook.com/help/PitchBook-api"],
+}
+
+OFFICIAL_HOST_ALIASES = {
+    "gohighlevel": {"gohighlevel.com"},
+    "sendgrid": {"sendgrid.com", "twilio.com"},
+    "binance": {"binance.com", "binance.us"},
+    "ipayx": {"ipayx.ai", "i-pay.io"},
+    "fathom": {"fathom.video", "fathom.ai"},
+    "paygent-connect": {"gopaygent.com"},
+    "fanbasis": {"fanbasis.com", "apidocs.fan"},
+    "notebooklm": {"google.com"},
 }
 
 
@@ -159,7 +225,7 @@ def url_resolves(url: str, timeout: int = 10) -> bool:
 # --------------------------------------------------------------------------- #
 @lru_cache(maxsize=1)
 def _perplexity_client():
-    key = os.getenv("PERPLEXITY_API_KEY", "")
+    key = config.PERPLEXITY_API_KEY
     if not key:
         raise RuntimeError("PERPLEXITY_API_KEY is not set")
     from perplexity import Perplexity
@@ -260,6 +326,34 @@ def _apex_host(url: str) -> str:
     return ".".join(parts[-2:]) if len(parts) >= 2 else host
 
 
+def is_first_party(url: str, hint_url: str = "", slug: str = "") -> bool:
+    """Recognize vendor-owned pages, including known cross-domain doc properties."""
+    if not url:
+        return False
+    seeded = {
+        *MCP_OFFICIAL_SEEDS.get(slug, []),
+        *ACCESS_OFFICIAL_SEEDS.get(slug, []),
+    }
+    if url in seeded:
+        return True
+    host = urlparse(url).netloc.lower().split(":", 1)[0]
+    aliases = OFFICIAL_HOST_ALIASES.get(slug, set())
+    if any(host == alias or host.endswith("." + alias) for alias in aliases):
+        return True
+    hint_apex = _apex_host(hint_url)
+    return bool(hint_apex and _apex_host(url) == hint_apex)
+
+
+def identity_matches(url: str, text: str, app: str, slug: str, hint_url: str = "") -> bool:
+    """Require evidence to identify the actual app, not only a generic API topic."""
+    if is_first_party(url, hint_url, slug):
+        return True
+    compact = re.sub(r"[^a-z0-9]", "", f"{url} {text}".lower())
+    app_key = re.sub(r"[^a-z0-9]", "", app.lower())
+    slug_key = re.sub(r"[^a-z0-9]", "", slug.lower())
+    return bool((app_key and app_key in compact) or (slug_key and slug_key in compact))
+
+
 def _candidate_score(result: dict, hint_url: str = "", app: str = "", slug: str = "") -> int:
     """Rank likely first-party, claim-bearing documentation pages."""
     url = result.get("url", "")
@@ -336,6 +430,8 @@ def _candidate_urls(hint_url: str, search_results: list[dict], app: str = "",
             urls.append(url)
 
     add(hint_url)
+    for url in ACCESS_OFFICIAL_SEEDS.get(slug, []):
+        add(url)
     reserved_search_slots = min(len(searched), max(3, MAX_FETCH // 2))
     for url in searched[:reserved_search_slots]:
         add(url)
@@ -357,7 +453,13 @@ def support_tags(text: str, url: str = "") -> list[str]:
             r"production", r"sandbox", r"request access", r"approval", r"app review",
             r"business verification", r"paid plan", r"existing customer", r"partner",
             r"self.?serve", r"sign.?up", r"free trial", r"developer account",
-            r"account settings", r"create (an )?api key", r"generate (an )?(access )?token",
+            r"account settings", r"create (an )?api key", r"generate (an )?api key",
+            r"generate (an )?(access )?token",
+            r"activate.{0,30}api", r"api (mode|access)", r"open your dashboard",
+            r"book a call", r"contact sales", r"talk to our team", r"account manager",
+            r"customer success manager", r"contact your.{0,40}admin",
+            r"enable api access", r"user group permissions", r"api capabilities",
+            r"standalone contract", r"contract agreement",
         ),
         "mcp": (r"\bmcp\b", r"model context protocol"),
     }
@@ -384,6 +486,31 @@ def _annotate_fetch(item: dict, hint_url: str, search_lookup: dict[str, dict],
         "relevance_score": _candidate_score(result, hint_url, app, slug),
         "support_tags": support_tags(item.get("text", ""), item["url"]) if item.get("ok") else [],
     }
+
+
+def _browser_verified_evidence(slug: str) -> list[dict]:
+    """Load browser-captured official evidence for pages direct HTTP could not read."""
+    payload = config.load_json(config.BROWSER_EVIDENCE_PATH, default={}) or {}
+    items = []
+    for item in payload.get("entries", []):
+        if item.get("slug") != slug or not item.get("url") or not item.get("text"):
+            continue
+        items.append({
+            "url": item["url"],
+            "ok": True,
+            "status": 200,
+            "text": item["text"],
+            "error": "",
+            "source_kind": "browser_verified_summary",
+            "relevance_score": 100,
+            "support_tags": support_tags(item["text"], item["url"]),
+            "browser_capture": {
+                "captured_at": item.get("captured_at", ""),
+                "method": item.get("method", ""),
+                "analyst_summary": bool(item.get("analyst_summary")),
+            },
+        })
+    return items
 
 
 def _mcp_score(url: str, title: str, app: str, slug: str) -> int:
@@ -475,6 +602,10 @@ def gather_evidence(app: str, slug: str, hint_url: str = "", category: str = "",
     for u in candidates:
         fetched.append(_annotate_fetch(fetch(u), hint_url, search_lookup, app, slug))
         time.sleep(0.2)
+
+    for browser_item in _browser_verified_evidence(slug):
+        fetched = [item for item in fetched if item.get("url") != browser_item["url"]]
+        fetched.append(browser_item)
 
     ok_urls = [f["url"] for f in fetched if f["ok"]]
     mcp = gather_mcp_evidence(app, slug)

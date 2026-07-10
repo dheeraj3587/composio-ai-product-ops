@@ -1,0 +1,70 @@
+{
+  "generated": "2026-07-10",
+  "method": "Codex in-app browser DOM verification of official vendor pages blocked to direct HTTP fetching.",
+  "entries": [
+    {
+      "slug": "salesforce-commerce-cloud",
+      "url": "https://developer.salesforce.com/docs/commerce/commerce-api/guide/authorization.html",
+      "captured_at": "2026-07-10",
+      "method": "in-app browser DOM snapshot",
+      "analyst_summary": true,
+      "text": "B2C Commerce APIs use OAuth 2.1 scopes. Admin tokens require an API client in Account Manager and the oauth2/access_token endpoint."
+    },
+    {
+      "slug": "pitchbook",
+      "url": "https://pitchbook.com/help/PitchBook-api",
+      "captured_at": "2026-07-10",
+      "method": "in-app browser DOM snapshot",
+      "analyst_summary": true,
+      "text": "PitchBook's REST API is a separate offering requiring a standalone contract. Access starts through Direct Data; credentials are API keys or authentication tokens."
+    },
+    {
+      "slug": "pitchbook",
+      "url": "https://pitchbook.com/media/press-releases/pitchbook-announces-new-essential-mcp-integration-with-perplexity-expanding-access-to-ai-powered-verifiable-market-intelligence",
+      "captured_at": "2026-07-10",
+      "method": "in-app browser DOM snapshot",
+      "analyst_summary": true,
+      "text": "PitchBook announced its Essential MCP server partnership with Perplexity, providing PitchBook firmographic intelligence inside Perplexity's interface."
+    },
+    {
+      "slug": "paygent-connect",
+      "url": "https://www.gopaygent.com/",
+      "captured_at": "2026-07-10",
+      "method": "in-app browser DOM snapshot",
+      "analyst_summary": true,
+      "text": "Paygent Connect supports marketplace payments. The site shows REST API calls with Bearer credentials, sandbox testing, signup, and a free plan."
+    },
+    {
+      "slug": "gumroad",
+      "url": "https://gumroad.com/help/article/280-create-application-api",
+      "captured_at": "2026-07-10",
+      "method": "in-app browser DOM snapshot",
+      "analyst_summary": true,
+      "text": "Gumroad documents API applications for a developer's own account or other users. A signed-in user can create an application and generate an access token in advanced settings; multi-user integrations use OAuth authorization and token endpoints."
+    },
+    {
+      "slug": "salesforce",
+      "url": "https://developer.salesforce.com/docs/platform/connect-rest-api/guide/intro_using_oauth.html",
+      "captured_at": "2026-07-10",
+      "method": "in-app browser DOM snapshot",
+      "analyst_summary": true,
+      "text": "Salesforce Connect REST API uses OAuth. Developers create an external client app, and successful authorization returns access and refresh tokens for REST API requests."
+    },
+    {
+      "slug": "salesforce",
+      "url": "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest_compatible_editions.htm",
+      "captured_at": "2026-07-10",
+      "method": "in-app browser DOM snapshot",
+      "analyst_summary": true,
+      "text": "Salesforce REST API access is enabled by default for Enterprise, Performance, Unlimited, and free Developer Edition orgs. API calls require the API Enabled user permission."
+    },
+    {
+      "slug": "plain",
+      "url": "https://help.plain.com/article/api-quickstart",
+      "captured_at": "2026-07-10",
+      "method": "in-app browser DOM snapshot",
+      "analyst_summary": true,
+      "text": "Plain provides a GraphQL API. A workspace user can generate an API key from Settings, send it as a Bearer credential, and use Plain's API explorer after setting up a workspace."
+    }
+  ]
+}

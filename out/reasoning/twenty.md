@@ -1,15 +1,59 @@
-# Twenty — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Twenty - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Twenty official API authentication developer documentation", "Twenty API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://twenty.com | HTTP 200 | hint | topics=api,auth,access,mcp
+- https://docs.twenty.com/developers/extend/oauth | HTTP 200 | search_result | topics=api,auth
+- https://docs.twenty.com/l/zh/developers/extend/oauth | HTTP 200 | search_result | topics=api,auth
+- https://docs.twenty.com/developers/extend/api | HTTP 200 | search_result | topics=api,auth,access
+- https://developer.twenty.com | HTTP 200 | derived_guess | topics=none
+- https://developers.twenty.com | HTTP 200 | derived_guess | topics=none
 
 ## Model reasoning
-Official docs clearly describe dual Core + Metadata APIs exposed as both REST and GraphQL (schema-per-tenant, so custom objects get full CRUD endpoints), Bearer API-key auth created self-serve in workspace Settings, OAuth for third-party apps, interactive playground, and explicit rate limits. Breadth is Broad (records across People/Companies/Opportunities/custom objects plus programmatic schema management). No MCP evidence. Preseed was none; evidence fully supports Easy buildability and Build Now. api_type set to REST as the primary integration surface though GraphQL is equally first-class. Confidence high due to detailed official docs; slight residual uncertainty only on free-tier cloud quotas not stated.
+The documentation clearly outlines self-serve API key generation and dynamic OAuth client registration. Both REST and GraphQL APIs are available and dynamically generated based on the workspace schema. No MCP server was found in the evidence.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — Create a Bearer API key in Settings → API & Webhooks; keys can be role-scoped. OAuth available for external apps.
+- access_model: **Self-Serve** - API keys can be generated directly in the workspace settings, and OAuth clients can be registered dynamically via API without manual dashboard setup.
 - recommended_next_action: **Build Now**
-- confidence: **0.9**
+- confidence: **0.95**
 
-## Evidence URLs (whitelist-enforced)
+## Evidence URLs
 - https://docs.twenty.com/developers/extend/api
-- https://docs.twenty.com/developers/introduction
+- https://docs.twenty.com/developers/extend/oauth
+
+## Generated record
+```json
+{
+  "app": "Twenty",
+  "category": "CRM",
+  "one_liner": "Twenty is an open-source CRM that provides dynamically generated REST and GraphQL APIs based on workspace schemas.",
+  "auth_methods": [
+    "API Key",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "API keys can be generated directly in the workspace settings, and OAuth clients can be registered dynamically via API without manual dashboard setup."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "None",
+  "composio_toolkit": "No",
+  "buildability": "Easy",
+  "main_blocker": "None.",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://docs.twenty.com/developers/extend/api",
+    "https://docs.twenty.com/developers/extend/oauth"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "twenty",
+  "primary_docs_url": "https://docs.twenty.com/developers/extend/api",
+  "rate_limit_note": "100 requests per minute, batch size up to 60 records per call.",
+  "last_verified": "2026-07-10"
+}
+```

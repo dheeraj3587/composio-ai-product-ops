@@ -1,16 +1,62 @@
-# Zoho Cliq — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Zoho Cliq - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Zoho Cliq official API authentication developer documentation", "Zoho Cliq API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://zoho.com/cliq | HTTP 200 | hint | topics=access
+- https://www.zoho.com/cliq/help/restapi/v3/oauth/ | HTTP 200 | search_result | topics=api,auth,access
+- https://help.zoho.com/portal/en/community/topic/generating-an-oauth-2-token-for-cliq | HTTP 200 | search_result | topics=auth
+- https://help.zoho.com/portal/en/community/topic/deprecation-of-authtokens-effective-for-zoho-cliq-apis-from-1st-march-2021 | HTTP 200 | search_result | topics=auth
+- https://developer.zoho.com | HTTP 200 | derived_guess | topics=api,access,mcp
+- https://developers.zoho.com | HTTP 200 | derived_guess | topics=api,access,mcp
 
 ## Model reasoning
-Evidence from official product page and REST API intro docs (v2/v3) confirms a public REST API with OAuth 2.0 (register application, scopes, multi-DC), extensive resources (users/roles/teams/depts, chats/messages/threads/reminders/pins/bots/extensions etc.), OAS/Swagger/Postman support, and free trial—self-serve entry. Breadth is Broad across comms + org domains. No MCP mentioned. Buildability Moderate per OAuth app setup + clear docs (not pure API-key Easy); no review/gating or thin docs so no main blocker and next action Build Now. Preseed was none (no contradiction). Rate limits and full auth flow details absent from snippets, slightly lowering confidence; used only allowed/fetched URLs.
+The fetched documentation confirms the availability of a broad REST API authenticated via OAuth 2.0, as well as an official Zoho Cliq MCP server. Access is self-serve through the Zoho Developer portal, making integration straightforward.
 
 ## Key decisions
-- buildability: **Moderate**
-- access_model: **Self-Serve** — Register application for OAuth; free trial and public docs with OAS/Postman
+- buildability: **Easy**
+- access_model: **Self-Serve** - Developers can sign up for free and register applications in the Zoho API console to obtain OAuth 2.0 credentials.
 - recommended_next_action: **Build Now**
-- confidence: **0.85**
+- confidence: **0.95**
 
-## Evidence URLs (whitelist-enforced)
-- https://zoho.com/cliq
-- https://www.zoho.com/cliq/help/restapi/v2/introduction/
-- https://www.zoho.com/cliq/help/restapi/v3/introduction/
+## Evidence URLs
+- https://www.zoho.com/cliq/help/restapi/v3/oauth/
+- https://www.zoho.com/cliq/help/platform/zoho-cliq-mcp.html
+- https://www.zoho.com/cliq/mcp-server.html
+- https://www.zoho.com/mcp/
+
+## Generated record
+```json
+{
+  "app": "Zoho Cliq",
+  "category": "Comms",
+  "one_liner": "Zoho Cliq offers a comprehensive REST API and an official MCP server for integrating AI agents and automating team...",
+  "auth_methods": [
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can sign up for free and register applications in the Zoho API console to obtain OAuth 2.0 credentials."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "No",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://www.zoho.com/cliq/help/restapi/v3/oauth/",
+    "https://www.zoho.com/cliq/help/platform/zoho-cliq-mcp.html",
+    "https://www.zoho.com/cliq/mcp-server.html",
+    "https://www.zoho.com/mcp/"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "zoho-cliq",
+  "primary_docs_url": "https://www.zoho.com/cliq/help/restapi/v3/oauth/",
+  "rate_limit_note": "Rate limits are not explicitly detailed in the provided evidence.",
+  "last_verified": "2026-07-10"
+}
+```

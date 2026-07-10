@@ -1,19 +1,64 @@
-# Ahrefs — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Ahrefs - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Ahrefs official API authentication developer documentation", "Ahrefs API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://ahrefs.com/api | HTTP 200 | hint | topics=api,auth,mcp
+- https://docs.ahrefs.com/ahrefs-connect/docs/oauth-guide | HTTP 200 | search_result | topics=api,auth,access,mcp
+- https://docs.ahrefs.com/en/api/docs/introduction | HTTP 200 | search_result | topics=api,auth,access,mcp
+- https://docs.ahrefs.com/uk | HTTP 200 | search_result | topics=api,auth,mcp
+- https://developer.ahrefs.com | HTTP 404 | derived_guess | topics=none
+- https://developers.ahrefs.com | HTTP 404 | derived_guess | topics=none
 
 ## Model reasoning
-The evidence confirms the preseed hypothesis: the API is gated behind eligible paid plans, although free test queries exist. Buildability is Moderate because while documentation is clear and API keys are self-managed, the financial barrier (paid plan) is a prerequisite for production use. The API breadth is Broad, covering Site Explorer, Keywords Explorer, Site Audit, Rank Tracker, and Brand Radar. Official MCP support is explicitly mentioned for Claude and ChatGPT. Recommended action is Partner-Gated because a paid account is required for meaningful integration.
+The documentation clearly details both a REST API and an official hosted MCP server. Authentication is supported via API Keys and OAuth 2.0 (for Ahrefs Connect). Production use of both the API and MCP requires a paid plan, making the access model Gated.
 
 ## Key decisions
 - buildability: **Moderate**
-- access_model: **Gated** — Available on eligible paid plans; limited free test queries available for non-eligible plans.
-- recommended_next_action: **Partner-Gated**
-- confidence: **1.0**
+- access_model: **Gated** - Production access to the API and the remote MCP server requires a paid Ahrefs subscription (Lite plan or higher). Free test queries are available without a paid plan.
+- recommended_next_action: **Needs Outreach**
+- confidence: **0.95**
 
-## Evidence URLs (whitelist-enforced)
-- https://ahrefs.com/api
+## Evidence URLs
 - https://docs.ahrefs.com/en/api/docs/introduction
-- https://docs.ahrefs.com/
+- https://docs.ahrefs.com/en/mcp/docs/introduction
+- https://docs.ahrefs.com/ahrefs-connect/docs/oauth-guide
+
+## Generated record
+```json
+{
+  "app": "Ahrefs",
+  "category": "Research/Scraping",
+  "one_liner": "Ahrefs provides a REST API and an official MCP server to access comprehensive SEO, marketing, and search data.",
+  "auth_methods": [
+    "API Key",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Production access to the API and the remote MCP server requires a paid Ahrefs subscription (Lite plan or higher). Free test queries are available without a paid plan."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Moderate",
+  "main_blocker": "Accessing real production data requires an active paid Ahrefs subscription.",
+  "recommended_next_action": "Needs Outreach",
+  "evidence_urls": [
+    "https://docs.ahrefs.com/en/api/docs/introduction",
+    "https://docs.ahrefs.com/en/mcp/docs/introduction",
+    "https://docs.ahrefs.com/ahrefs-connect/docs/oauth-guide"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "ahrefs",
+  "primary_docs_url": "https://docs.ahrefs.com/ahrefs-connect/docs/oauth-guide",
+  "rate_limit_note": "API requests consume units based on rows and fields returned (minimum 50 units per request). The MCP server also enforces row and request limits based on the subscription tier.",
+  "last_verified": "2026-07-10"
+}
+```
 
 ## Preseed hypothesis (unverified prior)
 ```json
@@ -23,4 +68,3 @@ The evidence confirms the preseed hypothesis: the API is gated behind eligible p
   "main_blocker": "API access likely requires a paid Ahrefs plan at a certain tier (verify)."
 }
 ```
-_The model was instructed to trust evidence over this prior and note contradictions above._

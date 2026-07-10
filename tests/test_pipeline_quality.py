@@ -7,9 +7,11 @@ from pathlib import Path
 from unittest import mock
 
 import config
+import batch_pipeline
 import docs_research
 import handcheck
 import normalize
+import pipeline
 import research
 import synthesis
 import verify
@@ -54,7 +56,130 @@ class NormalizeTests(unittest.TestCase):
         )
 
 
+class ProviderTests(unittest.TestCase):
+    def test_google_cancellation_is_retryable(self):
+        error = RuntimeError("cancelled")
+        error.code = 499
+        self.assertEqual(config._classify_error(error), "retry")
+
+    def test_daily_google_quota_is_a_batch_stop(self):
+        error = RuntimeError(
+            "Quota exceeded: generate_requests_per_model_per_day; retry tomorrow"
+        )
+        error.code = 429
+        self.assertEqual(config._classify_error(error), "quota")
+
+    def test_batch_stops_after_hard_quota_without_starting_more_apps(self):
+        apps = [
+            {"app": "One", "slug": "one", "category": "Test"},
+            {"app": "Two", "slug": "two", "category": "Test"},
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            with (
+                mock.patch.object(pipeline, "load_apps", return_value=apps),
+                mock.patch.object(config, "RESULTS_PATH", Path(tmp) / "results.json"),
+                mock.patch.object(
+                    pipeline,
+                    "research_app",
+                    side_effect=config.ProviderQuotaExhausted("daily quota"),
+                ) as research_app,
+                mock.patch.object(docs_research, "_log_failure"),
+            ):
+                with self.assertRaises(config.ProviderQuotaExhausted):
+                    pipeline.run_batch(workers=1, resume=False)
+        self.assertEqual(research_app.call_count, 1)
+
+    def test_batch_request_preserves_system_and_repair_turns(self):
+        request = batch_pipeline._batch_request([
+            {"role": "system", "content": "strict system"},
+            {"role": "user", "content": "initial evidence"},
+            {"role": "assistant", "content": "bad json"},
+            {"role": "user", "content": "repair it"},
+        ])
+        self.assertEqual(
+            request["config"]["system_instruction"]["parts"][0]["text"],
+            "strict system",
+        )
+        self.assertEqual(
+            [content["role"] for content in request["contents"]],
+            ["user", "model", "user"],
+        )
+        self.assertIs(
+            request["config"]["response_schema"], synthesis.SynthesisOutput
+        )
+
+    def test_repair_prompt_identifies_first_party_claim_sources(self):
+        entry = {
+            "app_meta": {
+                "app": "Pinterest",
+                "slug": "pinterest",
+                "category": "Social",
+                "hint_url": "https://developers.pinterest.com",
+            },
+            "evidence": {
+                "fetched": [{
+                    "url": "https://github.com/pinterest/api-quickstart/blob/main/nodejs/README.md",
+                    "ok": True,
+                    "support_tags": ["api", "auth", "access"],
+                }],
+                "mcp": {"fetched": []},
+            },
+            "composio_signal": {},
+            "preseed": None,
+        }
+        sources = batch_pipeline._first_party_tagged_sources(entry)
+        self.assertEqual(len(sources), 1)
+        self.assertIn("supports: api, auth, access", sources[0])
+
+    def test_paid_preflight_rejects_missing_key_before_a_run(self):
+        with (
+            mock.patch.object(config, "PERPLEXITY_API_KEY", ""),
+            mock.patch.object(config, "GOOGLE_API_KEY", "present"),
+            self.assertRaisesRegex(SystemExit, "PERPLEXITY_API_KEY"),
+        ):
+            research._preflight_paid_runtime(workers=1)
+
+    def test_batch_rejects_unsafe_google_concurrency(self):
+        with self.assertRaisesRegex(ValueError, "workers must be between"):
+            research.pipeline.run_batch(workers=config.GOOGLE_MAX_WORKERS + 1)
+
+
 class EvidenceTests(unittest.TestCase):
+    def test_access_tags_cover_real_credential_enablement_language(self):
+        samples = [
+            "Open your dashboard and activate API access for this scraper.",
+            "Book a call or contact sales to receive production credentials.",
+            "Enable API access through user group permissions or contact your admin.",
+            "Generate an API key from Settings in your workspace.",
+        ]
+        for sample in samples:
+            with self.subTest(sample=sample):
+                self.assertIn("access", docs_research.support_tags(sample))
+
+    def test_access_seed_is_reserved_before_guessed_doc_roots(self):
+        urls = docs_research._candidate_urls(
+            "https://dealcloud.com", [], app="DealCloud", slug="dealcloud"
+        )
+        self.assertIn("https://api.docs.dealcloud.com/docs/apikeys", urls)
+
+    def test_cross_domain_official_docs_are_recognized(self):
+        cases = [
+            (
+                "https://github.com/pinterest/api-quickstart/blob/main/nodejs/README.md",
+                "https://developers.pinterest.com",
+                "pinterest",
+            ),
+            ("https://apidocs.fan/", "https://fanbasis.com", "fanbasis"),
+            (
+                "https://docs.cloud.google.com/gemini/enterprise/notebooklm-enterprise/docs/set-up-notebooklm",
+                "https://cloud.google.com/gemini",
+                "notebooklm",
+            ),
+        ]
+        for url, hint_url, slug in cases:
+            with self.subTest(slug=slug):
+                self.assertTrue(docs_research.is_first_party(url, hint_url, slug))
+
     def test_search_results_keep_reserved_fetch_slots(self):
         results = [
             {
@@ -145,6 +270,101 @@ class EvidenceTests(unittest.TestCase):
 
 
 class SynthesisTests(unittest.TestCase):
+    def test_third_party_only_evidence_caps_confidence(self):
+        record = {
+            "evidence_urls": ["https://catalog.example/acme-api"],
+            "confidence": 0.9,
+            "existing_mcp": "None",
+        }
+        evidence = {
+            "fetched": [{
+                "url": "https://catalog.example/acme-api",
+                "ok": True,
+                "text": "Acme API authentication and production access",
+                "support_tags": ["api", "auth", "access"],
+            }],
+            "mcp": {"fetched": []},
+        }
+        app = {
+            "app": "Acme",
+            "slug": "acme",
+            "hint_url": "https://acme.com",
+        }
+        with self.assertRaisesRegex(ValueError, "third-party-only"):
+            synthesis._validate_source_quality(record, evidence, app)
+
+    def test_official_mcp_requires_first_party_mcp_page(self):
+        record = {
+            "evidence_urls": [
+                "https://docs.acme.com/api",
+                "https://catalog.example/acme-mcp",
+            ],
+            "confidence": 0.5,
+            "existing_mcp": "Official",
+        }
+        evidence = {
+            "fetched": [{
+                "url": "https://docs.acme.com/api",
+                "ok": True,
+                "text": "Acme API authentication and production access",
+                "support_tags": ["api", "auth", "access"],
+            }],
+            "mcp": {"fetched": [{
+                "url": "https://catalog.example/acme-mcp",
+                "ok": True,
+                "text": "Acme MCP server",
+                "support_tags": ["mcp"],
+            }]},
+        }
+        app = {
+            "app": "Acme",
+            "slug": "acme",
+            "hint_url": "https://acme.com",
+        }
+        with self.assertRaisesRegex(ValueError, "first-party MCP"):
+            synthesis._validate_source_quality(record, evidence, app)
+
+    def test_first_party_homepage_cannot_launder_third_party_api_claims(self):
+        record = {
+            "evidence_urls": [
+                "https://acme.com",
+                "https://catalog.example/acme-api",
+            ],
+            "confidence": 0.9,
+            "existing_mcp": "None",
+            "api_type": "REST",
+        }
+        evidence = {
+            "fetched": [
+                {
+                    "url": "https://acme.com",
+                    "ok": True,
+                    "text": "Create an Acme account.",
+                    "support_tags": ["access"],
+                },
+                {
+                    "url": "https://catalog.example/acme-api",
+                    "ok": True,
+                    "text": "Acme REST API uses OAuth.",
+                    "support_tags": ["api", "auth"],
+                },
+            ],
+            "mcp": {"fetched": []},
+        }
+        app = {
+            "app": "Acme",
+            "slug": "acme",
+            "hint_url": "https://acme.com",
+        }
+        with self.assertRaisesRegex(ValueError, "first-party coverage"):
+            synthesis._validate_source_quality(record, evidence, app)
+
+    def test_specific_token_is_not_duplicated_as_bearer(self):
+        record = valid_record()
+        record["auth_methods"] = ["Personal Access Token", "Bearer Token"]
+        with self.assertRaisesRegex(ValueError, "must not also be labeled Bearer"):
+            synthesis._validate_semantics(record)
+
     def test_long_one_liner_never_exceeds_schema_limit(self):
         clipped = synthesis._clip120("word " * 40)
         self.assertLessEqual(len(clipped), 120)
@@ -206,15 +426,27 @@ class SynthesisTests(unittest.TestCase):
         }
         invalid = {**base, "api_type": "REST/gRPC"}
         with mock.patch.object(
-            config, "llm_json", side_effect=[(invalid, ""), (base, "")]
+            config,
+            "llm_json",
+            side_effect=[
+                config.StructuredOutputError("truncated"),
+                (invalid, ""),
+                (base, ""),
+            ],
         ) as llm:
             record, _ = synthesis.synthesize(
-                {"app": "Acme", "slug": "acme", "category": "CRM", "hint_url": ""},
+                {
+                    "app": "Acme",
+                    "slug": "acme",
+                    "category": "CRM",
+                    "hint_url": "https://acme.test",
+                },
                 evidence,
                 {"composio_toolkit": "No"},
                 write_log=False,
             )
-        self.assertEqual(llm.call_count, 2)
+        self.assertEqual(llm.call_count, 3)
+        self.assertEqual(llm.call_args_list[1].kwargs["thinking_level"], "low")
         self.assertEqual(record.api_type, "REST")
 
     def test_invalid_nonempty_enum_never_silently_defaults(self):
@@ -292,7 +524,7 @@ class VerificationTests(unittest.TestCase):
 
 
 class FreshRunTests(unittest.TestCase):
-    def test_archive_clears_generated_state_but_preserves_report(self):
+    def test_archive_clears_generated_state_but_preserves_report_and_handcheck(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             out = root / "out"
@@ -308,6 +540,7 @@ class FreshRunTests(unittest.TestCase):
                 "FAILURES_PATH": out / "failures.log",
                 "FAILURE_STATE_PATH": out / "failures.json",
                 "USAGE_PATH": out / "usage.json",
+                "BATCH_STATE_PATH": out / "batch_state.json",
                 "HANDCHECK_PATH": handcheck_dir / "handcheck.json",
             }
             for path in paths.values():
@@ -335,10 +568,13 @@ class FreshRunTests(unittest.TestCase):
 
             self.assertEqual(report_file.read_text(encoding="utf-8"), "published")
             self.assertFalse(paths["RESULTS_PATH"].exists())
+            self.assertTrue(paths["HANDCHECK_PATH"].exists())
             archives = list((out / "archive").iterdir())
             self.assertEqual(len(archives), 1)
             self.assertTrue((archives[0] / "results.json").exists())
+            self.assertTrue((archives[0] / "batch_state.json").exists())
             self.assertTrue((archives[0] / "reasoning" / "acme.md").exists())
+            self.assertTrue((archives[0] / "handcheck.json").exists())
 
 
 class HandcheckTests(unittest.TestCase):

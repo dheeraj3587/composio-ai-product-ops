@@ -92,7 +92,7 @@ section[id] { scroll-margin-top: 84px; }
 .panel {
   background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 8px;
   box-shadow: var(--shadow-soft);
 }
 
@@ -124,7 +124,7 @@ section[id] { scroll-margin-top: 84px; }
 h1 {
   max-width: 900px;
   margin-top: 18px;
-  font-size: clamp(42px, 6.4vw, 82px);
+  font-size: clamp(40px, 5vw, 64px);
   font-weight: 780;
   letter-spacing: 0;
   line-height: .94;
@@ -201,7 +201,7 @@ h1 {
 .status-block {
   margin-top: 20px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--white);
   overflow: hidden;
 }
@@ -222,7 +222,7 @@ h1 {
   min-height: 118px;
   padding: 18px 16px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--paper);
   box-shadow: 0 1px 2px rgba(17, 24, 39, .04);
 }
@@ -276,7 +276,7 @@ h2 {
 .chart-card,
 .proof {
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--white);
   box-shadow: 0 1px 2px rgba(17, 24, 39, .035);
 }
@@ -326,7 +326,7 @@ input,
 select {
   min-height: 44px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 8px;
   background: var(--white);
   color: var(--ink);
   padding: 9px 12px;
@@ -341,7 +341,7 @@ select:focus {
 
 .table-shell {
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--white);
   box-shadow: 0 1px 2px rgba(17, 24, 39, .04);
 }
@@ -428,14 +428,14 @@ tbody tr:hover { background: #fbf8ff; }
 
 pre {
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 8px;
   background: #181a22;
   color: #f8fafc;
 }
 
 .warning {
   border: 1px solid #eadfff;
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--lavender);
   color: var(--ink);
 }

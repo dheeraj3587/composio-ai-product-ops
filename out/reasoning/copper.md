@@ -1,14 +1,65 @@
-# Copper — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Copper - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Copper official API authentication developer documentation", "Copper API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://copper.com | HTTP 200 | hint | topics=api,access
+- https://developer.copper.com/introduction/oauth/flow.html | HTTP 200 | search_result | topics=api,auth
+- https://developer.copper.com/introduction/oauth/index.html | HTTP 200 | search_result | topics=api,auth
+- https://developer.copper.com/introduction/requests.html | HTTP 200 | search_result | topics=api,auth
+- https://developer.copper.com | HTTP 200 | derived_guess | topics=api,auth
+- https://developers.copper.com | HTTP 0 | derived_guess | topics=none
 
 ## Model reasoning
-The evidence from developer.copper.com confirms a broad REST API covering almost all CRM domains (Leads, People, Companies, Opportunities, Projects, Tasks, Activities, and Custom Fields). It explicitly mentions OAuth2.0 authentication and provides a quickstart guide and Postman collections, making it easy to build. No preseed hypothesis was provided to confirm or refute.
+The Copper Developer API documentation clearly outlines support for OAuth2 and legacy API keys, with a broad set of REST endpoints covering leads, people, companies, and more. A free trial allows self-serve access. A community MCP server is available via SyncHub.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — Developer portal provides OAuth2.0 quickstart guides and Postman collections for self-serve integration.
+- access_model: **Self-Serve** - Developers can sign up for a free trial and create API keys or configure OAuth2 applications directly.
 - recommended_next_action: **Build Now**
-- confidence: **1.0**
+- confidence: **0.9**
 
-## Evidence URLs (whitelist-enforced)
-- https://developer.copper.com
+## Evidence URLs
+- https://developer.copper.com/introduction/oauth/flow.html
+- https://developer.copper.com/introduction/oauth/index.html
+- https://developer.copper.com/introduction/requests.html
+- https://copper.com
+- https://www.synchub.io/connectors/copper/knowledge-base/mcp
+
+## Generated record
+```json
+{
+  "app": "Copper",
+  "category": "CRM",
+  "one_liner": "Copper provides a comprehensive REST API for integrating with its CRM platform, supporting both OAuth2 and API keys.",
+  "auth_methods": [
+    "OAuth2",
+    "API Key"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can sign up for a free trial and create API keys or configure OAuth2 applications directly."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Community",
+  "composio_toolkit": "No",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://developer.copper.com/introduction/oauth/flow.html",
+    "https://developer.copper.com/introduction/oauth/index.html",
+    "https://developer.copper.com/introduction/requests.html",
+    "https://copper.com",
+    "https://www.synchub.io/connectors/copper/knowledge-base/mcp"
+  ],
+  "confidence": 0.9,
+  "verification_status": "Auto",
+  "slug": "copper",
+  "primary_docs_url": "https://developer.copper.com/introduction/oauth/flow.html",
+  "rate_limit_note": "Rate limits are enforced and detailed in the API documentation.",
+  "last_verified": "2026-07-10"
+}
+```

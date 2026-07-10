@@ -1,17 +1,62 @@
-# Pinterest — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Pinterest - synthesis reasoning
+_generated 2026-07-11 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Pinterest official API authentication developer documentation", "Pinterest API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://developers.pinterest.com | HTTP 200 | hint | topics=api,access
+- https://github.com/pinterest/api-quickstart/blob/main/nodejs/README.md | HTTP 200 | search_result | topics=api,auth,access,mcp
+- https://www.youtube.com/watch?v=16ns1L5UySI | HTTP 200 | search_result | topics=none
+- https://community.n8n.io/t/pinterest-api-trial-standard-any-success-stories-tips-for-standard-access-approval/257516?tl=en | HTTP 200 | search_result | topics=api,auth,access
+- https://developer.pinterest.com | HTTP 200 | derived_guess | topics=api,access
+- https://docs.pinterest.com | HTTP 0 | derived_guess | topics=none
 
 ## Model reasoning
-Official docs confirm a single REST API covering organic content (Pins/Boards), ads campaigns/targeting/reporting, product catalogs/shopping ads, conversions, and analytics—hence Broad. Auth is OAuth 2.0 after gated app registration (business account required, form submission, daily review for Trial tier; temporary product-limited tokens only post-approval). Python SDK and quickstart exist but do not remove the review gate. Docs are clear so not Blocked, yet review/verification elevates buildability to Hard (vs pure self-serve OAuth). Next action Needs Outreach because API is public but entry requires approval. Rate limits only from third-party (zernio); no official numbers in fetched text. Preseed was none so no confirmation/contradiction. Confidence high on core access model from primary docs, slightly tempered by third-party rate data and incomplete tier details.
+First-party documentation snippets lack explicit details on authentication methods and access gating, though the quickstart repo mentions application ID and secret. Relying on a detailed third-party community post for OAuth2 and the video demo requirement, which lowers confidence.
 
 ## Key decisions
 - buildability: **Hard**
-- access_model: **Gated** — Business account + email verify + app registration form; trial access reviewed each business day
+- access_model: **Gated** - Trial access is self-serve, but Standard (production) access requires submitting a video demo of the OAuth flow and core actions for manual approval.
 - recommended_next_action: **Needs Outreach**
-- confidence: **0.88**
+- confidence: **0.5**
 
-## Evidence URLs (whitelist-enforced)
+## Evidence URLs
+- https://community.n8n.io/t/pinterest-api-trial-standard-any-success-stories-tips-for-standard-access-approval/257516?tl=en
 - https://developers.pinterest.com
-- https://developers.pinterest.com/docs/getting-started/authentication/
-- https://developers.pinterest.com/
-- https://zernio.com/blog/pinterest-api
+- https://github.com/clugtu/pinterest-mcp
+- https://github.com/pinterest/api-quickstart/blob/main/nodejs/README.md
+
+## Generated record
+```json
+{
+  "app": "Pinterest",
+  "category": "Ads/Marketing",
+  "one_liner": "Pinterest provides a REST API for managing pins, boards, ads, and catalogs, with production access requiring a video...",
+  "auth_methods": [
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Trial access is self-serve, but Standard (production) access requires submitting a video demo of the OAuth flow and core actions for manual approval."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Community",
+  "composio_toolkit": "No",
+  "buildability": "Hard",
+  "main_blocker": "Upgrading from Trial to Standard access requires recording and submitting a video demo of the application for vendor approval.",
+  "recommended_next_action": "Needs Outreach",
+  "evidence_urls": [
+    "https://community.n8n.io/t/pinterest-api-trial-standard-any-success-stories-tips-for-standard-access-approval/257516?tl=en",
+    "https://developers.pinterest.com",
+    "https://github.com/clugtu/pinterest-mcp",
+    "https://github.com/pinterest/api-quickstart/blob/main/nodejs/README.md"
+  ],
+  "confidence": 0.5,
+  "verification_status": "Auto",
+  "slug": "pinterest",
+  "primary_docs_url": "https://github.com/pinterest/api-quickstart/blob/main/nodejs/README.md",
+  "rate_limit_note": "Trial access restricts certain POST endpoints; Standard access lifts these restrictions upon approval.",
+  "last_verified": "2026-07-11"
+}
+```

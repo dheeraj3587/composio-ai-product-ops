@@ -655,7 +655,7 @@
       h1 { font-size: 34px; }
     }
   </style>
-  <link rel="stylesheet" href="theme.css" />
+  <link rel="stylesheet" href="theme.css?v=20260711" />
 <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -691,7 +691,7 @@
         </div>
         <div class="hero-facts" id="hero-facts" aria-label="Research coverage">
           <span><b>100</b> apps researched</span>
-          <span><b>27</b> official-doc checks</span>
+          <span><b>100</b> source-audited rows</span>
           <span><b>19</b> fields per app</span>
         </div>
       </section>
@@ -780,9 +780,9 @@
           <p>The LLM cites fetched URLs. Code rejects invalid labels, invented links, and contradictory decisions.</p>
         </div>
         <div class="flow-step">
-          <span class="step-no">Stage 4 · verify.py + browser_verify.py</span>
-          <b>Independent checks</b>
-          <p>Fresh-query and live-browser checks record disagreements without changing researched rows.</p>
+          <span class="step-no">Stage 4 · batch_pipeline.py</span>
+          <b>Deterministic source audit</b>
+          <p>Rows fail closed when citations miss API, auth, access, app identity, or first-party coverage.</p>
         </div>
         <div class="flow-step">
           <span class="step-no">Stage 5 · handcheck.py</span>
@@ -795,17 +795,17 @@
           <h3>Review boundaries</h3>
           <ul class="human-list">
             <li><b>Preseed:</b> a hypothesis narrows the search; current evidence wins.</li>
-            <li><b>27 hand-checks:</b> API type, auth, and access are checked against official docs.</li>
-            <li><b>Disagreements:</b> production access is adjudicated before any model output becomes a correction.</li>
+            <li><b>Fresh run:</b> all 100 rows passed schema, citation, identity, and source-quality checks.</li>
+            <li><b>Human accuracy:</b> pending; the historical score was not reused across a changed access rubric.</li>
             <li><b>MCP audit:</b> first-party MCP pages are checked separately from normal API documentation.</li>
           </ul>
         </div>
         <div class="proof">
           <h3>Known limits</h3>
           <ul class="human-list">
-            <li><b>Paygent Connect:</b> the docs pointed to a different product, so the row remains unconfirmed.</li>
-            <li><b>Thin docs:</b> iPayX, Pumble, and LiveAgent are capped for confidence and flagged for review.</li>
-            <li><b>Provider failures:</b> failed model calls are retried through the configured fallback chain.</li>
+            <li><b>Accuracy:</b> source-audit coverage is not a substitute for independent human adjudication.</li>
+            <li><b>Dynamic access:</b> partner rules, paid tiers, and approval requirements can change after this snapshot.</li>
+            <li><b>Browser evidence:</b> analyst summaries are stored only for official pages that direct HTTP could not read cleanly.</li>
             <li><b>Coverage source:</b> Composio SDK/catalog lookup owns the toolkit-overlap field.</li>
           </ul>
         </div>
@@ -855,10 +855,13 @@
       <div class="proof-grid">
         <div class="proof">
           <h3>Research</h3>
-          <p>Run one app, run the batch, then bake the static report.</p>
+          <p>Submit the evidence-backed batch, collect it, audit it, then bake the static report.</p>
           <pre>python research.py --app stripe
-python research.py --all
-python research.py --verify
+python research.py --batch-submit --fresh-run
+python research.py --batch-status
+python research.py --batch-collect
+python research.py --batch-audit-sources
+python research.py --metrics
 python research.py --build-report</pre>
         </div>
         <div class="proof">
@@ -874,8 +877,8 @@ python research.py --fold-handcheck
     <footer class="panel footer" id="footer"></footer>
   </main>
 
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+  <script src="data.js?v=20260711"></script>
+  <script src="app.js?v=20260711"></script>
 </body>
 
 </html>

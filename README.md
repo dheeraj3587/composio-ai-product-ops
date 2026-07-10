@@ -97,8 +97,15 @@ evidence.
 100 apps, while deterministic validators remain the final authority for schema, semantics, and
 citations. There is intentionally no gateway fallback or cross-model sharding.
 
+For full refreshes, the optional Gemini Batch API path keeps the same pinned Pro model while using a
+separate asynchronous quota. It checkpoints all 100 evidence payloads, validates every returned row,
+and submits at most one repair batch for deterministic-validation failures. Batch output never reaches
+the report until collection produces a complete 100-row result set.
+
 Every paid call is recorded in `out/usage.json`. Default run caps are $2 for Perplexity and $8 for
 Google; the pipeline refuses a call whose conservative estimate would cross its provider cap.
+Paid-run preflight checks this interpreter's SDKs and both keys before a fresh run archives anything.
+Concurrency defaults to two workers because the preview model showed capacity failures above that level.
 
 ---
 
@@ -148,6 +155,7 @@ cp .env.example .env       # then edit .env
 | `PERPLEXITY_API_KEY` | Perplexity Search API for documentation discovery |
 | `GOOGLE_GENAI_API_KEY` | Native Google Gen AI synthesis and verification |
 | `GOOGLE_GENAI_MODEL` | Pinned synthesis model; default `gemini-3.1-pro-preview` |
+| `GOOGLE_MAX_WORKERS` | Maximum Google concurrency; default `2` for preview-model stability |
 | `PERPLEXITY_RUN_BUDGET_USD` / `GOOGLE_RUN_BUDGET_USD` | Per-run safety caps; defaults `$2` / `$8` |
 | `COMPOSIO_API_KEY` | Composio toolkit lookup (recommended; HTTP-catalog fallback if absent) |
 | `BROWSER_USE_API_KEY` | *optional* — Browser Use Cloud verification loop (`browser_verify.py`) |
@@ -156,22 +164,26 @@ cp .env.example .env       # then edit .env
 
 ```bash
 python research.py --app stripe             # 1) live sanity check; does not merge a results row
-python research.py --all --fresh-run         # 2) archive old state, research all 100
+python research.py --batch-submit --fresh-run --model gemini-3.1-pro-preview  # 2) archive + submit 100
+python research.py --batch-status            # 3) inspect asynchronous job state
+python research.py --batch-collect           # 4) validate results; may submit one repair batch
+# Run --batch-status / --batch-collect once more if a repair batch was submitted.
 # If any app failed: rerun --all, then capture the complete snapshot once:
-python research.py --snapshot-first-pass        # 3) only needed after an interrupted fresh run
-python research.py --verify --sample 24         # 4) blind re-search; facts remain unchanged
-.venv-browser/bin/python browser_verify.py --sample 12 --batch-size 6  # 5) live-doc loop
-python research.py --handcheck-template 24      # 6) create risk-biased worksheet
+python research.py --snapshot-first-pass        # 5) only needed after an interrupted sync run
+python research.py --verify --sample 24         # 6) blind re-search; facts remain unchanged
+.venv-browser/bin/python browser_verify.py --sample 12 --batch-size 6  # 7) live-doc loop
+python research.py --handcheck-template 24      # 8) create risk-biased worksheet
 # Fill official-doc truth + evidence URLs in handcheck/handcheck.json.
-python research.py --fold-handcheck             # 7) current ground-truth metric
-python research.py --accuracy-movement          # 8) first-pass vs current on same truth
-python research.py --metrics                    # 9) rebuild all derived metrics
-python research.py --build-report               # 10) publish only after review
+python research.py --fold-handcheck             # 9) current ground-truth metric
+python research.py --accuracy-movement          # 10) first-pass vs current on same truth
+python research.py --metrics                    # 11) rebuild all derived metrics
+python research.py --build-report               # 12) publish only after review
 ```
 
-- **Safe fresh state:** `--fresh-run` archives generated results, metrics, reasoning, browser output,
-  and hand-check truth under ignored `out/archive/<timestamp>/`; it deliberately leaves `report/`
-  unchanged until `--build-report`.
+- **Safe fresh state:** `--fresh-run` preflights dependencies, keys, and concurrency before it archives
+  generated results, metrics, reasoning, and browser output under ignored `out/archive/<timestamp>/`.
+  It copies but never deletes human-authored `handcheck/handcheck.json`, and leaves `report/` unchanged
+  until `--build-report`.
 - **Immutable baseline:** a complete fresh run writes `results_firstpass.json` automatically. If the
   run was interrupted, resume it and call `--snapshot-first-pass`; that command refuses to overwrite.
 - **Resumable:** `--all` skips apps already in `results.json`; re-run after interruption.
@@ -207,10 +219,12 @@ or point a Vercel project at the repo with **Root Directory = `report`** (no bui
 |---------|------|
 | `--app <slug>` | research one app, print the record + reasoning-log path (no file writes) |
 | `--all` | research all 100 (concurrent, resumable) |
+| `--batch-submit` | prepare/checkpoint all evidence and submit one homogeneous Gemini batch |
+| `--batch-status` / `--batch-collect` | inspect, collect, validate, and optionally repair batch output |
 | `--slugs a,b,c` | research a subset |
 | `--limit N` | research the first N apps |
 | `--recheck a,b,c` | re-research given slugs and **merge** into results.json (keeps all other rows) |
-| `--fresh-run` | with `--all`, archive generated state and start clean without touching `report/` |
+| `--fresh-run` | with `--all` or `--batch-submit`, archive generated state without touching `report/` |
 | `--snapshot-first-pass` | capture a complete baseline once; refuses incomplete data or overwrite |
 | `--verify [--sample N]` | blind re-search audit; writes evidence/provenance but never changes rows |
 | `--handcheck-template [N]` | generate a hand-check worksheet (default 18) |

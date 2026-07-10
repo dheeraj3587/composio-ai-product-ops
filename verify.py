@@ -134,9 +134,29 @@ def _rederive(app: str, exclude_urls: set[str], model: str | None,
             "content": f"APP: {app}\n\nFETCHED EVIDENCE:\n{evidence_text}\n\nReturn strict JSON now.",
         },
     ]
-    parsed, _ = config.llm_json(
-        messages, model=model, lead=lead, response_schema=VerificationOutput
-    )
+    try:
+        parsed, _ = config.llm_json(
+            messages,
+            model=model,
+            lead=lead,
+            max_tokens=3072,
+            response_schema=VerificationOutput,
+        )
+    except config.StructuredOutputError:
+        parsed, _ = config.llm_json(
+            [
+                *messages,
+                {
+                    "role": "user",
+                    "content": "Return one complete JSON object with every required key.",
+                },
+            ],
+            model=model,
+            lead=lead,
+            thinking_level="low",
+            max_tokens=3072,
+            response_schema=VerificationOutput,
+        )
     try:
         verdict = _canonical_verdict(parsed)
     except ValueError as exc:
@@ -152,6 +172,8 @@ def _rederive(app: str, exclude_urls: set[str], model: str | None,
             repair_messages,
             model=model,
             lead=lead,
+            thinking_level="low",
+            max_tokens=3072,
             response_schema=VerificationOutput,
         )
         verdict = _canonical_verdict(repaired)
@@ -379,6 +401,28 @@ def rebuild_metrics() -> dict:
     browser_summary = _browser_use_summary()
     if browser_summary:
         metrics["browser_use"] = browser_summary
+    batch_state = config.load_json(config.BATCH_STATE_PATH, default={}) or {}
+    result_slugs = {record.get("slug") for record in results if record.get("slug")}
+    completed_slugs = set(batch_state.get("completed_slugs") or [])
+    source_audit_complete = bool(
+        results
+        and batch_state.get("status") == "complete"
+        and not batch_state.get("active_job")
+        and not batch_state.get("validation_failures")
+        and completed_slugs == result_slugs
+    )
+    browser_evidence = config.load_json(config.BROWSER_EVIDENCE_PATH, default={}) or {}
+    browser_entries = [
+        entry
+        for entry in browser_evidence.get("entries", [])
+        if entry.get("slug") in result_slugs and entry.get("analyst_summary")
+    ]
+    metrics["quality"] = {
+        "source_audit_complete": source_audit_complete,
+        "source_audited_rows": len(results) if source_audit_complete else 0,
+        "browser_evidence_pages": len(browser_entries),
+        "browser_evidence_apps": len({entry["slug"] for entry in browser_entries}),
+    }
     verification = metrics.get("verification", {})
     handcheck = metrics.get("handcheck", {})
     metrics["headline_accuracy"] = {

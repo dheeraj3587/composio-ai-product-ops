@@ -1,16 +1,63 @@
-# Monday.com — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Monday.com - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Monday.com official API authentication developer documentation", "Monday.com API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://developer.monday.com | HTTP 200 | hint | topics=api,auth,access,mcp
+- https://developer.monday.com/apps/docs/oauth | HTTP 200 | search_result | topics=api,auth,access,mcp
+- https://developer.monday.com/api-reference/docs/authentication | HTTP 200 | search_result | topics=api,auth,mcp
+- https://developer.monday.com/api-reference/docs/getting-started | HTTP 200 | search_result | topics=api,auth,access,mcp
+- https://developers.monday.com | HTTP 200 | derived_guess | topics=api,auth,access,mcp
+- https://docs.monday.com | HTTP 406 | derived_guess | topics=none
 
 ## Model reasoning
-The evidence confirms a broad GraphQL API covering boards, leads, docs, and updates. It explicitly mentions a 'hosted MCP url' and a 'Platform MCP' with a vast array of tools (Create Board, Get Items, etc.), making it highly buildable. The access model is self-serve via a free developer account. Preseed was 'none', so no contradiction occurred.
+The documentation clearly outlines a GraphQL API and an official MCP server. Authentication is handled via OAuth2 or Personal Access Tokens. Developer accounts are free and self-serve, making integration straightforward.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — Offers a free, no-expiration date developer account for playground access.
+- access_model: **Self-Serve** - Developers can sign up for a free developer account to access the API and MCP without manual approval.
 - recommended_next_action: **Build Now**
-- confidence: **1.0**
+- confidence: **0.95**
 
-## Evidence URLs (whitelist-enforced)
-- https://developer.monday.com
+## Evidence URLs
 - https://developer.monday.com/api-reference/docs/authentication
-- https://developer.monday.com/api-reference/
+- https://developer.monday.com/apps/docs/oauth
+- https://developer.monday.com/api-reference/docs/getting-started
+- https://developer.monday.com/apps/changelog/introducing-the-mondaycom-mcp-integration
+
+## Generated record
+```json
+{
+  "app": "Monday.com",
+  "category": "Productivity/PM",
+  "one_liner": "Monday.com provides a GraphQL API and an official Model Context Protocol (MCP) server for integrating AI agents and...",
+  "auth_methods": [
+    "OAuth2",
+    "Personal Access Token"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can sign up for a free developer account to access the API and MCP without manual approval."
+  },
+  "api_type": "GraphQL",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://developer.monday.com/api-reference/docs/authentication",
+    "https://developer.monday.com/apps/docs/oauth",
+    "https://developer.monday.com/api-reference/docs/getting-started",
+    "https://developer.monday.com/apps/changelog/introducing-the-mondaycom-mcp-integration"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "monday",
+  "primary_docs_url": "https://developer.monday.com/apps/docs/oauth",
+  "rate_limit_note": "Rate limits are enforced and documented in the API reference, though specific quotas depend on the account plan.",
+  "last_verified": "2026-07-10"
+}
+```

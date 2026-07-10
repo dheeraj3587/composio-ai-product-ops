@@ -1,16 +1,62 @@
-# Threads (Meta) — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Threads (Meta) - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Threads (Meta) official API authentication developer documentation", "Threads (Meta) API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://developers.facebook.com/docs/threads | HTTP 200 | hint | topics=api,auth
+- https://developers.facebook.com/docs/threads/get-started/ | HTTP 200 | search_result | topics=api,auth,access
+- https://developers.facebook.com/docs/threads/ | HTTP 200 | search_result | topics=api,auth
+- https://developers.facebook.com/docs/threads/get-started/get-access-tokens-and-permissions/ | HTTP 200 | search_result | topics=api,auth
+- https://developer.facebook.com | HTTP 200 | derived_guess | topics=api,auth,access
+- https://developers.facebook.com | HTTP 200 | derived_guess | topics=api,auth,access
 
 ## Model reasoning
-The API is broad, covering publishing (posts, replies, reposts), retrieval (user posts, mentions, keyword search), insights, and webhooks. Buildability is Moderate because while it uses standard OAuth 2.0 and has clear documentation, it requires a Meta App setup and a mandatory App Review process for permissions to be granted to general users. The preseed hypothesis was 'none'. Confidence is high as the official Meta documentation provides a comprehensive overview of the requirements and endpoints.
+The official documentation clearly outlines an OAuth2 flow for user access tokens and explicitly states that App Review is required for public users to grant permissions. The API covers a broad range of features including publishing, replies, and insights. Multiple community MCP servers exist.
 
 ## Key decisions
-- buildability: **Moderate**
-- access_model: **Gated** — Requires creating a Meta app with the Threads use case; permissions must be approved through App Review for non-tester users.
+- buildability: **Hard**
+- access_model: **Gated** - Requires Meta App Review for production access to permissions for users without a role on the app.
 - recommended_next_action: **Needs Outreach**
 - confidence: **0.9**
 
-## Evidence URLs (whitelist-enforced)
-- https://developers.facebook.com/docs/threads
-- https://developers.facebook.com/documentation/threads/
-- https://developers.facebook.com/documentation/threads/get-started/
+## Evidence URLs
+- https://developers.facebook.com/docs/threads/get-started/
+- https://developers.facebook.com/docs/threads/get-started/get-access-tokens-and-permissions/
+- https://github.com/quinnjr/threads-mcp
+- https://lobehub.com/ru/mcp/metathreads-meta-threads-mcp
+
+## Generated record
+```json
+{
+  "app": "Threads (Meta)",
+  "category": "Ads/Marketing",
+  "one_liner": "The Threads API by Meta allows developers to publish content, manage replies, and retrieve insights via a REST API.",
+  "auth_methods": [
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Requires Meta App Review for production access to permissions for users without a role on the app."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Community",
+  "composio_toolkit": "No",
+  "buildability": "Hard",
+  "main_blocker": "Production access requires passing Meta's App Review process to get permissions approved for public users.",
+  "recommended_next_action": "Needs Outreach",
+  "evidence_urls": [
+    "https://developers.facebook.com/docs/threads/get-started/",
+    "https://developers.facebook.com/docs/threads/get-started/get-access-tokens-and-permissions/",
+    "https://github.com/quinnjr/threads-mcp",
+    "https://lobehub.com/ru/mcp/metathreads-meta-threads-mcp"
+  ],
+  "confidence": 0.9,
+  "verification_status": "Auto",
+  "slug": "threads",
+  "primary_docs_url": "https://developers.facebook.com/docs/threads/get-started/",
+  "rate_limit_note": "Rate limits and publishing quotas apply, though specific limits are not detailed in the provided snippets.",
+  "last_verified": "2026-07-10"
+}
+```

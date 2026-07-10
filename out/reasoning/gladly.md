@@ -1,17 +1,63 @@
-# Gladly — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Gladly - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Gladly official API authentication developer documentation", "Gladly API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://gladly.com | HTTP 200 | hint | topics=api,access
+- https://developer.gladly.com/rest/ | HTTP 200 | search_result | topics=api,auth,access
+- https://developer.gladly.com/ | HTTP 200 | search_result | topics=api
+- https://help.gladly.com/developer-tutorials/docs/quickstart | HTTP 200 | search_result | topics=api,auth
+- https://developer.gladly.com | HTTP 200 | derived_guess | topics=api
+- https://developers.gladly.com | HTTP 0 | derived_guess | topics=none
 
 ## Model reasoning
-Evidence confirms a substantial public REST surface (agents, customers, conversations/items, answers, tasks, teams, inboxes, topics, webhooks, reports, export, communications, etc.), API-token auth with create/rotate docs, webhooks, Chat SDKs, App Platform, OpenAPI download, and rate-limit sections—so technical buildability is Easy once credentials exist. Marketing/dev pages push demo/book-a-demo with no free signup path, so access is Gated and next action is Partner-Gated rather than Build Now. Preseed was none (nothing to confirm/contradict). Confidence 0.85: API breadth/type/auth clear from docs; exact token-permission UX and numeric rate limits not fully spelled out in excerpts; enterprise sales-led access inferred from CTAs rather than an explicit 'customers only' API policy statement.
+The Gladly REST API is well-documented and supports various authentication methods. However, access requires an existing customer account or partner relationship, making it gated. A community MCP server is available via StackOne.
 
 ## Key decisions
-- buildability: **Easy**
-- access_model: **Gated** — Public developer docs and token creation flow, but product is demo/sales-led with no free self-serve signup
+- buildability: **Hard**
+- access_model: **Gated** - Requires an existing customer account or partner relationship with Gladly to access the API and generate tokens.
 - recommended_next_action: **Partner-Gated**
 - confidence: **0.85**
 
-## Evidence URLs (whitelist-enforced)
+## Evidence URLs
 - https://developer.gladly.com/rest/
-- https://developer.gladly.com/
-- https://www.gladly.ai/gladly-developer-platform/
-- https://gladly.com
+- https://help.gladly.com/developer-tutorials/docs/quickstart
+- https://www.stackone.com/connectors/gladly/mcp/
+
+## Generated record
+```json
+{
+  "app": "Gladly",
+  "category": "Support",
+  "one_liner": "Gladly provides a comprehensive REST API and App Platform for integrating customer service workflows and data.",
+  "auth_methods": [
+    "API Key",
+    "Basic Auth",
+    "Bearer Token",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Requires an existing customer account or partner relationship with Gladly to access the API and generate tokens."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Community",
+  "composio_toolkit": "No",
+  "buildability": "Hard",
+  "main_blocker": "Requires an existing customer account or partner relationship with Gladly to access the API and generate tokens.",
+  "recommended_next_action": "Partner-Gated",
+  "evidence_urls": [
+    "https://developer.gladly.com/rest/",
+    "https://help.gladly.com/developer-tutorials/docs/quickstart",
+    "https://www.stackone.com/connectors/gladly/mcp/"
+  ],
+  "confidence": 0.85,
+  "verification_status": "Auto",
+  "slug": "gladly",
+  "primary_docs_url": "https://developer.gladly.com/rest/",
+  "rate_limit_note": "The REST API documentation includes sections on Default Rate Limit, Reporting API Rate Limit, and Handling Rate Limit.",
+  "last_verified": "2026-07-10"
+}
+```

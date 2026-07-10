@@ -55,11 +55,11 @@ async function loadData() {
 function renderStatus() {
   const p = metrics.patterns || {};
   const h = metrics.handcheck || {};
-  const b = metrics.browser_use || {};
+  const q = metrics.quality || {};
   const lines = [
-    ["Evidence", h.n ? `${h.n} / ${pct(h.accuracy)}` : "Pending"],
-    ["Live docs", b.n_checked ? `${b.n_checked} checked` : "Pending"],
-    ["Run", metrics.generated || "Not generated"],
+    ["Source audit", q.source_audit_complete ? `${q.source_audited_rows} / ${p.n || rows.length}` : "Incomplete"],
+    ["Browser docs", q.browser_evidence_pages ? `${q.browser_evidence_pages} pages` : "Pending"],
+    ["Human check", h.n ? `${h.n} rows` : "Pending"],
   ];
   $("status-lines").innerHTML = lines.map(([label, value]) => `
     <div class="status-line"><b>${esc(label)}</b><span>${esc(value)}</span></div>
@@ -70,9 +70,10 @@ function renderHeroFacts() {
   const p = metrics.patterns || {};
   const h = metrics.handcheck || {};
   const mcp = p.existing_mcp || {};
+  const q = metrics.quality || {};
   const facts = [
     [p.n || rows.length, "apps researched"],
-    [h.n || "-", "official-doc checks"],
+    [q.source_audited_rows || "-", "source-audited rows"],
     [mcp.Official || 0, "vendor MCP servers"],
   ];
   $("hero-facts").innerHTML = facts.map(([value, label]) => `
@@ -141,14 +142,14 @@ function renderMetrics() {
   const p = metrics.patterns || {};
   const access = p.access_model || {};
   const toolkit = p.composio_toolkit || {};
-  const h = metrics.handcheck || {};
+  const q = metrics.quality || {};
   const actions = p.recommended_next_action || {};
   const data = [
     [access["Self-Serve"] || 0, "self-serve paths"],
     [p.build_now || 0, "ready to build"],
     [actions["Needs Outreach"] || 0, "needs outreach"],
     [toolkit.No || 0, "Composio gaps"],
-    [h.n ? pct(h.accuracy) : "Pending", "hand-check"],
+    [q.source_audited_rows || 0, "source-audited"],
   ];
   $("metrics").innerHTML = data.map(([value, label]) => `
     <article class="metric">
@@ -330,9 +331,10 @@ function renderVerification() {
   const v = metrics.verification || {};
   const am = metrics.accuracy_movement || {};
   const unresolved = metrics.unresolved_failures || [];
+  const q = metrics.quality || {};
   const handText = h.n
     ? `${h.n} official-doc checks: API ${pct(h.api_type_accuracy)}, auth ${pct(h.auth_accuracy)}, access ${pct(h.access_accuracy)}. Overall ${pct(h.accuracy)}; ${(h.misses || []).length} mismatches shown below.`
-    : "No hand-check rows have been folded yet. This should be completed before final submission.";
+    : "Independent human adjudication is pending for this fresh run. The legacy score was not carried forward because its access rubric was different.";
   const blindText = v.n_verified
     ? `${v.n_verified} fresh-source re-checks; agreement ${pct(v.overall_agreement_rate)}. This measures reproducibility, not accuracy.`
     : "No blind re-search agreement has been recorded yet.";
@@ -345,7 +347,9 @@ function renderVerification() {
     ? (browserAccepted != null
       ? `${bu.n_checked} live-doc checks produced ${browserDisagreements} disagreements; ${browserAccepted} became accepted corrections after human adjudication.`
       : `${bu.n_checked} live-doc checks produced ${browserDisagreements} disagreements. This legacy snapshot did not store field-level adjudication state.`)
-    : "Browser Use Cloud loop not yet recorded for this run.";
+    : (q.browser_evidence_pages
+      ? `${q.browser_evidence_pages} official pages across ${q.browser_evidence_apps} difficult apps were read in-browser when direct fetching was incomplete. This is evidence acquisition, not an accuracy score.`
+      : "No browser-assisted evidence is recorded for this run.");
   const moveText = (am.first_pass_accuracy != null)
     ? `Measured sample: ${pct(am.first_pass_accuracy)} first pass to ${pct(am.post_verification_accuracy)} after review. ${(am.improved_apps || []).length} improved; ${(am.regressed_apps || []).length} regressed.`
     : "";
@@ -370,6 +374,9 @@ function renderVerification() {
     + (h.note ? `<p class="subtle" style="margin:10px 0 0">${esc(h.note)}</p>` : "")
     + `</article>`;
   const cards = [
+    `<article class="proof"><h3>Source Quality Gate</h3><p>${q.source_audit_complete
+      ? `${q.source_audited_rows} of ${rows.length} rows passed schema, citation, app-identity, and first-party claim-coverage checks.`
+      : "The full source-quality audit is incomplete."}</p></article>`,
     handCard,
     `<article class="proof"><h3>Blind Re-Search Agreement</h3><p>${esc(blindText)}</p></article>`,
     `<article class="proof"><h3>Browser-Use Verification (live docs)</h3><p>${esc(browserText)}</p></article>`,
@@ -383,7 +390,7 @@ function renderVerification() {
 
   const warnings = [];
   if (!h.n || !v.n_verified) {
-    warnings.push("Verification is incomplete: fill the hand-check and run blind re-search before submission.");
+    warnings.push("Independent accuracy is still pending. The 100/100 source-audit pass must not be presented as a human accuracy score.");
   }
   if (unresolved.length) {
     warnings.push(`Unresolved pipeline failures: ${unresolved.map((f) => `${f.slug} (${f.phase})`).join(", ")}. These apps were not guessed.`);

@@ -73,9 +73,14 @@ def _save(results_by_slug: dict) -> None:
     config.save_json(config.RESULTS_PATH, _ordered(results_by_slug))
 
 
-def run_batch(slugs: list[str] | None = None, workers: int = 6,
+def run_batch(slugs: list[str] | None = None, workers: int = 2,
               resume: bool = True, model: str | None = None,
               shard: bool = True) -> list[dict]:
+    if workers < 1 or workers > config.GOOGLE_MAX_WORKERS:
+        raise ValueError(
+            f"workers must be between 1 and {config.GOOGLE_MAX_WORKERS} for the "
+            "configured Google model"
+        )
     config.ensure_dirs()
     apps = load_apps()
     if slugs:
@@ -96,27 +101,68 @@ def run_batch(slugs: list[str] | None = None, workers: int = 6,
         rec, info = research_app(a, model=model, lead=None)
         return a["slug"], rec.model_dump(mode="json"), info, None
 
+    consecutive_capacity_failures = 0
+    todo_iter = iter(todo)
     with cf.ThreadPoolExecutor(max_workers=workers) as ex:
-        futs = {ex.submit(work, a): a for a in todo}
-        for fut in cf.as_completed(futs):
-            a = futs[fut]
+        futs: dict[cf.Future, dict] = {}
+
+        def submit_next() -> bool:
             try:
-                slug, rec, info, lead = fut.result()
-                results[slug] = rec
-                with _write_lock:
+                app = next(todo_iter)
+            except StopIteration:
+                return False
+            futs[ex.submit(work, app)] = app
+            return True
+
+        for _ in range(workers):
+            submit_next()
+
+        while futs:
+            done, _ = cf.wait(futs, return_when=cf.FIRST_COMPLETED)
+            completed_slots = 0
+            # Preserve any successful sibling before reacting to a fatal provider error.
+            for fut in sorted(done, key=lambda item: item.exception() is not None):
+                a = futs.pop(fut)
+                try:
+                    slug, rec, info, lead = fut.result()
+                    results[slug] = rec
+                    with _write_lock:
+                        _save(results)
+                    docs_research.resolve_failure(slug, "pipeline")
+                    if not info["degraded"]:
+                        docs_research.resolve_failure(slug, "evidence")
+                    flag = " [degraded]" if info["degraded"] else ""
+                    via = f" via {lead}" if lead else ""
+                    print(f"[ok] {slug}: {rec['buildability']}/{rec['recommended_next_action']} "
+                          f"conf={rec['confidence']}{via}{flag}")
+                    consecutive_capacity_failures = 0
+                except config.ProviderQuotaExhausted as e:
+                    docs_research._log_failure(
+                        a["slug"], f"pipeline paused: {e}", phase="pipeline"
+                    )
+                    for pending in futs:
+                        pending.cancel()
                     _save(results)
-                docs_research.resolve_failure(slug, "pipeline")
-                if not info["degraded"]:
-                    docs_research.resolve_failure(slug, "evidence")
-                flag = " [degraded]" if info["degraded"] else ""
-                via = f" via {lead}" if lead else ""
-                print(f"[ok] {slug}: {rec['buildability']}/{rec['recommended_next_action']} "
-                      f"conf={rec['confidence']}{via}{flag}")
-            except Exception as e:  # honest failure log — never silently guess
-                docs_research._log_failure(
-                    a["slug"], f"pipeline error: {type(e).__name__}: {e}", phase="pipeline"
-                )
-                print(f"[FAIL] {a['slug']}: {type(e).__name__}: {e}")
+                    raise
+                except Exception as e:  # honest failure log — never silently guess
+                    docs_research._log_failure(
+                        a["slug"], f"pipeline error: {type(e).__name__}: {e}", phase="pipeline"
+                    )
+                    print(f"[FAIL] {a['slug']}: {type(e).__name__}: {e}")
+                    if config.is_capacity_error(e):
+                        consecutive_capacity_failures += 1
+                        if consecutive_capacity_failures >= 3:
+                            for pending in futs:
+                                pending.cancel()
+                            _save(results)
+                            raise config.ProviderCapacityUnavailable(
+                                "three consecutive provider high-demand failures; resume later"
+                            ) from e
+                    else:
+                        consecutive_capacity_failures = 0
+                completed_slots += 1
+            for _ in range(completed_slots):
+                submit_next()
 
     ordered = _ordered(results)
     _save(results)

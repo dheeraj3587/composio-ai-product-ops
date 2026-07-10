@@ -1,17 +1,61 @@
-# Mailchimp — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Mailchimp - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Mailchimp official API authentication developer documentation", "Mailchimp API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://mailchimp.com/developer | HTTP 200 | hint | topics=api,access
+- https://mailchimp.com/developer/marketing/guides/access-user-data-oauth-2/ | HTTP 200 | search_result | topics=api,auth,access
+- https://mailchimp.com/developer/transactional/docs/authentication-delivery/ | HTTP 200 | search_result | topics=api,auth
+- https://mailchimp.com/developer/marketing/api/ | HTTP 200 | search_result | topics=api,auth
+- https://developer.mailchimp.com | HTTP 200 | derived_guess | topics=api,access
+- https://developers.mailchimp.com | HTTP 0 | derived_guess | topics=none
 
 ## Model reasoning
-Evidence from official developer hub and Marketing API reference shows a mature REST API (v3) with many resources (audiences/lists, campaigns, automations, e-commerce stores, reports, templates, batch ops, etc.) spanning marketing domains, confirming Broad breadth. Auth is self-serve: API keys generated directly in account extras, plus OAuth 2.0 app registration for multi-tenant use; base URL uses DC prefix from key. Docs include quick starts, full reference, and guides—clear and public. No review/partner gate required for basic access, so buildability Easy and next action Build Now; main_blocker empty. No MCP mentioned (Official/Community/None). Rate limits absent from evidence. Preseed was none (nothing to confirm/contradict). Confidence high due to direct official endpoint listings and third-party confirmation of auth/setup, though auth guide fetch was partially redundant and rates unspecified.
+Mailchimp offers well-documented REST APIs for both Marketing and Transactional services, supporting API Key and OAuth2 authentication. The official documentation explicitly details an official MCP server for Transactional Messaging, making integration straightforward.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — API keys created in account settings; OAuth via developer app registration
+- access_model: **Self-Serve** - Developers can sign up for a Mailchimp account to generate API keys or register OAuth 2 applications without manual approval.
 - recommended_next_action: **Build Now**
-- confidence: **0.92**
+- confidence: **0.95**
 
-## Evidence URLs (whitelist-enforced)
-- https://mailchimp.com/developer
+## Evidence URLs
+- https://mailchimp.com/developer/marketing/guides/access-user-data-oauth-2/
 - https://mailchimp.com/developer/marketing/api/
-- https://aeroleads.com/blog/getting-started-with-mailchimp-api-developer-documentation/
-- https://mailchimp.com/developer/marketing/guides/authentication/
+- https://mailchimp.com/developer/transactional/guides/how-to-use-mailchimps-transactional-messaging-mcp/
+
+## Generated record
+```json
+{
+  "app": "Mailchimp",
+  "category": "Ads/Marketing",
+  "one_liner": "Mailchimp provides comprehensive REST APIs and an official MCP server for managing marketing campaigns and...",
+  "auth_methods": [
+    "OAuth2",
+    "API Key"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can sign up for a Mailchimp account to generate API keys or register OAuth 2 applications without manual approval."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://mailchimp.com/developer/marketing/guides/access-user-data-oauth-2/",
+    "https://mailchimp.com/developer/marketing/api/",
+    "https://mailchimp.com/developer/transactional/guides/how-to-use-mailchimps-transactional-messaging-mcp/"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "mailchimp",
+  "primary_docs_url": "https://mailchimp.com/developer/marketing/guides/access-user-data-oauth-2/",
+  "rate_limit_note": "Rate limits are not explicitly detailed in the provided snippets, but standard API limits apply.",
+  "last_verified": "2026-07-10"
+}
+```

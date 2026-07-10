@@ -1,16 +1,62 @@
-# Gorgias — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Gorgias - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Gorgias official API authentication developer documentation", "Gorgias API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://gorgias.com | HTTP 200 | hint | topics=api,access
+- https://docs.gorgias.com/en-US/rest-api-208286 | HTTP 200 | search_result | topics=api,auth,access
+- https://developers.gorgias.com/docs/create-a-ticket-using-api | HTTP 200 | search_result | topics=api,auth,access
+- https://updates.gorgias.com/publications/oauth2-authentication-for-http-integrations | HTTP 200 | search_result | topics=api,auth
+- https://developer.gorgias.com | HTTP 200 | derived_guess | topics=none
+- https://developers.gorgias.com | HTTP 200 | derived_guess | topics=api,access
 
 ## Model reasoning
-Evidence confirms a documented REST API with predictable resource URLs, JSON, standard HTTP verbs, and Basic Auth via API key (base URL https://{subdomain}.gorgias.com/api/). Private apps need no approval and are self-serve; public apps require Developer Portal + review (explicitly stated). Resources include tickets, messages, customers, integrations, events with CRUD-style operations—Moderate breadth. Docs + blog provide clear auth, pagination, webhooks, and examples, so buildability Easy and next action Build Now for private use. No MCP mentioned (None). Rate limits exist but numbers absent. Preseed was none (no contradiction). Confidence high on core facts but slightly lowered as exact rate limits and full endpoint list are not exhaustively quoted.
+Gorgias provides comprehensive REST API documentation with self-serve API keys via Basic Auth for private apps, and OAuth2 for public apps. An official MCP server is also available and documented on their main help center.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — Private apps: self-serve API key on account subdomain; Public apps require Developer Portal signup + review/approval for App Store
+- access_model: **Self-Serve** - API keys can be generated directly from the helpdesk settings for private apps. Public apps require developer portal registration and review.
 - recommended_next_action: **Build Now**
-- confidence: **0.88**
+- confidence: **0.95**
 
-## Evidence URLs (whitelist-enforced)
-- https://developers.gorgias.com/reference/introduction
-- https://developers.gorgias.com/
-- https://www.getmacha.com/blog/how-to-use-the-gorgias-api
+## Evidence URLs
+- https://docs.gorgias.com/en-US/rest-api-208286
+- https://developers.gorgias.com/docs/create-a-ticket-using-api
+- https://docs.gorgias.com/en-US/connect-your-ai-assistant-to-the-gorgias-mcp-6310546
+
+## Generated record
+```json
+{
+  "app": "Gorgias",
+  "category": "Support",
+  "one_liner": "Gorgias provides a REST API and an official MCP server for managing e-commerce helpdesk tickets and customer data.",
+  "auth_methods": [
+    "Basic Auth",
+    "API Key",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "API keys can be generated directly from the helpdesk settings for private apps. Public apps require developer portal registration and review."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None.",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://docs.gorgias.com/en-US/rest-api-208286",
+    "https://developers.gorgias.com/docs/create-a-ticket-using-api",
+    "https://docs.gorgias.com/en-US/connect-your-ai-assistant-to-the-gorgias-mcp-6310546"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "gorgias",
+  "primary_docs_url": "https://docs.gorgias.com/en-US/rest-api-208286",
+  "rate_limit_note": "Not explicitly detailed in the provided snippets.",
+  "last_verified": "2026-07-10"
+}
+```

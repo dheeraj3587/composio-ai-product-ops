@@ -1,16 +1,63 @@
-# Shopify — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Shopify - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Shopify official API authentication developer documentation", "Shopify API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://shopify.dev | HTTP 200 | hint | topics=api,access
+- https://shopify.dev/docs/api/usage/authentication | HTTP 200 | search_result | topics=api,auth,access
+- https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/getting-started | HTTP 200 | search_result | topics=api,auth,access
+- https://shopify.dev/docs/apps/build/authentication-authorization/client-secrets | HTTP 200 | search_result | topics=api,auth,access,mcp
+- https://developer.shopify.dev | HTTP 0 | derived_guess | topics=none
+- https://developers.shopify.dev | HTTP 0 | derived_guess | topics=none
 
 ## Model reasoning
-Official Shopify.dev docs show extensive public APIs: GraphQL Admin API (primary), legacy REST Admin, Storefront API, Partner API, webhooks, Functions, and more—clear Broad breadth. Auth is documented as session tokens/token exchange for admin apps plus public/private Storefront tokens, with Shopify CLI scaffolding auth boilerplate and managed install—self-serve Easy buildability. Access is Self-Serve (CLI init, dev stores, App Store path). No MCP mentioned in evidence → existing_mcp None. No material blocker; recommended_next_action Build Now. Rate limits are referenced but not quantified in excerpts. PRESEED was none; evidence fully supports a mature public API platform. Cleverence URL added no usable API detail. Confidence high due to first-party docs, slightly reduced only because rate-limit numbers and full OAuth flow detail are summarized rather than fully excerpted.
+Shopify offers extensive, self-serve developer documentation. They provide modern GraphQL APIs for Admin and Storefront, authenticated via OAuth2 and access tokens. They also officially support MCP with the Storefront MCP and Shopify Dev MCP server.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — Partner apps and dev stores via Shopify CLI; managed installation and App Store distribution available
+- access_model: **Self-Serve** - Developers can create a Partner account, scaffold apps, and generate client credentials or Storefront access tokens directly from the Dev Dashboard.
 - recommended_next_action: **Build Now**
-- confidence: **0.9**
+- confidence: **0.95**
 
-## Evidence URLs (whitelist-enforced)
-- https://shopify.dev
+## Evidence URLs
 - https://shopify.dev/docs/api/usage/authentication
-- https://shopify.dev/docs/api
+- https://shopify.dev/docs/apps/build/authentication-authorization/client-secrets
+- https://shopify.dev/docs/apps/build/storefront-mcp
+- https://tenten.co/shopifymcp/docs/mcp-resources/official-mcp-servers
+
+## Generated record
+```json
+{
+  "app": "Shopify",
+  "category": "Commerce",
+  "one_liner": "Shopify provides a comprehensive commerce platform with GraphQL APIs and official MCP support for AI integrations.",
+  "auth_methods": [
+    "OAuth2",
+    "API Key"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can create a Partner account, scaffold apps, and generate client credentials or Storefront access tokens directly from the Dev Dashboard."
+  },
+  "api_type": "GraphQL",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://shopify.dev/docs/api/usage/authentication",
+    "https://shopify.dev/docs/apps/build/authentication-authorization/client-secrets",
+    "https://shopify.dev/docs/apps/build/storefront-mcp",
+    "https://tenten.co/shopifymcp/docs/mcp-resources/official-mcp-servers"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "shopify",
+  "primary_docs_url": "https://shopify.dev/docs/api/usage/authentication",
+  "rate_limit_note": "Apps can have a maximum of 100 active storefront access tokens per shop.",
+  "last_verified": "2026-07-10"
+}
+```

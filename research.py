@@ -14,8 +14,10 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import importlib
 import json
 import shutil
+import sys
 import time as _t
 
 import config
@@ -35,8 +37,29 @@ def cmd_app(slug: str, model: str | None) -> None:
     _print_record(rec.model_dump(mode="json"), info)
 
 
+def _preflight_paid_runtime(workers: int) -> None:
+    """Fail before archiving when this interpreter cannot run the paid pipeline."""
+    errors = []
+    if not config.PERPLEXITY_API_KEY:
+        errors.append("PERPLEXITY_API_KEY is not set")
+    if not config.GOOGLE_API_KEY:
+        errors.append("GOOGLE_GENAI_API_KEY/GOOGLE_API_KEY is not set")
+    for module, package in (("perplexity", "perplexityai"), ("google.genai", "google-genai")):
+        try:
+            importlib.import_module(module)
+        except ImportError:
+            errors.append(f"{package} is not installed in {sys.executable}")
+    if workers < 1 or workers > config.GOOGLE_MAX_WORKERS:
+        errors.append(
+            f"--workers must be 1..{config.GOOGLE_MAX_WORKERS}; the configured preview "
+            "model was unstable above that concurrency"
+        )
+    if errors:
+        raise SystemExit("paid-run preflight failed:\n- " + "\n- ".join(errors))
+
+
 def _archive_current_run() -> None:
-    """Archive and clear generated research state while leaving report/ untouched."""
+    """Archive generated state while preserving report/ and human-authored truth."""
     stamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
     archive = config.OUT_DIR / "archive" / stamp
     archive.mkdir(parents=True, exist_ok=False)
@@ -48,6 +71,7 @@ def _archive_current_run() -> None:
         config.FAILURES_PATH,
         config.FAILURE_STATE_PATH,
         config.USAGE_PATH,
+        config.BATCH_STATE_PATH,
     ]
     for path in generated_files:
         if path.exists():
@@ -58,20 +82,28 @@ def _archive_current_run() -> None:
         shutil.rmtree(config.REASONING_DIR)
     if config.HANDCHECK_PATH.exists():
         shutil.copy2(config.HANDCHECK_PATH, archive / "handcheck.json")
-        config.HANDCHECK_PATH.unlink()
+    if config.BROWSER_EVIDENCE_PATH.exists():
+        shutil.copy2(config.BROWSER_EVIDENCE_PATH, archive / "browser_evidence.json")
     config.ensure_dirs()
     print(f"archived prior run -> {archive} (published report files were not changed)")
 
 
 def cmd_batch(slugs, limit, workers, model, resume, shard, fresh_run=False) -> None:
+    _preflight_paid_runtime(workers)
     if fresh_run:
         _archive_current_run()
         resume = False
     if limit and not slugs:
         slugs = [a["slug"] for a in pipeline.load_apps()[:limit]]
-    results = pipeline.run_batch(
-        slugs=slugs, workers=workers, resume=resume, model=model, shard=shard
-    )
+    try:
+        results = pipeline.run_batch(
+            slugs=slugs, workers=workers, resume=resume, model=model, shard=shard
+        )
+    except (config.ProviderQuotaExhausted, config.ProviderCapacityUnavailable) as exc:
+        raise SystemExit(
+            f"batch paused safely: {exc}\n"
+            "completed rows are checkpointed; rerun the same command without --fresh-run"
+        ) from exc
     agg = pipeline.compute_aggregates(results)
     metrics = config.load_json(config.METRICS_PATH, default={}) or {}
     metrics["patterns"] = agg
@@ -92,6 +124,49 @@ def cmd_batch(slugs, limit, workers, model, resume, shard, fresh_run=False) -> N
         f"patterns -> {config.METRICS_PATH}: build_now={agg.get('build_now')} "
         f"partner_gated={agg.get('partner_gated')} access={agg.get('access_model')}"
     )
+
+
+def cmd_batch_submit(model: str | None, workers: int, fresh_run: bool) -> None:
+    import batch_pipeline
+
+    _preflight_paid_runtime(workers)
+    if fresh_run:
+        _archive_current_run()
+    batch_pipeline.submit(model or config.PRIMARY_MODEL, workers=workers)
+
+
+def cmd_batch_status() -> None:
+    import batch_pipeline
+
+    batch_pipeline.status()
+
+
+def cmd_batch_recover(job_name: str, model: str | None, workers: int) -> None:
+    import batch_pipeline
+
+    _preflight_paid_runtime(workers)
+    batch_pipeline.recover(
+        job_name, model or config.PRIMARY_MODEL, workers=workers
+    )
+
+
+def cmd_batch_collect() -> None:
+    import batch_pipeline
+
+    batch_pipeline.collect()
+
+
+def cmd_batch_retry_failures(workers: int) -> None:
+    import batch_pipeline
+
+    _preflight_paid_runtime(workers)
+    batch_pipeline.retry_failures(workers=workers)
+
+
+def cmd_batch_audit_sources() -> None:
+    import batch_pipeline
+
+    batch_pipeline.audit_sources()
 
 
 def cmd_recheck(slugs_csv, model) -> None:
@@ -168,7 +243,7 @@ def main() -> None:
     p.add_argument("--all", action="store_true", help="research all 100 apps")
     p.add_argument("--slugs", help="comma-separated slugs to research")
     p.add_argument("--limit", type=int, help="research only the first N apps (dry run)")
-    p.add_argument("--workers", type=int, default=3)
+    p.add_argument("--workers", type=int, default=config.GOOGLE_MAX_WORKERS)
     p.add_argument("--model", help="override the native Google Gemini model")
     p.add_argument(
         "--no-resume", action="store_true", help="ignore cached results.json"
@@ -176,6 +251,34 @@ def main() -> None:
     p.add_argument(
         "--fresh-run", action="store_true",
         help="archive generated state, research all apps from scratch, and preserve report/"
+    )
+    p.add_argument(
+        "--batch-submit",
+        action="store_true",
+        help="prepare all evidence and submit asynchronous Gemini batch synthesis",
+    )
+    p.add_argument(
+        "--batch-status", action="store_true", help="show current Gemini batch state"
+    )
+    p.add_argument(
+        "--batch-recover",
+        metavar="JOB_NAME",
+        help="rebuild local evidence state for an existing Gemini batch job",
+    )
+    p.add_argument(
+        "--batch-collect",
+        action="store_true",
+        help="collect and validate a completed Gemini batch",
+    )
+    p.add_argument(
+        "--batch-retry-failures",
+        action="store_true",
+        help="refresh evidence and resubmit only final batch validation failures",
+    )
+    p.add_argument(
+        "--batch-audit-sources",
+        action="store_true",
+        help="revalidate completed rows against app-identity and official-source rules",
     )
     p.add_argument(
         "--snapshot-first-pass", action="store_true",
@@ -215,14 +318,26 @@ def main() -> None:
                    help="score first-pass vs post-verification accuracy against hand truth")
     args = p.parse_args()
 
-    if args.fresh_run and not args.all:
-        p.error("--fresh-run must be used with --all")
+    if args.fresh_run and not (args.all or args.batch_submit):
+        p.error("--fresh-run must be used with --all or --batch-submit")
     if args.fresh_run and len(config.configured_model_chain(args.model)) != 1:
         p.error(
             "--fresh-run requires the single native Google model policy."
         )
 
-    if args.app:
+    if args.batch_submit:
+        cmd_batch_submit(args.model, args.workers, args.fresh_run)
+    elif args.batch_recover:
+        cmd_batch_recover(args.batch_recover, args.model, args.workers)
+    elif args.batch_status:
+        cmd_batch_status()
+    elif args.batch_collect:
+        cmd_batch_collect()
+    elif args.batch_retry_failures:
+        cmd_batch_retry_failures(args.workers)
+    elif args.batch_audit_sources:
+        cmd_batch_audit_sources()
+    elif args.app:
         cmd_app(args.app, args.model)
     elif args.recheck:
         cmd_recheck(args.recheck, args.model)

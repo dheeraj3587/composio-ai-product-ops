@@ -1,48 +1,50 @@
-woocommerce	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-salesforce-commerce-cloud	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-squarespace	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-magento	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-threads	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-bigcommerce	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-gumroad	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-ecwid	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-se-ranking	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-fanbasis	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-dataforseo	pipeline error: RuntimeError: all LLM providers failed (last error: Expecting ',' delimiter: line 7 column 4 (char 334))
-amazon-selling-partner	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-ahrefs	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-apify	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-firecrawl	pipeline error: RuntimeError: all LLM providers failed (last error: Expecting ',' delimiter: line 7 column 4 (char 297))
-sherlock	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-mrscraper	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-bright-data	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-waterfall	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-github	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-netlify	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-cloudflare	pipeline error: RuntimeError: all LLM providers failed (last error: Expecting ',' delimiter: line 7 column 4 (char 329))
-vercel	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-clay	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-woocommerce	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-bigcommerce	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-threads	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-salesforce-commerce-cloud	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-magento	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-squarespace	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-ahrefs	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-sherlock	pipeline error: AttributeError: 'list' object has no attribute 'get'
-vercel	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-neo4j	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-monday	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-xero	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-higgsfield	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-mermaid-cli	pipeline error: RuntimeError: all LLM providers failed (last error: empty completion from openrouter:tencent/hy3:free)
-salesforce-commerce-cloud	verify error: RuntimeError: all LLM providers failed (last error: Unterminated string starting at: line 3 column 5 (char 10))
-google-ads	verify error: RuntimeError: all LLM providers failed (last error: Unterminated string starting at: line 8 column 15 (char 109))
-pitchbook	verify error: RuntimeError: all LLM providers failed (last error: Unterminated string starting at: line 7 column 13 (char 93))
-sherlock	verify error: RuntimeError: all LLM providers failed (last error: Unterminated string starting at: line 3 column 5 (char 10))
-airtable	verify error: RuntimeError: all LLM providers failed (last error: Unterminated string starting at: line 3 column 5 (char 10))
-ramp	verify error: RuntimeError: all LLM providers failed (last error: Expecting value: line 7 column 14 (char 86))
-ahrefs	verify error: RuntimeError: all LLM providers failed (last error: Unterminated string starting at: line 3 column 5 (char 10))
-notion	verify error: RuntimeError: all LLM providers failed (last error: Unterminated string starting at: line 3 column 5 (char 10))
-pitchbook	no fetchable docs; query='PitchBook API documentation authentication developer'; candidates=['https://pitchbook.com', 'https://developer.pitchbook.com', 'https://developers.pitchbook.com', 'https://docs.pitchbook.com', 'https://api.pitchbook.com', 'https://pitchbook.com/developers']
-pitchbook	no fetchable docs; query='PitchBook API documentation authentication developer'; candidates=['https://pitchbook.com', 'https://developer.pitchbook.com', 'https://developers.pitchbook.com', 'https://docs.pitchbook.com', 'https://api.pitchbook.com', 'https://pitchbook.com/developers']
+2026-07-10T15:22:00.846753+00:00	FAILED	pipeline	salesforce	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['api'], cited topics=['access', 'auth', 'mcp']
+2026-07-10T15:22:00.857469+00:00	FAILED	pipeline	dealcloud	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['access'], cited topics=['api', 'auth', 'mcp']
+2026-07-10T15:22:00.862336+00:00	FAILED	pipeline	pylon	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['access'], cited topics=['api', 'auth', 'mcp']
+2026-07-10T15:22:00.865219+00:00	FAILED	pipeline	plain	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['access'], cited topics=['api', 'auth', 'mcp']
+2026-07-10T15:22:00.867324+00:00	FAILED	pipeline	help-scout	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['access'], cited topics=['api', 'auth', 'mcp']
+2026-07-10T15:22:00.871085+00:00	FAILED	pipeline	gladly	batch validation error: ValueError: Partner-Gated must identify the partner/existing-customer requirement
+2026-07-10T15:22:00.907390+00:00	FAILED	pipeline	salesforce-commerce-cloud	batch validation error: ValueError: Partner-Gated must identify the partner/existing-customer requirement
+2026-07-10T15:22:00.908452+00:00	FAILED	pipeline	magento	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['access'], cited topics=['api', 'auth', 'mcp']
+2026-07-10T15:22:00.910895+00:00	FAILED	pipeline	ecwid	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['mcp'], cited topics=['access', 'api', 'auth']
+2026-07-10T15:22:00.921596+00:00	FAILED	pipeline	mrscraper	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['access'], cited topics=['api', 'auth', 'mcp']
+2026-07-10T15:22:00.930737+00:00	FAILED	pipeline	waterfall	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['access'], cited topics=['api', 'auth']
+2026-07-10T15:22:00.951251+00:00	FAILED	pipeline	sentry	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['mcp'], cited topics=['access', 'api', 'auth']
+2026-07-10T15:22:00.960793+00:00	FAILED	pipeline	jira	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['access'], cited topics=['api', 'auth', 'mcp']
+2026-07-10T15:22:00.983951+00:00	FAILED	pipeline	paygent-connect	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['api'], cited topics=['access', 'auth', 'mcp']
+2026-07-10T15:22:01.002287+00:00	FAILED	pipeline	otter-ai	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['access'], cited topics=['api', 'auth', 'mcp']
+2026-07-10T15:25:14.509871+00:00	RESOLVED	pipeline	salesforce
+2026-07-10T15:25:14.512668+00:00	FAILED	pipeline	dealcloud	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['access'], cited topics=['api', 'auth', 'mcp']
+2026-07-10T15:25:14.515744+00:00	RESOLVED	pipeline	pylon
+2026-07-10T15:25:14.518307+00:00	RESOLVED	pipeline	plain
+2026-07-10T15:25:14.520332+00:00	RESOLVED	pipeline	help-scout
+2026-07-10T15:25:14.522795+00:00	RESOLVED	pipeline	gladly
+2026-07-10T15:25:14.524919+00:00	RESOLVED	pipeline	salesforce-commerce-cloud
+2026-07-10T15:25:14.527108+00:00	RESOLVED	pipeline	magento
+2026-07-10T15:25:14.529470+00:00	RESOLVED	pipeline	ecwid
+2026-07-10T15:25:14.531155+00:00	FAILED	pipeline	mrscraper	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['access'], cited topics=['api', 'auth', 'mcp']
+2026-07-10T15:25:14.533586+00:00	FAILED	pipeline	waterfall	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['access'], cited topics=['api', 'auth']
+2026-07-10T15:25:14.535826+00:00	RESOLVED	pipeline	sentry
+2026-07-10T15:25:14.537835+00:00	RESOLVED	pipeline	jira
+2026-07-10T15:25:14.539966+00:00	RESOLVED	pipeline	paygent-connect
+2026-07-10T15:25:14.541923+00:00	RESOLVED	pipeline	otter-ai
+2026-07-10T15:32:22.135883+00:00	RESOLVED	pipeline	dealcloud
+2026-07-10T15:32:22.144078+00:00	RESOLVED	pipeline	mrscraper
+2026-07-10T15:32:22.149385+00:00	RESOLVED	pipeline	waterfall
+2026-07-10T15:47:43.350420+00:00	FAILED	pipeline	salesforce-commerce-cloud	batch validation error: ValueError: at least one fetched evidence URL must support the record
+2026-07-10T15:47:43.373372+00:00	FAILED	pipeline	pitchbook	batch validation error: ValueError: known first-party evidence exists but was not cited
+2026-07-10T15:47:43.379493+00:00	FAILED	pipeline	paygent-connect	batch validation error: ValueError: evidence_urls do not identify the requested app
+2026-07-10T15:51:42.859566+00:00	RESOLVED	pipeline	salesforce-commerce-cloud
+2026-07-10T15:51:42.869546+00:00	RESOLVED	pipeline	pitchbook
+2026-07-10T15:51:42.875966+00:00	RESOLVED	pipeline	paygent-connect
+2026-07-10T16:06:38.199778+00:00	FAILED	pipeline	salesforce	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['api'], cited topics=['access', 'auth', 'mcp']
+2026-07-10T16:06:38.208374+00:00	FAILED	pipeline	plain	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['access'], cited topics=['api', 'auth', 'mcp']
+2026-07-10T16:06:38.220513+00:00	FAILED	pipeline	pinterest	batch validation error: ValueError: high-confidence core claims need first-party coverage; missing topics=['auth']
+2026-07-10T16:06:38.238766+00:00	FAILED	pipeline	clay	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['auth'], cited topics=['access', 'api', 'mcp']
+2026-07-10T16:06:38.247102+00:00	FAILED	pipeline	sentry	batch validation error: ValueError: evidence_urls do not support all high-risk claims; missing topics=['mcp'], cited topics=['access', 'api', 'auth']
+2026-07-10T18:40:39.981341+00:00	RESOLVED	pipeline	salesforce
+2026-07-10T18:40:39.988722+00:00	FAILED	pipeline	plain	batch validation error: ValueError: high-confidence core claims need first-party coverage; missing topics=['access']
+2026-07-10T18:40:39.994950+00:00	RESOLVED	pipeline	pinterest
+2026-07-10T18:40:39.999963+00:00	RESOLVED	pipeline	clay
+2026-07-10T18:40:40.004895+00:00	RESOLVED	pipeline	sentry
+2026-07-10T18:46:56.849356+00:00	RESOLVED	pipeline	plain

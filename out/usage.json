@@ -1,97 +1,118 @@
 {
   "totals_usd": {
-    "perplexity": 0.015,
-    "google": 0.022683
+    "google": 1.785305
   },
   "events": [
     {
-      "timestamp": "2026-07-10T08:28:17.279438+00:00",
-      "provider": "perplexity",
-      "operation": "search_preflight",
-      "estimated_cost_usd": 0.005,
-      "metadata": {
-        "query_count": 2,
-        "note": "provider integration preflight"
-      }
-    },
-    {
-      "timestamp": "2026-07-10T08:28:39.550674+00:00",
-      "provider": "perplexity",
-      "operation": "search",
-      "estimated_cost_usd": 0.005,
-      "metadata": {
-        "query_count": 2,
-        "result_count": 8
-      }
-    },
-    {
-      "timestamp": "2026-07-10T08:32:27.475366+00:00",
+      "timestamp": "2026-07-10T15:22:01.030393+00:00",
       "provider": "google",
-      "operation": "failed_structured_smoke",
-      "estimated_cost_usd": 0.0025,
+      "operation": "batch_generate_content",
+      "estimated_cost_usd": 1.197144,
       "metadata": {
-        "max_output_tokens": 256,
-        "reason": "truncated_json_conservative_estimate"
-      }
-    },
-    {
-      "timestamp": "2026-07-10T08:33:19.418774+00:00",
-      "provider": "google",
-      "operation": "generate_content",
-      "estimated_cost_usd": 0.000201,
-      "metadata": {
-        "model": "gemini-3.5-flash",
-        "prompt_tokens": 26,
-        "answer_tokens": 18,
-        "thought_tokens": 0,
-        "finish_reason": "FinishReason.STOP"
-      }
-    },
-    {
-      "timestamp": "2026-07-10T08:38:29.896779+00:00",
-      "provider": "google",
-      "operation": "generate_content",
-      "estimated_cost_usd": 0.0017925,
-      "metadata": {
+        "batch_job": "batches/ypksdme7dezu050dwkt5e8y0f1pdynxr0el2",
         "model": "gemini-3.1-pro-preview",
-        "prompt_tokens": 19,
-        "answer_tokens": 11,
-        "thought_tokens": 185,
-        "finish_reason": "FinishReason.STOP"
+        "prompt_tokens": 564120,
+        "answer_tokens": 34380,
+        "thought_tokens": 71124,
+        "batch_discount": 0.5
       }
     },
     {
-      "timestamp": "2026-07-10T08:39:29.379821+00:00",
+      "timestamp": "2026-07-10T15:25:14.543971+00:00",
       "provider": "google",
-      "operation": "pricing_adjustment",
-      "estimated_cost_usd": 0.0005975,
+      "operation": "batch_generate_content",
+      "estimated_cost_usd": 0.195296,
       "metadata": {
-        "reason": "gemini-3.1-pro-preview smoke repriced at official Pro rates"
-      }
-    },
-    {
-      "timestamp": "2026-07-10T08:41:20.183849+00:00",
-      "provider": "perplexity",
-      "operation": "search",
-      "estimated_cost_usd": 0.005,
-      "metadata": {
-        "query_count": 1,
-        "result_count": 8
-      }
-    },
-    {
-      "timestamp": "2026-07-10T08:41:39.155412+00:00",
-      "provider": "google",
-      "operation": "generate_content",
-      "estimated_cost_usd": 0.017592,
-      "metadata": {
+        "batch_job": "batches/mulmavu50oon0axie6sl3qqyir81t9ijke66",
         "model": "gemini-3.1-pro-preview",
-        "prompt_tokens": 5166,
-        "answer_tokens": 304,
-        "thought_tokens": 301,
-        "input_usd_per_million": 2.0,
-        "output_usd_per_million": 12.0,
-        "finish_reason": "FinishReason.STOP"
+        "prompt_tokens": 82058,
+        "answer_tokens": 5134,
+        "thought_tokens": 13739,
+        "batch_discount": 0.5
+      }
+    },
+    {
+      "timestamp": "2026-07-10T15:32:22.153566+00:00",
+      "provider": "google",
+      "operation": "batch_generate_content",
+      "estimated_cost_usd": 0.041829,
+      "metadata": {
+        "batch_job": "batches/955a1jlv64s80kw26smepekrbsr95pfz80le",
+        "model": "gemini-3.1-pro-preview",
+        "prompt_tokens": 16989,
+        "answer_tokens": 1015,
+        "thought_tokens": 3125,
+        "batch_discount": 0.5
+      }
+    },
+    {
+      "timestamp": "2026-07-10T15:47:43.383460+00:00",
+      "provider": "google",
+      "operation": "batch_generate_content",
+      "estimated_cost_usd": 0.100648,
+      "metadata": {
+        "batch_job": "batches/6dtb7nah0lhfnsgmngkbu9s96wvnudcrrrij",
+        "model": "gemini-3.1-pro-preview",
+        "prompt_tokens": 36082,
+        "answer_tokens": 2613,
+        "thought_tokens": 8148,
+        "batch_discount": 0.5
+      }
+    },
+    {
+      "timestamp": "2026-07-10T15:51:42.878959+00:00",
+      "provider": "google",
+      "operation": "batch_generate_content",
+      "estimated_cost_usd": 0.032993,
+      "metadata": {
+        "batch_job": "batches/oyeskml3w2gya8dty1gwio91lezzyaer5rw5",
+        "model": "gemini-3.1-pro-preview",
+        "prompt_tokens": 13331,
+        "answer_tokens": 939,
+        "thought_tokens": 2338,
+        "batch_discount": 0.5
+      }
+    },
+    {
+      "timestamp": "2026-07-10T16:06:38.258672+00:00",
+      "provider": "google",
+      "operation": "batch_generate_content",
+      "estimated_cost_usd": 0.139002,
+      "metadata": {
+        "batch_job": "batches/p82p27yewvklnqzdtxg5c38j0ptnqgdpl96u",
+        "model": "gemini-3.1-pro-preview",
+        "prompt_tokens": 69924,
+        "answer_tokens": 3877,
+        "thought_tokens": 7636,
+        "batch_discount": 0.5
+      }
+    },
+    {
+      "timestamp": "2026-07-10T18:40:40.007852+00:00",
+      "provider": "google",
+      "operation": "batch_generate_content",
+      "estimated_cost_usd": 0.065121,
+      "metadata": {
+        "batch_job": "batches/xosioztvodg0fi6288nwv0yhf6jxq153yne4",
+        "model": "gemini-3.1-pro-preview",
+        "prompt_tokens": 27909,
+        "answer_tokens": 1756,
+        "thought_tokens": 4446,
+        "batch_discount": 0.5
+      }
+    },
+    {
+      "timestamp": "2026-07-10T18:46:56.856730+00:00",
+      "provider": "google",
+      "operation": "batch_generate_content",
+      "estimated_cost_usd": 0.013272,
+      "metadata": {
+        "batch_job": "batches/1h92n8gyeatfz1rvdr1hqe802f0dwvsvdhlj",
+        "model": "gemini-3.1-pro-preview",
+        "prompt_tokens": 6120,
+        "answer_tokens": 289,
+        "thought_tokens": 903,
+        "batch_discount": 0.5
       }
     }
   ],

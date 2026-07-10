@@ -1,19 +1,69 @@
-# GoHighLevel — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# GoHighLevel - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["GoHighLevel official API authentication developer documentation", "GoHighLevel API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://highlevel.stoplight.io | HTTP 200 | hint | topics=none
+- https://marketplace.gohighlevel.com/docs/oauth/Authorization/index.html | HTTP 200 | search_result | topics=auth
+- https://marketplace.gohighlevel.com/docs/oauth/ExternalAuthentication/index.html | HTTP 200 | search_result | topics=api,auth,mcp
+- https://marketplace.gohighlevel.com/docs/Authorization/DeveloperGlossary/ | HTTP 200 | search_result | topics=api,auth,access,mcp
+- https://developer.stoplight.io | HTTP 200 | derived_guess | topics=none
+- https://developers.stoplight.io | HTTP 200 | derived_guess | topics=none
 
 ## Model reasoning
-Marketplace docs show comprehensive REST coverage (contacts, conversations, calendar, opportunities, payments, webhooks) with Quick Start for Private Integration Token or OAuth 2.0 and interactive docs—supports Easy buildability and Self-Serve private integrations. Help article confirms official docs at marketplace.gohighlevel.com/docs/, V1 EOS, and that new legacy API-key generation is being removed in favor of Private Integrations; plan-level access differences and rate-limit sections exist but details are thin in the fetch. Preseed Self-Serve + Build Now confirmed for private integrations; preseed main_blocker partially outdated (API keys → Private Integrations) but public-vs-private marketplace distinction still valid—public marketplace listing is optional distribution, not required to call the API. No MCP evidence. Confidence 0.85: strong primary docs, minor gaps on exact rate limits and marketplace review process.
+GoHighLevel offers extensive REST APIs and recently launched an official LeadConnector MCP server. Authentication supports OAuth 2.0 for marketplace apps and API keys for self-serve private integrations.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — Private Integration tokens and OAuth app setup available via docs; marketplace public listing is a separate distribution path.
+- access_model: **Self-Serve** - Private integrations and API keys are self-serve; public Marketplace apps require a review process.
 - recommended_next_action: **Build Now**
-- confidence: **0.85**
+- confidence: **0.9**
 
-## Evidence URLs (whitelist-enforced)
-- https://marketplace.gohighlevel.com/docs/
-- https://help.gohighlevel.com/support/solutions/articles/48001060529-highlevel-api-documentation
-- https://github.com/GoHighLevel/highlevel-api-docs
+## Evidence URLs
+- https://marketplace.gohighlevel.com/docs/Authorization/DeveloperGlossary/
+- https://marketplace.gohighlevel.com/docs/oauth/ExternalAuthentication/index.html
+- https://help.gohighlevel.com/support/solutions/articles/155000005741-how-to-use-the-highlevel-mcp-server
+- https://www.gohighlevel.com/post/introducing-the-mcp-server
+- https://marketplace.gohighlevel.com/docs/2021-07-28/other/mcp/index.html
+
+## Generated record
+```json
+{
+  "app": "GoHighLevel",
+  "category": "Ads/Marketing",
+  "one_liner": "GoHighLevel provides a comprehensive REST API and an official MCP server for CRM, marketing, and automation workflows.",
+  "auth_methods": [
+    "OAuth2",
+    "API Key",
+    "Basic Auth"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Private integrations and API keys are self-serve; public Marketplace apps require a review process."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "No",
+  "buildability": "Easy",
+  "main_blocker": "None for private integrations. Public marketplace distribution requires app review.",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://marketplace.gohighlevel.com/docs/Authorization/DeveloperGlossary/",
+    "https://marketplace.gohighlevel.com/docs/oauth/ExternalAuthentication/index.html",
+    "https://help.gohighlevel.com/support/solutions/articles/155000005741-how-to-use-the-highlevel-mcp-server",
+    "https://www.gohighlevel.com/post/introducing-the-mcp-server",
+    "https://marketplace.gohighlevel.com/docs/2021-07-28/other/mcp/index.html"
+  ],
+  "confidence": 0.9,
+  "verification_status": "Auto",
+  "slug": "gohighlevel",
+  "primary_docs_url": "https://marketplace.gohighlevel.com/docs/Authorization/DeveloperGlossary/",
+  "rate_limit_note": "Not explicitly detailed in the provided evidence.",
+  "last_verified": "2026-07-10"
+}
+```
 
 ## Preseed hypothesis (unverified prior)
 ```json
@@ -23,4 +73,3 @@ Marketplace docs show comprehensive REST coverage (contacts, conversations, cale
   "main_blocker": "Sub-account API keys are self-serve; public marketplace app listing needs review (public-vs-private app distinction)."
 }
 ```
-_The model was instructed to trust evidence over this prior and note contradictions above._

@@ -1,17 +1,60 @@
-# Pumble — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Pumble - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Pumble official API authentication developer documentation", "Pumble API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://pumble.com | HTTP 200 | hint | topics=api,access,mcp
+- https://pumble.com/help/integrations/automation-workflow-integrations/api-keys-integration/ | HTTP 200 | search_result | topics=api,auth,access
+- https://pumble.com/help/fr/integrations/automation-workflow-integrations/api-keys-integration/ | HTTP 200 | search_result | topics=api,auth
+- https://pumble.com/help/es/integrations/automation-workflow-integrations/api-keys-integration/ | HTTP 200 | search_result | topics=api,auth
+- https://developer.pumble.com | HTTP 200 | derived_guess | topics=access
+- https://developers.pumble.com | HTTP 200 | derived_guess | topics=access
 
 ## Model reasoning
-Main site explicitly lists MCP Server under features, confirming Official MCP. Search results + VendorTool confirm public API docs, API-keys integration help, and API-client pages exist on marketplace (self-serve keys). Node SDK referenced in search. No endpoint inventory or rate-limit details fetched so breadth set Moderate by typical comms scope and confidence lowered for thin/ambiguous content (titles + partial homepage only; no full docs body). Preseed was none (nothing to confirm/contradict). Easy + Self-Serve maps to Build Now; no blocker evident.
+The official documentation clearly outlines how to generate an API key via the API addon and details the rate limits. Furthermore, Pumble has officially announced and documented an MCP server, making integration straightforward.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — API keys via CAKE marketplace addon with public docs links
+- access_model: **Self-Serve** - API keys can be generated directly within the Pumble workspace by installing the API addon.
 - recommended_next_action: **Build Now**
-- confidence: **0.45**
+- confidence: **0.95**
 
-## Evidence URLs (whitelist-enforced)
-- https://pumble.com
-- https://pumble-api-keys.addons.marketplace.cake.com/api-docs/
-- https://vendortool.compliancescorecard.com/tools/pumble/api-docs
-- https://dev-docs.marketplace.cake.com/pumble/build/api-client.html
+## Evidence URLs
+- https://pumble.com/help/integrations/automation-workflow-integrations/api-keys-integration/
+- https://pumble.com/help/integrations/automation-workflow-integrations/how-to-use-the-pumble-mcp-server/
+- https://cake.com/updates/mcp-server
+
+## Generated record
+```json
+{
+  "app": "Pumble",
+  "category": "Comms",
+  "one_liner": "Pumble provides a REST API and an official MCP server for team communication, messaging, and channel management.",
+  "auth_methods": [
+    "API Key"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "API keys can be generated directly within the Pumble workspace by installing the API addon."
+  },
+  "api_type": "REST",
+  "api_breadth": "Moderate",
+  "existing_mcp": "Official",
+  "composio_toolkit": "No",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://pumble.com/help/integrations/automation-workflow-integrations/api-keys-integration/",
+    "https://pumble.com/help/integrations/automation-workflow-integrations/how-to-use-the-pumble-mcp-server/",
+    "https://cake.com/updates/mcp-server"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "pumble",
+  "primary_docs_url": "https://pumble.com/help/integrations/automation-workflow-integrations/api-keys-integration/",
+  "rate_limit_note": "1000 requests per minute per user.",
+  "last_verified": "2026-07-10"
+}
+```

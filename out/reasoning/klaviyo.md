@@ -1,17 +1,63 @@
-# Klaviyo — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Klaviyo - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Klaviyo official API authentication developer documentation", "Klaviyo API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://developers.klaviyo.com | HTTP 200 | hint | topics=api,auth,access
+- https://developers.klaviyo.com/en/docs/set_up_oauth | HTTP 200 | search_result | topics=api,auth,access,mcp
+- https://developers.klaviyo.com/en/docs/authenticate_ | HTTP 200 | search_result | topics=api,auth,access,mcp
+- https://developers.klaviyo.com/en/docs/create_a_public_oauth_app | HTTP 200 | search_result | topics=api,auth,access,mcp
+- https://developer.klaviyo.com | HTTP 0 | derived_guess | topics=none
+- https://docs.klaviyo.com | HTTP 200 | derived_guess | topics=api,auth,access
 
 ## Model reasoning
-Evidence from official developers.klaviyo.com and API overview shows a mature public REST API with extensive resources (campaigns, messages, variations, translations, customer agents/knowledge/skills/tools, conversations, profiles/events/lists implied via guides) supporting full CRUD across marketing domains—hence Broad. Auth is self-serve private API keys created in account settings with scopes (not OAuth-primary); free test accounts, Postman collections, multi-language SDKs (Python/PHP/Ruby/Node), sample data/code, and clear getting-started guides confirm Easy buildability and Self-Serve access. Rate limits explicitly noted as 150/min sliding window (tier/endpoint-dependent). No MCP mentioned so None. Preseed was none (nothing to confirm/contradict). No blockers; recommended Build Now. High confidence as docs are comprehensive and consistent across official + secondary sources; minor ambiguity only on exact public vs private key variants beyond private keys.
+The fetched documentation clearly outlines self-serve access, OAuth2 and API Key authentication, and a broad REST API. Furthermore, Klaviyo has officially announced and documented an MCP server, making integration straightforward.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — Create private API keys (scoped) in account settings; free test accounts and get-started-for-free available
+- access_model: **Self-Serve** - Developers can create a free test account to obtain API credentials and start building immediately.
 - recommended_next_action: **Build Now**
-- confidence: **0.92**
+- confidence: **0.95**
 
-## Evidence URLs (whitelist-enforced)
-- https://developers.klaviyo.com
-- https://developers.klaviyo.com/en/reference/api_overview
-- https://developers.klaviyo.com/
-- https://aeroleads.com/blog/getting-started-with-klaviyo-api-developer-documentation/
+## Evidence URLs
+- https://developers.klaviyo.com/en/docs/set_up_oauth
+- https://developers.klaviyo.com/en/docs/authenticate_
+- https://developers.klaviyo.com/en/docs/klaviyo_mcp_server
+- https://www.klaviyo.com/blog/introducing-mcp-server
+
+## Generated record
+```json
+{
+  "app": "Klaviyo",
+  "category": "Ads/Marketing",
+  "one_liner": "Klaviyo provides a comprehensive REST API and an official MCP server for managing marketing data, profiles, and...",
+  "auth_methods": [
+    "OAuth2",
+    "API Key"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can create a free test account to obtain API credentials and start building immediately."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None. The API is well-documented, self-serve, and an official MCP server is available.",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://developers.klaviyo.com/en/docs/set_up_oauth",
+    "https://developers.klaviyo.com/en/docs/authenticate_",
+    "https://developers.klaviyo.com/en/docs/klaviyo_mcp_server",
+    "https://www.klaviyo.com/blog/introducing-mcp-server"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "klaviyo",
+  "primary_docs_url": "https://developers.klaviyo.com/en/docs/set_up_oauth",
+  "rate_limit_note": "Rate limits apply and are documented in the 'Rate limits, status codes, and errors' section, though specific limits depend on the endpoint.",
+  "last_verified": "2026-07-10"
+}
+```

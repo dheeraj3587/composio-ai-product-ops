@@ -6,6 +6,7 @@ import json
 from typing import Literal
 
 import config
+import docs_research
 import normalize
 from pydantic import BaseModel, Field
 from schema import (
@@ -40,6 +41,9 @@ Controlled vocabularies:
 - auth_methods must use ONLY: {json.dumps(normalize.CANONICAL)}.
 - OAuth2 means an OAuth grant, including authorization-code and client-credentials flows. Do not also add Bearer Token merely because an OAuth access token is sent in a Bearer header.
 - Bearer Token means a static vendor-issued bearer token with no OAuth grant. API Key means a static API key/token. Use Other Token only when official docs identify a distinct credential that fits no other label.
+- List only credentials independently accepted by the dominant public API or the recommended official MCP surface. Do not list account IDs, client IDs, scopes, or bearer transport as separate auth methods.
+- Prefer the vendor's most specific credential label. A personal access token or bot token sent in an Authorization: Bearer header is one method, not both that label and Bearer Token.
+- OAuth2 and a static token may coexist only when official docs show they are independently issued alternatives for API access.
 - Use None / Not Applicable only when there is no hosted API/MCP authentication surface.
 - api_type: REST | GraphQL | SDK | SOAP | MCP-only | None. Choose the dominant public integration surface; explain additional protocols in notes/reasoning.
 - existing_mcp: Official only for a vendor-hosted/published server; Community for a credible third party; None otherwise. Base this primarily on MCP EVIDENCE.
@@ -214,6 +218,72 @@ def _validate_citations(record: dict, evidence: dict) -> None:
         )
 
 
+def _validate_source_quality(record: dict, evidence: dict, app_meta: dict) -> None:
+    """Reject wrong-app evidence and overconfident third-party-only conclusions."""
+    by_url = {
+        item.get("url"): item
+        for item in [
+            *evidence.get("fetched", []),
+            *(evidence.get("mcp") or {}).get("fetched", []),
+        ]
+        if item.get("ok") and item.get("url")
+    }
+    cited = []
+    for url in record["evidence_urls"]:
+        item = by_url.get(url, {})
+        first_party = docs_research.is_first_party(
+            url, app_meta.get("hint_url") or "", app_meta["slug"]
+        )
+        identity_match = docs_research.identity_matches(
+            url,
+            item.get("text", ""),
+            app_meta["app"],
+            app_meta["slug"],
+            app_meta.get("hint_url") or "",
+        )
+        cited.append({
+            "url": url,
+            "tags": set(item.get("support_tags", [])),
+            "first_party": first_party,
+            "identity_match": identity_match,
+        })
+
+    if not any(item["identity_match"] for item in cited):
+        raise ValueError("evidence_urls do not identify the requested app")
+    first_party = [item for item in cited if item["first_party"]]
+    if not first_party:
+        if docs_research.ACCESS_OFFICIAL_SEEDS.get(app_meta["slug"]):
+            raise ValueError("known first-party evidence exists but was not cited")
+        if record["confidence"] > 0.5:
+            raise ValueError("third-party-only evidence requires confidence <= 0.5")
+        disclosure = " ".join([
+            record.get("one_liner", ""),
+            (record.get("access_model") or {}).get("note", ""),
+            record.get("main_blocker", ""),
+        ]).lower()
+        if not any(
+            marker in disclosure
+            for marker in ("third-party", "no official", "official documentation")
+        ):
+            raise ValueError("third-party-only evidence must be disclosed in the record")
+    if record["existing_mcp"] == "Official" and not any(
+        item["first_party"] and "mcp" in item["tags"] for item in cited
+    ):
+        raise ValueError("existing_mcp=Official requires first-party MCP evidence")
+    if record["confidence"] > 0.5 and record["api_type"] != "None":
+        first_party_topics = {
+            tag for item in first_party for tag in item["tags"]
+        }
+        required = {"auth", "access"}
+        required.add("mcp" if record["api_type"] == "MCP-only" else "api")
+        missing = required - first_party_topics
+        if missing:
+            raise ValueError(
+                "high-confidence core claims need first-party coverage; "
+                f"missing topics={sorted(missing)}"
+            )
+
+
 def _validate_semantics(record: dict) -> None:
     api_type = record["api_type"]
     buildability = record["buildability"]
@@ -230,6 +300,8 @@ def _validate_semantics(record: dict) -> None:
             raise ValueError("api_type=None requires buildability=Blocked and next_action=Blocked")
     elif "None / Not Applicable" in auth:
         raise ValueError("a usable API/MCP cannot use None / Not Applicable authentication")
+    if "Bearer Token" in auth and auth & {"Personal Access Token", "Bot Token"}:
+        raise ValueError("specific token credentials must not also be labeled Bearer Token")
     if api_type == "MCP-only" and record["existing_mcp"] == "None":
         raise ValueError("api_type=MCP-only requires an Official or Community MCP")
     if action == "Build Now" and (access != "Self-Serve" or buildability == "Blocked"):
@@ -335,6 +407,7 @@ def _record_from_parsed(app_meta: dict, evidence: dict, composio_signal: dict,
         "last_verified": dt.date.today().isoformat(),
     }
     _validate_citations(record, evidence)
+    _validate_source_quality(record, evidence, app_meta)
     _validate_semantics(record)
     reasoning = str(parsed.get("reasoning") or "").strip()
     if not reasoning:
@@ -351,9 +424,32 @@ def synthesize(app_meta: dict, evidence: dict, composio_signal: dict,
             f"{app_meta['slug']}: no fetched evidence; pipeline will log a failure instead of guessing"
         )
     messages = build_messages(evidence, composio_signal, preseed)
-    parsed, _ = config.llm_json(
-        messages, model=model, lead=lead, response_schema=SynthesisOutput
-    )
+    try:
+        parsed, _ = config.llm_json(
+            messages,
+            model=model,
+            lead=lead,
+            max_tokens=4096,
+            response_schema=SynthesisOutput,
+        )
+    except config.StructuredOutputError:
+        parsed, _ = config.llm_json(
+            [
+                *messages,
+                {
+                    "role": "user",
+                    "content": (
+                        "Return the complete JSON object. Keep reasoning concise so no field is "
+                        "truncated. Do not omit any required key."
+                    ),
+                },
+            ],
+            model=model,
+            lead=lead,
+            thinking_level="low",
+            max_tokens=4096,
+            response_schema=SynthesisOutput,
+        )
     first_error = ""
     for attempt in range(2):
         try:
@@ -382,6 +478,8 @@ def synthesize(app_meta: dict, evidence: dict, composio_signal: dict,
                 repair_messages,
                 model=model,
                 lead=lead,
+                thinking_level="low",
+                max_tokens=4096,
                 response_schema=SynthesisOutput,
             )
     raise AssertionError("unreachable")
@@ -414,7 +512,9 @@ def append_final_state(record: dict, reason: str = "post-processing") -> None:
     path.write_text(current + "\n".join(block), encoding="utf-8")
 
 
-def _write_reasoning(app_meta, reasoning, record, evidence, preseed) -> None:
+def _write_reasoning(
+    app_meta, reasoning, record, evidence, preseed, model_used: str | None = None
+) -> None:
     config.ensure_dirs()
     path = config.REASONING_DIR / f"{app_meta['slug']}.md"
     confidence_note = " (capped because evidence was degraded)" if evidence.get("degraded") else ""
@@ -427,7 +527,8 @@ def _write_reasoning(app_meta, reasoning, record, evidence, preseed) -> None:
         )
     lines = [
         f"# {app_meta['app']} - synthesis reasoning",
-        f"_generated {record['last_verified']} | model {config.last_llm_used() or config.PRIMARY_MODEL}_",
+        f"_generated {record['last_verified']} | model "
+        f"{config.last_llm_used() or model_used or config.PRIMARY_MODEL}_",
         "",
         "## Research trace",
         f"- queries: {json.dumps(evidence.get('queries') or [evidence.get('query')])}",

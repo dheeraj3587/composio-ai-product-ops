@@ -1,17 +1,61 @@
-# Discord — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Discord - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Discord official API authentication developer documentation", "Discord API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://discord.com | HTTP 200 | hint | topics=none
+- https://docs.discord.com/developers/topics/oauth2 | HTTP 200 | search_result | topics=api,auth,access
+- https://docs.discord.com/developers/reference | HTTP 200 | search_result | topics=api,auth
+- https://discord.com/developers/docs/social-sdk/authentication.html | HTTP 200 | search_result | topics=api,auth,access
+- https://developer.discord.com | HTTP 0 | derived_guess | topics=none
+- https://developers.discord.com | HTTP 0 | derived_guess | topics=none
 
 ## Model reasoning
-Official docs explicitly describe Discord API as REST (base https://discord.com/api, versioning, resources like Guild/Channel/Message/User/Webhook/etc. spanning multiple domains = Broad). OAuth2 page details self-serve app registration for client_id/secret plus bot authorization flows and multiple grants; some scopes partner-gated but core is open. Rate Limiting section present. Developer Portal and docs linked from discord.com and GitHub repo confirm clear public docs. No MCP mentioned anywhere. Preseed was none (no contradiction). Thus Easy buildability + Self-Serve => Build Now; high confidence from direct primary docs.
+Discord's official documentation clearly outlines a self-serve REST API utilizing OAuth2 and Bot Tokens. Multiple community MCP servers exist on GitHub.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — Register developer application in Developer Portal for client ID/secret; bot authorization flows available; some OAuth2 scopes need Discord approval
+- access_model: **Self-Serve** - Developers can freely create applications and bots in the Discord Developer Portal to obtain credentials.
 - recommended_next_action: **Build Now**
-- confidence: **0.92**
+- confidence: **0.95**
 
-## Evidence URLs (whitelist-enforced)
-- https://discord.com
-- https://docs.discord.com/developers/reference
+## Evidence URLs
 - https://docs.discord.com/developers/topics/oauth2
-- https://github.com/discord/discord-api-docs
+- https://docs.discord.com/developers/reference
+- https://github.com/IQAIcom/mcp-discord
+
+## Generated record
+```json
+{
+  "app": "Discord",
+  "category": "Comms",
+  "one_liner": "Discord provides a comprehensive REST API and WebSocket gateway for building bots, apps, and integrations.",
+  "auth_methods": [
+    "OAuth2",
+    "Bot Token"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can freely create applications and bots in the Discord Developer Portal to obtain credentials."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Community",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://docs.discord.com/developers/topics/oauth2",
+    "https://docs.discord.com/developers/reference",
+    "https://github.com/IQAIcom/mcp-discord"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "discord",
+  "primary_docs_url": "https://docs.discord.com/developers/topics/oauth2",
+  "rate_limit_note": "Rate limits are enforced and documented in the API reference, with specific limits varying by endpoint.",
+  "last_verified": "2026-07-10"
+}
+```

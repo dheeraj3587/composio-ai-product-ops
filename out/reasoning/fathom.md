@@ -1,19 +1,65 @@
-# Fathom — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Fathom - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Fathom official API authentication developer documentation", "Fathom API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://fathom.video | HTTP 200 | hint | topics=api,access,mcp
+- https://developers.fathom.ai/sdks/oauth | HTTP 200 | search_result | topics=api,auth,access,mcp
+- https://developers.fathom.ai/oauth | HTTP 200 | search_result | topics=api,auth,access,mcp
+- https://developers.fathom.ai/sdks/authentication | HTTP 200 | search_result | topics=api,auth,mcp
+- https://developer.fathom.video | HTTP 0 | derived_guess | topics=none
+- https://developers.fathom.video | HTTP 0 | derived_guess | topics=none
 
 ## Model reasoning
-The evidence explicitly confirms a public REST API with a developer hub, SDKs (TypeScript/Python), and multiple auth methods including API keys and OAuth. The preseed hypothesis that it might be webhook/Zapier-only is refuted by the existence of the developer portal at developers.fathom.ai. Note: api-docs.fathom.global refers to a different 'Fathom' (flood risk intelligence), which was ignored in favor of the meeting-tool evidence. Fathom.video also explicitly mentions 'Public API & MCP' in its integrations list.
+Fathom provides comprehensive developer documentation for its REST API, SDKs, and an official MCP server. Authentication supports API Keys, Bearer Tokens, and OAuth2. Access appears to be self-serve, allowing developers to build integrations immediately.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — Quickstart guide allows generating an API key and making calls in minutes.
+- access_model: **Self-Serve** - Developers can register an OAuth app or generate API keys directly from their account settings.
 - recommended_next_action: **Build Now**
-- confidence: **1.0**
+- confidence: **0.95**
 
-## Evidence URLs (whitelist-enforced)
-- https://fathom.video
-- https://developers.fathom.ai/
+## Evidence URLs
 - https://developers.fathom.ai/sdks/authentication
+- https://developers.fathom.ai/oauth
+- https://developers.fathom.ai/mcp-docs
+
+## Generated record
+```json
+{
+  "app": "Fathom",
+  "category": "AI/Meeting-tools",
+  "one_liner": "Fathom provides a REST API, SDKs, and an official MCP server to access AI meeting transcripts and summaries.",
+  "auth_methods": [
+    "API Key",
+    "Bearer Token",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can register an OAuth app or generate API keys directly from their account settings."
+  },
+  "api_type": "REST",
+  "api_breadth": "Moderate",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://developers.fathom.ai/sdks/authentication",
+    "https://developers.fathom.ai/oauth",
+    "https://developers.fathom.ai/mcp-docs"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "fathom",
+  "primary_docs_url": "https://developers.fathom.ai/sdks/oauth",
+  "rate_limit_note": "Rate limits are mentioned in the documentation for OAuth and API usage, but specific thresholds are not detailed in the provided text.",
+  "last_verified": "2026-07-10"
+}
+```
 
 ## Preseed hypothesis (unverified prior)
 ```json
@@ -22,4 +68,3 @@ The evidence explicitly confirms a public REST API with a developer hub, SDKs (T
   "main_blocker": "May be webhook/Zapier-only; unclear whether a fully public REST API exists — verify against docs, do not trust memory."
 }
 ```
-_The model was instructed to trust evidence over this prior and note contradictions above._

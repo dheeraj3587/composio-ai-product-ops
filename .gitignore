@@ -26,3 +26,4 @@ node_modules/
 _smoke*
 _e2e*
 out/browser_tasks.json
+out/batch_state.json

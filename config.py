@@ -42,6 +42,8 @@ METRICS_PATH = OUT_DIR / "metrics.json"
 FAILURES_PATH = OUT_DIR / "failures.log"
 FAILURE_STATE_PATH = OUT_DIR / "failures.json"
 USAGE_PATH = OUT_DIR / "usage.json"
+BATCH_STATE_PATH = OUT_DIR / "batch_state.json"
+BROWSER_EVIDENCE_PATH = OUT_DIR / "browser_evidence.json"
 HANDCHECK_PATH = HANDCHECK_DIR / "handcheck.json"
 
 
@@ -82,7 +84,9 @@ def save_json(path: Path, data: Any) -> None:
 # LLM - one native provider, intentionally no gateway fallback
 # --------------------------------------------------------------------------- #
 COMPOSIO_API_KEY = os.getenv("COMPOSIO_API_KEY", "")
-LLM_TIMEOUT_SECONDS = float(os.getenv("LLM_TIMEOUT_SECONDS", "75"))
+PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY", "")
+LLM_TIMEOUT_SECONDS = float(os.getenv("LLM_TIMEOUT_SECONDS", "180"))
+GOOGLE_MAX_WORKERS = int(os.getenv("GOOGLE_MAX_WORKERS", "2"))
 GOOGLE_API_KEY = (
     os.getenv("GOOGLE_GENAI_API_KEY")
     or os.getenv("GOOGLE_API_KEY")
@@ -93,6 +97,7 @@ PRIMARY_MODEL = os.getenv("GOOGLE_GENAI_MODEL", "gemini-3.1-pro-preview")
 GOOGLE_THINKING_LEVEL = os.getenv("GOOGLE_THINKING_LEVEL", "medium")
 GOOGLE_TOKEN_PRICES = {
     "gemini-3.1-pro-preview": (2.0, 12.0),
+    "gemini-3-flash-preview": (0.5, 3.0),
     "gemini-3.5-flash": (1.5, 9.0),
     "gemini-3.1-flash-lite": (0.25, 1.5),
 }
@@ -157,9 +162,48 @@ def _extract_json_object(text: str) -> dict:
         raise
 
 
+class StructuredOutputError(ValueError):
+    """The provider answered, but not with a complete JSON object."""
+
+
+class ProviderQuotaExhausted(RuntimeError):
+    """A provider's long-lived project quota is exhausted; pause the batch."""
+
+
+class ProviderCapacityUnavailable(RuntimeError):
+    """Repeated provider capacity failures make continuing the batch wasteful."""
+
+
 def _classify_error(exc) -> str:
     code = getattr(exc, "code", None) or getattr(exc, "status_code", None)
-    return "retry" if code == 429 or (isinstance(code, int) and code >= 500) else "other"
+    try:
+        code = int(code)
+    except (TypeError, ValueError):
+        return "other"
+    message = str(exc).lower()
+    if code == 429 and any(
+        marker in message
+        for marker in (
+            "generate_requests_per_model_per_day",
+            "generaterequestsperdayperprojectpermodel",
+            "requests per day",
+        )
+    ):
+        return "quota"
+    return "retry" if code in {408, 429, 499} or code >= 500 else "other"
+
+
+def is_capacity_error(exc) -> bool:
+    """Return true for provider-wide high-demand failures after local retries."""
+    code = getattr(exc, "code", None) or getattr(exc, "status_code", None)
+    try:
+        code = int(code)
+    except (TypeError, ValueError):
+        return False
+    message = str(exc).lower()
+    return code == 503 and any(
+        marker in message for marker in ("high demand", "capacity", "unavailable")
+    )
 
 
 def _google_contents(messages: list[dict]):
@@ -230,7 +274,12 @@ def llm_json(
             config=types.GenerateContentConfig(**generation_config),
         )
 
-    response = _call()
+    try:
+        response = _call()
+    except Exception as exc:
+        if _classify_error(exc) == "quota":
+            raise ProviderQuotaExhausted(str(exc)) from exc
+        raise
     raw = response.text or ""
     usage = response.usage_metadata
     prompt_tokens = int(getattr(usage, "prompt_token_count", 0) or 0)
@@ -250,18 +299,23 @@ def llm_json(
         "output_usd_per_million": output_price,
         "finish_reason": str(getattr(candidate, "finish_reason", "") or ""),
     })
-    if not raw.strip():
-        raise RuntimeError(f"empty completion from google:{selected_model}")
-    parsed = getattr(response, "parsed", None)
-    if hasattr(parsed, "model_dump"):
-        obj = parsed.model_dump(mode="json")
-    elif isinstance(parsed, dict):
-        obj = parsed
-    else:
-        obj = _extract_json_object(raw)
-    if isinstance(obj, list):
-        obj = next((item for item in obj if isinstance(item, dict)), None)
-    if not isinstance(obj, dict):
-        raise ValueError("model did not return a JSON object")
+    try:
+        if not raw.strip():
+            raise ValueError("empty completion")
+        parsed = getattr(response, "parsed", None)
+        if hasattr(parsed, "model_dump"):
+            obj = parsed.model_dump(mode="json")
+        elif isinstance(parsed, dict):
+            obj = parsed
+        else:
+            obj = _extract_json_object(raw)
+        if isinstance(obj, list):
+            obj = next((item for item in obj if isinstance(item, dict)), None)
+        if not isinstance(obj, dict):
+            raise ValueError("model did not return a JSON object")
+    except (json.JSONDecodeError, TypeError, ValueError) as exc:
+        raise StructuredOutputError(
+            f"incomplete JSON from google:{selected_model}"
+        ) from exc
     _last_llm.value = f"google:{selected_model}"
     return obj, raw

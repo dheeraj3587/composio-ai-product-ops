@@ -1,17 +1,61 @@
-# Mermaid CLI — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Mermaid CLI - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Mermaid CLI official API authentication developer documentation", "Mermaid CLI API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://github.com/mermaid-js/mermaid-cli | HTTP 200 | search_result | topics=api,access,mcp
+- https://github.com/data-mermaid/mermaid-api | HTTP 200 | search_result | topics=api,auth,access,mcp
+- https://github.com/mermaid-js/mermaid-cli/blob/master/building.md | HTTP 200 | search_result | topics=auth,access,mcp
+- https://developer.github.com | HTTP 200 | derived_guess | topics=api,auth
+- https://developers.github.com | HTTP 200 | derived_guess | topics=none
+- https://docs.github.com | HTTP 200 | derived_guess | topics=api,auth
 
 ## Model reasoning
-The preseed hypothesis is confirmed. The evidence from the official GitHub repository shows that mermaid-cli is a command-line tool for rendering diagrams, not a hosted API. While search results mention a 'MERMAID API' (datamermaid.org), that is a separate project focused on coral reef conservation and is unrelated to the Mermaid.js diagramming tool. Therefore, for the purpose of integrating the Mermaid CLI as an API, it is blocked as no such hosted service exists for the CLI tool itself.
+Mermaid CLI is a local command-line tool for rendering Mermaid diagrams. It does not offer a hosted API service, making standard API integration impossible, though several community MCP servers exist to wrap the local CLI.
 
 ## Key decisions
 - buildability: **Blocked**
-- access_model: **Self-Serve** — Open-source CLI tool available on GitHub.
+- access_model: **Self-Serve** - Open-source local CLI tool; no hosted API credentials required.
 - recommended_next_action: **Blocked**
-- confidence: **1.0**
+- confidence: **0.95**
 
-## Evidence URLs (whitelist-enforced)
+## Evidence URLs
 - https://github.com/mermaid-js/mermaid-cli
+- https://github.com/peng-shawn/mermaid-mcp-server
+
+## Generated record
+```json
+{
+  "app": "Mermaid CLI",
+  "category": "AI/Meeting-tools",
+  "one_liner": "Mermaid CLI is an open-source command-line tool for generating diagrams, lacking a hosted API but supported by...",
+  "auth_methods": [
+    "None / Not Applicable"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Open-source local CLI tool; no hosted API credentials required."
+  },
+  "api_type": "None",
+  "api_breadth": "Narrow",
+  "existing_mcp": "Community",
+  "composio_toolkit": "No",
+  "buildability": "Blocked",
+  "main_blocker": "Mermaid CLI is a local open-source tool, not a hosted API service.",
+  "recommended_next_action": "Blocked",
+  "evidence_urls": [
+    "https://github.com/mermaid-js/mermaid-cli",
+    "https://github.com/peng-shawn/mermaid-mcp-server"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "mermaid-cli",
+  "primary_docs_url": "https://github.com/data-mermaid/mermaid-api",
+  "rate_limit_note": "Not applicable as it is a local tool.",
+  "last_verified": "2026-07-10"
+}
+```
 
 ## Preseed hypothesis (unverified prior)
 ```json
@@ -22,4 +66,3 @@ The preseed hypothesis is confirmed. The evidence from the official GitHub repos
   "main_blocker": "Open-source CLI/library (diagram rendering), not a hosted API service."
 }
 ```
-_The model was instructed to trust evidence over this prior and note contradictions above._

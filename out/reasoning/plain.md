@@ -1,15 +1,59 @@
-# Plain — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Plain - synthesis reasoning
+_generated 2026-07-11 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Plain official API authentication developer documentation", "Plain API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://plain.com | HTTP 200 | hint | topics=api
+- https://developers.kit.com/api-reference/authentication | HTTP 200 | search_result | topics=api,auth,access,mcp
+- https://docs.plainid.io/apidocs/authorization-apis | HTTP 200 | search_result | topics=api,auth,access
+- https://docs.plainid.io/docs/developer-portal | HTTP 200 | search_result | topics=api,auth,access
+- https://developer.plain.com | HTTP 0 | derived_guess | topics=none
+- https://help.plain.com/article/api-quickstart | HTTP 200 | browser_verified_summary | topics=api,auth,access
 
 ## Model reasoning
-The evidence explicitly confirms a broad GraphQL API covering customers, companies, threads, messaging, and more. It mentions an official MCP server for agents and a TypeScript SDK. Authentication is a straightforward Bearer token. Buildability is 'Easy' because the documentation provides a clear API URL, authentication method, and a 'Your first API call' example. Preseed was 'none', so no contradiction occurred.
+Plain provides a GraphQL API authenticated via API Key and an official MCP server authenticated via OAuth2. Both are self-serve, allowing developers to generate credentials directly from their workspace settings.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — API keys can be generated with specific permissions (e.g., customer:read) as indicated in the documentation.
+- access_model: **Self-Serve** - Developers can generate API keys from their workspace settings or use OAuth for the official MCP server.
 - recommended_next_action: **Build Now**
-- confidence: **1.0**
+- confidence: **0.9**
 
-## Evidence URLs (whitelist-enforced)
-- https://plain.com
-- https://docs.plain.com
+## Evidence URLs
+- https://help.plain.com/article/api-quickstart
+- https://help.plain.com/article/mcp-server
+
+## Generated record
+```json
+{
+  "app": "Plain",
+  "category": "Support",
+  "one_liner": "Plain is an AI-first support infrastructure platform that enables B2B teams to build custom support workflows.",
+  "auth_methods": [
+    "API Key",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can generate API keys from their workspace settings or use OAuth for the official MCP server."
+  },
+  "api_type": "GraphQL",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://help.plain.com/article/api-quickstart",
+    "https://help.plain.com/article/mcp-server"
+  ],
+  "confidence": 0.9,
+  "verification_status": "Auto",
+  "slug": "plain",
+  "primary_docs_url": "https://help.plain.com/article/api-quickstart",
+  "rate_limit_note": "Rate limits exist but specific details are not provided in the quickstart.",
+  "last_verified": "2026-07-11"
+}
+```

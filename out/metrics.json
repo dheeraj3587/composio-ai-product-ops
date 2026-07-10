@@ -1,291 +1,31 @@
 {
-  "handcheck": {
-    "method": "Human cross-check vs official docs on api_type + auth_methods + access_model (both auth sides normalized to canonical labels before comparison). Misses shown, not hidden.",
-    "n": 27,
-    "api_type_accuracy": 1.0,
-    "auth_accuracy": 0.852,
-    "access_accuracy": 1.0,
-    "accuracy": 0.951,
-    "misses": [
-      {
-        "slug": "dealcloud",
-        "app": "DealCloud",
-        "field": "auth_methods",
-        "current": [
-          "API Key",
-          "Other Token"
-        ],
-        "truth": [
-          "API Key",
-          "OAuth2"
-        ],
-        "notes": "Good REST API but keys only issuable by an admin on an existing paid site."
-      },
-      {
-        "slug": "notion",
-        "app": "Notion",
-        "field": "auth_methods",
-        "current": [
-          "OAuth2",
-          "Bearer Token"
-        ],
-        "truth": [
-          "OAuth2",
-          "API Key"
-        ],
-        "notes": "REST; internal integration token or OAuth."
-      },
-      {
-        "slug": "slack",
-        "app": "Slack",
-        "field": "auth_methods",
-        "current": [
-          "OAuth2",
-          "Bot Token",
-          "Other Token"
-        ],
-        "truth": [
-          "OAuth2"
-        ],
-        "notes": "REST; self-serve app + OAuth."
-      },
-      {
-        "slug": "cloudflare",
-        "app": "Cloudflare",
-        "field": "auth_methods",
-        "current": [
-          "API Key",
-          "OAuth2"
-        ],
-        "truth": [
-          "API Key",
-          "Bearer Token"
-        ],
-        "notes": "Cloudflare API docs: users create API tokens in the dashboard and call the REST API with Authorization: Bearer API_TOKEN."
-      }
-    ],
-    "checked": [
-      {
-        "slug": "copper",
-        "app": "Copper",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "plain",
-        "app": "Plain",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "pumble",
-        "app": "Pumble",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "salesforce",
-        "app": "Salesforce",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "meta-ads",
-        "app": "Meta Ads",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "dealcloud",
-        "app": "DealCloud",
-        "api_ok": true,
-        "auth_ok": false,
-        "access_ok": true
-      },
-      {
-        "slug": "gladly",
-        "app": "Gladly",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "whatsapp-business",
-        "app": "WhatsApp Business",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "google-ads",
-        "app": "Google Ads",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "linkedin-ads",
-        "app": "LinkedIn Ads",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "pinterest",
-        "app": "Pinterest",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "stripe",
-        "app": "Stripe",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "github",
-        "app": "GitHub",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "notion",
-        "app": "Notion",
-        "api_ok": true,
-        "auth_ok": false,
-        "access_ok": true
-      },
-      {
-        "slug": "slack",
-        "app": "Slack",
-        "api_ok": true,
-        "auth_ok": false,
-        "access_ok": true
-      },
-      {
-        "slug": "twilio",
-        "app": "Twilio",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "amazon-selling-partner",
-        "app": "Amazon Selling Partner",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "hubspot",
-        "app": "HubSpot",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "shopify",
-        "app": "Shopify",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "zendesk",
-        "app": "Zendesk",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "intercom",
-        "app": "Intercom",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "mailchimp",
-        "app": "Mailchimp",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "discord",
-        "app": "Discord",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "cloudflare",
-        "app": "Cloudflare",
-        "api_ok": true,
-        "auth_ok": false,
-        "access_ok": true
-      },
-      {
-        "slug": "vercel",
-        "app": "Vercel",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "airtable",
-        "app": "Airtable",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      },
-      {
-        "slug": "asana",
-        "app": "Asana",
-        "api_ok": true,
-        "auth_ok": true,
-        "access_ok": true
-      }
-    ],
-    "generated": "2026-07-10",
-    "note": "Three historic auth misses (DealCloud, Notion, Slack) were subsequently folded back into the matrix via corrections.py. Cloudflare remains a measured auth discrepancy. Accuracy is reported as measured at hand-check time, with all four misses shown rather than hidden."
-  },
   "patterns": {
     "n": 100,
     "buildability": {
-      "Easy": 76,
-      "Hard": 9,
-      "Moderate": 12,
-      "Blocked": 3
+      "Moderate": 7,
+      "Easy": 75,
+      "Hard": 16,
+      "Blocked": 2
     },
     "recommended_next_action": {
-      "Build Now": 79,
-      "Partner-Gated": 6,
-      "Needs Outreach": 13,
+      "Build Now": 76,
+      "Partner-Gated": 4,
+      "Needs Outreach": 18,
       "Blocked": 2
     },
     "access_model": {
-      "Self-Serve": 81,
-      "Gated": 19
+      "Self-Serve": 78,
+      "Gated": 22
     },
     "api_type": {
-      "REST": 92,
+      "REST": 94,
       "GraphQL": 4,
-      "None": 3,
-      "MCP-only": 1
+      "None": 2
     },
     "existing_mcp": {
-      "Official": 64,
-      "None": 33,
-      "Community": 3
+      "Official": 70,
+      "None": 5,
+      "Community": 25
     },
     "composio_toolkit": {
       "Yes": 51,
@@ -294,35 +34,35 @@
     "auth_methods_top": [
       [
         "OAuth2",
-        59
+        75
       ],
       [
         "API Key",
-        49
-      ],
-      [
-        "Bearer Token",
-        23
-      ],
-      [
-        "Basic Auth",
-        12
-      ],
-      [
-        "Other Token",
-        8
+        50
       ],
       [
         "Personal Access Token",
-        8
+        17
       ],
       [
-        "Service Account",
-        3
+        "Bearer Token",
+        17
+      ],
+      [
+        "Basic Auth",
+        11
+      ],
+      [
+        "Other Token",
+        6
+      ],
+      [
+        "Bot Token",
+        2
       ],
       [
         "None / Not Applicable",
-        3
+        2
       ]
     ],
     "access_by_category": {
@@ -331,12 +71,12 @@
         "Gated": 1
       },
       "Support": {
-        "Self-Serve": 9,
-        "Gated": 1
+        "Gated": 2,
+        "Self-Serve": 8
       },
       "Comms": {
-        "Self-Serve": 9,
-        "Gated": 1
+        "Self-Serve": 8,
+        "Gated": 2
       },
       "Ads/Marketing": {
         "Gated": 5,
@@ -351,414 +91,72 @@
         "Gated": 2
       },
       "DevInfra": {
-        "Self-Serve": 10
+        "Self-Serve": 9,
+        "Gated": 1
       },
       "Productivity/PM": {
         "Self-Serve": 10
       },
       "Fintech": {
-        "Self-Serve": 5,
-        "Gated": 5
+        "Self-Serve": 6,
+        "Gated": 4
       },
       "AI/Meeting-tools": {
-        "Gated": 1,
-        "Self-Serve": 9
+        "Gated": 2,
+        "Self-Serve": 8
       }
     },
     "top_blockers": [
       [
-        "No usable entry without an existing paid DealCloud site whose admin can issue API keys; no public trial/self-serve path found.",
+        "None",
+        48
+      ],
+      [
+        "None.",
+        10
+      ],
+      [
+        "Requires setting up a connected app and OAuth flow.",
         1
       ],
       [
-        "No entry without an existing Gladly customer account to mint API tokens",
+        "Requires an existing paid DealCloud account and admin privileges to generate API credentials; no self-serve public sandbox is available.",
         1
       ],
       [
-        "Production access requires Meta business verification + app review.",
+        "Production access requires an active paid Zendesk account.",
         1
       ],
       [
-        "Requires an approved Google Ads developer token in addition to OAuth.",
-        1
-      ],
-      [
-        "Marketing API requires Meta app authorization; app review and business verification commonly block production use (preseed; not spelled out in fetched text).",
-        1
-      ],
-      [
-        "Marketing API access requires applying for API products + partner approval (3-legged OAuth).",
+        "The official MCP server is currently only supported in US hosted workspaces.",
         1
       ]
     ],
-    "build_now": 79,
-    "partner_gated": 6,
-    "avg_confidence": 0.881
+    "build_now": 76,
+    "partner_gated": 4,
+    "avg_confidence": 0.912
   },
   "n_results": 100,
+  "unresolved_failures": [],
   "headline_accuracy": {
     "hand_checked_accuracy": {
-      "value": 0.951,
-      "n": 27,
-      "label": "Hand-checked accuracy (ground truth)"
+      "value": null,
+      "n": null,
+      "label": "Current hand-checked accuracy (ground truth)"
     },
     "automated_agreement": {
-      "value": 0.595,
-      "n": 21,
+      "value": null,
+      "n": null,
       "label": "Automated blind re-search agreement (not accuracy)"
     }
   },
-  "generated": "2026-07-10",
-  "accuracy_movement": {
-    "method": "Field-level accuracy (api_type + auth_methods + access_model) vs hand-verified truth, comparing the first-pass snapshot to the post-verification results. Both sides canonicalized before comparison, so the delta reflects factual corrections only — label normalization (e.g. 'OAuth 2.0' -> 'OAuth2') is counted separately, not as accuracy.",
-    "n": 27,
-    "first_pass_accuracy": 0.84,
-    "post_verification_accuracy": 0.951,
-    "improved_apps": [
-      "copper",
-      "plain",
-      "whatsapp-business",
-      "linkedin-ads",
-      "airtable"
-    ],
-    "regressed_apps": [],
-    "per_app": [
-      {
-        "slug": "copper",
-        "first_pass": "0/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "plain",
-        "first_pass": "0/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "pumble",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "salesforce",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "meta-ads",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "dealcloud",
-        "first_pass": "2/3",
-        "post_verification": "2/3"
-      },
-      {
-        "slug": "gladly",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "whatsapp-business",
-        "first_pass": "2/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "google-ads",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "linkedin-ads",
-        "first_pass": "2/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "pinterest",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "stripe",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "github",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "notion",
-        "first_pass": "2/3",
-        "post_verification": "2/3"
-      },
-      {
-        "slug": "slack",
-        "first_pass": "2/3",
-        "post_verification": "2/3"
-      },
-      {
-        "slug": "twilio",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "amazon-selling-partner",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "hubspot",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "shopify",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "zendesk",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "intercom",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "mailchimp",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "discord",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "cloudflare",
-        "first_pass": "2/3",
-        "post_verification": "2/3"
-      },
-      {
-        "slug": "vercel",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "airtable",
-        "first_pass": "2/3",
-        "post_verification": "3/3"
-      },
-      {
-        "slug": "asana",
-        "first_pass": "3/3",
-        "post_verification": "3/3"
-      }
-    ],
-    "note": "Scored with both sides canonicalized, so the delta counts factual fixes only. The label-normalization pass (e.g. 'OAuth 2.0' -> 'OAuth2', 8 fields on this sample) is data hygiene and is deliberately NOT counted as accuracy movement. Measured before the 3 hand-check auth folds; the shipped matrix carries those fixes."
-  },
-  "verification": {
-    "method": "Blind re-search from scratch: fresh differently-phrased query, independent fetch EXCLUDING stored evidence URLs, LLM blind to the pass-1 answer. Re-derived fields: auth_methods, access_model.",
-    "n_verified": 21,
-    "n_skipped_no_independent_source": 3,
-    "auth_methods_agreement_rate": 0.429,
-    "access_model_agreement_rate": 0.762,
-    "overall_agreement_rate": 0.595,
-    "avg_confidence_before": 0.704,
-    "avg_confidence_after": 0.601,
-    "disagreements": [
-      {
-        "slug": "pitchbook",
-        "app": "PitchBook",
-        "field": "auth_methods",
-        "before": [
-          "Bearer Token"
-        ],
-        "after": [
-          "OAuth2"
-        ]
-      },
-      {
-        "slug": "higgsfield",
-        "app": "higgsfield",
-        "field": "auth_methods",
-        "before": [
-          "API Key"
-        ],
-        "after": [
-          "Token"
-        ]
-      },
-      {
-        "slug": "amazon-selling-partner",
-        "app": "Amazon Selling Partner",
-        "field": "auth_methods",
-        "before": [
-          "OAuth2"
-        ],
-        "after": [
-          "Login"
-        ]
-      },
-      {
-        "slug": "whatsapp-business",
-        "app": "WhatsApp Business",
-        "field": "access_model",
-        "before": "Gated",
-        "after": "Self-Serve"
-      },
-      {
-        "slug": "sherlock",
-        "app": "Sherlock",
-        "field": "auth_methods",
-        "before": [
-          "None / Not Applicable"
-        ],
-        "after": []
-      },
-      {
-        "slug": "pylon",
-        "app": "Pylon",
-        "field": "auth_methods",
-        "before": [
-          "Bearer Token"
-        ],
-        "after": [
-          "API Key"
-        ]
-      },
-      {
-        "slug": "pylon",
-        "app": "Pylon",
-        "field": "access_model",
-        "before": "Self-Serve",
-        "after": "Gated"
-      },
-      {
-        "slug": "vercel",
-        "app": "Vercel",
-        "field": "auth_methods",
-        "before": [
-          "Bearer Token"
-        ],
-        "after": [
-          "API Key"
-        ]
-      },
-      {
-        "slug": "airtable",
-        "app": "Airtable",
-        "field": "auth_methods",
-        "before": [
-          "API Key"
-        ],
-        "after": [
-          "PAT",
-          "OAuth"
-        ]
-      },
-      {
-        "slug": "ramp",
-        "app": "Ramp",
-        "field": "access_model",
-        "before": "Gated",
-        "after": "Self-Serve"
-      },
-      {
-        "slug": "notebooklm",
-        "app": "NotebookLM",
-        "field": "auth_methods",
-        "before": [
-          "OAuth2",
-          "Bearer Token"
-        ],
-        "after": []
-      },
-      {
-        "slug": "salesforce-commerce-cloud",
-        "app": "Salesforce Commerce Cloud",
-        "field": "auth_methods",
-        "before": [
-          "OAuth2",
-          "Basic Auth",
-          "Bearer Token"
-        ],
-        "after": [
-          "OAuth2"
-        ]
-      },
-      {
-        "slug": "salesforce",
-        "app": "Salesforce",
-        "field": "access_model",
-        "before": "Self-Serve",
-        "after": "Gated"
-      },
-      {
-        "slug": "neo4j",
-        "app": "Neo4j",
-        "field": "auth_methods",
-        "before": [
-          "Bearer Token",
-          "Basic Auth"
-        ],
-        "after": [
-          "OAuth2",
-          "Basic"
-        ]
-      },
-      {
-        "slug": "plaid",
-        "app": "Plaid",
-        "field": "auth_methods",
-        "before": [
-          "Other Token"
-        ],
-        "after": [
-          "OAuth2",
-          "API Key"
-        ]
-      },
-      {
-        "slug": "consensus",
-        "app": "Consensus",
-        "field": "access_model",
-        "before": "Gated",
-        "after": "Self-Serve"
-      },
-      {
-        "slug": "gumroad",
-        "app": "Gumroad",
-        "field": "auth_methods",
-        "before": [
-          "OAuth2"
-        ],
-        "after": [
-          "OAuth 2.0",
-          "API Key"
-        ]
-      }
-    ],
-    "caveat": "Agreement rate is NOT accuracy — it measures whether an independent second pass reproduced pass 1. True accuracy is the hand-checked number.",
-    "generated": "2026-07-09"
-  },
   "repo_url": "https://github.com/dheeraj3587/composio-ai-product-ops",
   "live_url": "https://composio-ai-product-ops.vercel.app",
-  "browser_use": {
-    "method": "A cloud browser agent (Browser Use Cloud) independently navigated each app's live developer docs and re-derived API type, auth, and access model — a channel independent of the pipeline's own search+fetch and LLM synthesis.",
-    "n_checked": 12,
-    "n_corrections_found": 6,
-    "corrected_apps": [
-      "copper",
-      "plain",
-      "ipayx",
-      "whatsapp-business",
-      "google-ads",
-      "pinterest"
-    ]
+  "generated": "2026-07-11",
+  "quality": {
+    "source_audit_complete": true,
+    "source_audited_rows": 100,
+    "browser_evidence_pages": 8,
+    "browser_evidence_apps": 6
   }
 }

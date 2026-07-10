@@ -1,15 +1,63 @@
-# Vercel — synthesis reasoning
-_generated 2026-07-09 · model x-ai/grok-4.5-free_
+# Vercel - synthesis reasoning
+_generated 2026-07-10 | model gemini-3.1-pro-preview_
+
+## Research trace
+- queries: ["Vercel official API authentication developer documentation", "Vercel API production access approval credentials official documentation"]
+- evidence quality: **adequate**
+- https://vercel.com/docs/rest-api | HTTP 200 | hint | topics=api
+- https://vercel.com/docs/sign-in-with-vercel/authorization-server-api | HTTP 200 | search_result | topics=api,auth,access
+- https://vercel.com/docs/sandbox/concepts/authentication | HTTP 200 | search_result | topics=api,auth,access
+- https://vercel.com/kb/guide/how-do-i-use-a-vercel-api-access-token | HTTP 200 | search_result | topics=api,auth,access,mcp
+- https://developer.vercel.com | HTTP 404 | derived_guess | topics=none
+- https://developers.vercel.com | HTTP 404 | derived_guess | topics=none
 
 ## Model reasoning
-The evidence confirms a broad REST API covering numerous resources (projects, deployments, domains, teams, etc.) as detailed in the SDK reference. The CLI documentation demonstrates that authenticated HTTP requests can be made easily, and the SDK reference indicates a structured API surface. Buildability is 'Easy' because it is a standard REST API with clear resource mapping. Preseed was 'none', so no contradiction occurred.
+The documentation clearly outlines the use of Personal Access Tokens and OAuth2 for the REST API, and officially announces the Vercel MCP server. Access is self-serve and well-documented.
 
 ## Key decisions
 - buildability: **Easy**
-- access_model: **Self-Serve** — Authentication is handled via CLI sessions or tokens for HTTP requests.
+- access_model: **Self-Serve** - Developers can generate Personal Access Tokens directly from their account settings or use OAuth2 for integrations.
 - recommended_next_action: **Build Now**
-- confidence: **0.9**
+- confidence: **0.95**
 
-## Evidence URLs (whitelist-enforced)
-- https://vercel.com/docs/cli/api
-- https://deepwiki.com/vercel/sdk/5.2-api-reference
+## Evidence URLs
+- https://vercel.com/docs/sign-in-with-vercel/authorization-server-api
+- https://vercel.com/kb/guide/how-do-i-use-a-vercel-api-access-token
+- https://vercel.com/docs/agent-resources/vercel-mcp
+- https://vercel.com/blog/introducing-vercel-mcp-connect-vercel-to-your-ai-tools
+
+## Generated record
+```json
+{
+  "app": "Vercel",
+  "category": "DevInfra",
+  "one_liner": "Vercel provides a REST API and an official MCP server for managing deployments, projects, and infrastructure.",
+  "auth_methods": [
+    "OAuth2",
+    "Personal Access Token"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can generate Personal Access Tokens directly from their account settings or use OAuth2 for integrations."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://vercel.com/docs/sign-in-with-vercel/authorization-server-api",
+    "https://vercel.com/kb/guide/how-do-i-use-a-vercel-api-access-token",
+    "https://vercel.com/docs/agent-resources/vercel-mcp",
+    "https://vercel.com/blog/introducing-vercel-mcp-connect-vercel-to-your-ai-tools"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "vercel",
+  "primary_docs_url": "https://vercel.com/docs/sign-in-with-vercel/authorization-server-api",
+  "rate_limit_note": "Rate limits are not explicitly detailed in the provided snippets, but standard Vercel API limits apply.",
+  "last_verified": "2026-07-10"
+}
+```
