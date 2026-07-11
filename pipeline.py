@@ -79,10 +79,12 @@ def _save(results_by_slug: dict) -> None:
 def run_batch(slugs: list[str] | None = None, workers: int = 2,
               resume: bool = True, model: str | None = None,
               shard: bool = True) -> list[dict]:
-    if workers < 1 or workers > config.GOOGLE_MAX_WORKERS:
+    max_workers = config.max_workers_for_model(model)
+    provider = config.provider_for_model(model)
+    if workers < 1 or workers > max_workers:
         raise ValueError(
-            f"workers must be between 1 and {config.GOOGLE_MAX_WORKERS} for the "
-            "configured Google model"
+            f"workers must be between 1 and {max_workers} for the configured "
+            f"{provider} model"
         )
     config.ensure_dirs()
     apps = load_apps()
@@ -96,7 +98,8 @@ def run_batch(slugs: list[str] | None = None, workers: int = 2,
     todo = [a for a in apps if a["slug"] not in existing]
     results = dict(existing)
 
-    mode = f"google-native:{model or config.PRIMARY_MODEL}"
+    mode_provider, mode_model = config.configured_model_chain(model)[0]
+    mode = f"{mode_provider}:{mode_model}"
     print(f"batch: {len(apps)} requested, {len(existing)} cached, {len(todo)} to run "
           f"(workers={workers}, {mode})")
 
