@@ -145,6 +145,46 @@ class ProviderTests(unittest.TestCase):
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_fetch_uses_advertised_markdown_variant_for_complete_docs(self):
+        html_response = mock.Mock(
+            status_code=200,
+            text="<html><body>Add .md for the markdown version of any page.</body></html>",
+        )
+        markdown_response = mock.Mock(
+            status_code=200,
+            text=(
+                "# Authentication\nAPI keys use HTTP Basic authentication. "
+                "The API key is the username and the password is empty.\n" * 4
+            ),
+        )
+        with mock.patch.object(
+            docs_research.requests, "get", side_effect=[html_response, markdown_response]
+        ) as get:
+            fetched = docs_research.fetch("https://docs.acme.test/api/auth")
+
+        self.assertTrue(fetched["ok"])
+        self.assertEqual(fetched["content_url"], "https://docs.acme.test/api/auth.md")
+        self.assertIn("HTTP Basic authentication", fetched["text"])
+        self.assertEqual(get.call_count, 2)
+
+    def test_auth_signals_preserve_specific_plural_credentials(self):
+        signals = set(docs_research.auth_evidence_signals(
+            "The API supports API keys, bearer API tokens, user PATs, and "
+            "service-account key-pair authentication."
+        ))
+        self.assertTrue({
+            "API Key", "Bearer Token", "Personal Access Token", "Service Account"
+        } <= signals)
+
+    def test_negated_api_key_is_not_treated_as_supported_auth(self):
+        cases = [
+            "OAuth client IDs are not an independent API-key method.",
+            "A client API key is not accepted as the API credential.",
+        ]
+        for text in cases:
+            with self.subTest(text=text):
+                self.assertNotIn("API Key", docs_research.auth_evidence_signals(text))
+
     def test_access_tags_cover_real_credential_enablement_language(self):
         samples = [
             "Open your dashboard and activate API access for this scraper.",
@@ -161,6 +201,12 @@ class EvidenceTests(unittest.TestCase):
             "https://dealcloud.com", [], app="DealCloud", slug="dealcloud"
         )
         self.assertIn("https://api.docs.dealcloud.com/docs/apikeys", urls)
+
+    def test_known_paid_platform_reserves_official_pricing_evidence(self):
+        urls = docs_research._candidate_urls(
+            "https://docs.snowflake.com", [], app="Snowflake", slug="snowflake"
+        )
+        self.assertIn("https://www.snowflake.com/en/pricing-options/", urls)
 
     def test_cross_domain_official_docs_are_recognized(self):
         cases = [
@@ -196,6 +242,83 @@ class EvidenceTests(unittest.TestCase):
         self.assertLessEqual(len(candidates), docs_research.MAX_FETCH)
         self.assertGreaterEqual(len(search_urls & set(candidates)), 3)
         self.assertIn(results[0]["url"], candidates)
+
+    def test_pricing_result_gets_a_reserved_fetch_slot(self):
+        auth_results = [
+            {
+                "title": f"Acme API Authentication {index}",
+                "url": f"https://docs.acme.test/auth/{index}",
+                "snippet": "OAuth credentials and API keys",
+            }
+            for index in range(5)
+        ]
+        pricing = {
+            "title": "Acme pricing and production API plans",
+            "url": "https://acme.test/pricing",
+            "snippet": "The API trial expires before paid production access.",
+        }
+        candidates = docs_research._candidate_urls(
+            "https://acme.test", [*auth_results, pricing], app="Acme", slug="acme"
+        )
+        self.assertIn(pricing["url"], candidates)
+
+    def test_key_generation_alone_is_not_production_access_evidence(self):
+        item = {
+            "url": "https://docs.acme.test/auth",
+            "ok": True,
+            "text": "Generate an API key from account settings.",
+        }
+        self.assertIn(
+            "credential_enablement",
+            docs_research.access_evidence_signals(item["text"], item["url"]),
+        )
+        self.assertFalse(docs_research.access_decision_ready([item]))
+
+    def test_without_manual_approval_is_not_misread_as_a_gate(self):
+        signals = docs_research.access_evidence_signals(
+            "Generate production API credentials without manual approval."
+        )
+        self.assertIn("self_serve_production", signals)
+        self.assertNotIn("manual_gate", signals)
+
+    def test_free_developer_environment_is_not_assumed_to_be_production(self):
+        signals = docs_research.access_evidence_signals(
+            "The free Developer Edition includes API access for development and testing. "
+            "Production requires a paid plan."
+        )
+        self.assertIn("nonproduction_only", signals)
+        self.assertIn("commercial_gate", signals)
+        self.assertNotIn("self_serve_production", signals)
+
+    def test_zero_api_free_plan_is_not_misread_as_free_production(self):
+        signals = docs_research.access_evidence_signals(
+            "The free plan has zero API calls; production API access requires a paid plan."
+        )
+        self.assertIn("commercial_gate", signals)
+        self.assertNotIn("free_api_account", signals)
+        self.assertNotIn("self_serve_production", signals)
+
+    def test_temporary_trial_plus_paid_monthly_pricing_is_gated(self):
+        signals = docs_research.access_evidence_signals(
+            "Start a 7-day free trial. Starter is $35 /month."
+        )
+        self.assertIn("nonproduction_only", signals)
+        self.assertIn("commercial_gate", signals)
+
+    def test_free_api_plan_plus_key_creation_is_decision_grade(self):
+        items = [
+            {
+                "url": "https://acme.test/pricing",
+                "ok": True,
+                "text": "The free plan includes API access with 1,000 requests per month.",
+            },
+            {
+                "url": "https://docs.acme.test/auth",
+                "ok": True,
+                "text": "Generate an API key from account settings.",
+            },
+        ]
+        self.assertTrue(docs_research.access_decision_ready(items))
 
     def test_support_tags_require_claim_bearing_text(self):
         self.assertEqual(docs_research.support_tags("Welcome to our company"), [])
@@ -233,11 +356,42 @@ class EvidenceTests(unittest.TestCase):
                 "Acme", "acme", hint_url="https://acme.test", log=False
             )
 
-        self.assertEqual(len(evidence["queries"]), 2)
+        self.assertEqual(len(evidence["queries"]), 3)
         self.assertFalse(evidence["degraded"])
         self.assertEqual(set(evidence["supported_topics"]), {"api", "auth", "access"})
+        self.assertIn("manual_gate", evidence["supported_access_signals"])
         self.assertIn(auth_url, evidence["fetched_urls"])
         self.assertIn(access_url, evidence["fetched_urls"])
+
+    def test_gather_evidence_degrades_without_a_production_entitlement_source(self):
+        auth_url = "https://docs.acme.test/api/authentication"
+
+        def fake_fetch(url):
+            text = (
+                "The REST API uses OAuth2. Generate an API key from account settings."
+                if url == auth_url
+                else "Acme product homepage"
+            )
+            return {"url": url, "ok": True, "status": 200, "text": text, "error": ""}
+
+        with (
+            mock.patch.object(docs_research, "search_many", return_value=[{
+                "title": "Authentication",
+                "url": auth_url,
+                "snippet": "OAuth API key",
+            }]),
+            mock.patch.object(docs_research, "fetch", side_effect=fake_fetch),
+            mock.patch.object(docs_research, "gather_mcp_evidence", return_value={
+                "query": "mcp", "search_results": [], "fetched": [], "fetched_urls": [],
+            }),
+            mock.patch.object(docs_research.time, "sleep"),
+        ):
+            evidence = docs_research.gather_evidence(
+                "Acme", "acme", hint_url="https://acme.test", log=False
+            )
+
+        self.assertTrue(evidence["degraded"])
+        self.assertFalse(evidence["access_decision_ready"])
 
     def test_recovered_failure_leaves_history_but_not_unresolved_state(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -270,6 +424,37 @@ class EvidenceTests(unittest.TestCase):
 
 
 class SynthesisTests(unittest.TestCase):
+    @staticmethod
+    def _evidence(text: str, url: str = "https://docs.acme.com/api") -> dict:
+        return {
+            "fetched": [{
+                "url": url,
+                "ok": True,
+                "text": text,
+                "support_tags": docs_research.support_tags(text, url),
+            }],
+            "mcp": {"fetched": []},
+        }
+
+    def test_preseed_hypothesis_is_withheld_from_model_prompt(self):
+        evidence = {
+            "app": "Acme",
+            "category": "CRM",
+            "query": "q",
+            "queries": ["q"],
+            "fetched_urls": [],
+            "fetched": [],
+            "search_results": [],
+            "mcp": {"search_results": [], "fetched": []},
+        }
+        messages = synthesis.build_messages(
+            evidence,
+            {"composio_toolkit": "No"},
+            preseed={"hypothesis": {"secret_stale_guess": "Self-Serve"}},
+        )
+        self.assertNotIn("secret_stale_guess", messages[1]["content"])
+        self.assertIn("withheld", messages[1]["content"])
+
     def test_third_party_only_evidence_caps_confidence(self):
         record = {
             "evidence_urls": ["https://catalog.example/acme-api"],
@@ -365,6 +550,91 @@ class SynthesisTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "must not also be labeled Bearer"):
             synthesis._validate_semantics(record)
 
+    def test_oauth_client_id_does_not_ground_an_api_key_label(self):
+        record = valid_record()
+        record["evidence_urls"] = ["https://docs.acme.com/api"]
+        evidence = self._evidence(
+            "The REST API uses OAuth 2.0. Register a client ID and client secret."
+        )
+        with self.assertRaisesRegex(ValueError, "API Key"):
+            synthesis._validate_auth_grounding(record, evidence)
+
+    def test_personal_access_token_must_not_be_generic_bearer(self):
+        record = valid_record()
+        record["auth_methods"] = ["Bearer Token"]
+        record["evidence_urls"] = ["https://docs.acme.com/api"]
+        evidence = self._evidence(
+            "Authenticate API requests with a personal access token."
+        )
+        with self.assertRaisesRegex(ValueError, "specific canonical label"):
+            synthesis._validate_auth_grounding(record, evidence)
+
+    def test_key_pair_must_not_be_other_token(self):
+        record = valid_record()
+        record["auth_methods"] = ["OAuth2", "Other Token"]
+        record["evidence_urls"] = ["https://docs.acme.com/api"]
+        evidence = self._evidence(
+            "The REST API supports OAuth 2.0 and key-pair authentication."
+        )
+        with self.assertRaisesRegex(ValueError, "Service Account"):
+            synthesis._validate_auth_grounding(record, evidence)
+
+    def test_oauth1_requires_other_token_alongside_oauth2(self):
+        record = valid_record()
+        record["auth_methods"] = ["OAuth2"]
+        record["evidence_urls"] = ["https://docs.acme.com/api"]
+        evidence = self._evidence(
+            "The API supports OAuth 1.0a for legacy integrations and OAuth 2.0 for cloud apps."
+        )
+        with self.assertRaisesRegex(ValueError, "represent it as Other Token"):
+            synthesis._validate_auth_grounding(record, evidence)
+
+    def test_explicit_api_key_basic_flow_requires_basic_auth(self):
+        record = valid_record()
+        record["auth_methods"] = ["API Key", "OAuth2"]
+        record["evidence_urls"] = ["https://docs.acme.com/api-key-authentication"]
+        evidence = self._evidence(
+            "Use your API key as the username with HTTP Basic authentication. "
+            "OAuth 2.0 is also supported.",
+            url="https://docs.acme.com/api-key-authentication",
+        )
+        with self.assertRaisesRegex(ValueError, "include Basic Auth"):
+            synthesis._validate_auth_grounding(record, evidence)
+
+    def test_basic_transport_explicitly_marked_non_independent_is_not_required(self):
+        item = {
+            "url": "https://docs.acme.com/auth",
+            "text": (
+                "The API token is sent through Basic transport. Basic transport is not "
+                "an independent credential."
+            ),
+        }
+        self.assertFalse(synthesis._explicit_basic_for_api_requests(item))
+
+    def test_self_serve_rejects_trial_only_production_access(self):
+        record = valid_record()
+        record["access_model"] = {
+            "kind": "Self-Serve",
+            "note": "Generate credentials during a free trial; a paid plan is required after the trial.",
+        }
+        record["recommended_next_action"] = "Build Now"
+        record["buildability"] = "Moderate"
+        with self.assertRaisesRegex(ValueError, "contradicts"):
+            synthesis._validate_semantics(record)
+
+    def test_free_production_plan_can_ground_self_serve_access(self):
+        record = valid_record()
+        record["access_model"] = {
+            "kind": "Self-Serve",
+            "note": "The free plan includes production API access and keys are generated in settings.",
+        }
+        record["evidence_urls"] = ["https://docs.acme.com/plans"]
+        evidence = self._evidence(
+            "The free plan includes production API access. Generate an API key in settings.",
+            url="https://docs.acme.com/plans",
+        )
+        synthesis._validate_access_grounding(record, evidence)
+
     def test_long_one_liner_never_exceeds_schema_limit(self):
         clipped = synthesis._clip120("word " * 40)
         self.assertLessEqual(len(clipped), 120)
@@ -396,7 +666,7 @@ class SynthesisTests(unittest.TestCase):
                 "url": evidence_url,
                 "ok": True,
                 "status": 200,
-                "text": "REST API using OAuth. A new developer can create a production app.",
+                "text": "REST API using OAuth. A new developer can generate production OAuth credentials from the dashboard without approval.",
                 "support_tags": ["api", "auth", "access"],
                 "source_kind": "search_result",
                 "relevance_score": 40,
@@ -455,6 +725,11 @@ class SynthesisTests(unittest.TestCase):
 
 
 class VerificationTests(unittest.TestCase):
+    def test_blind_verification_searches_pricing_and_production_access(self):
+        queries = verify._blind_queries("Acme")
+        self.assertEqual(len(queries), 3)
+        self.assertTrue(any("pricing" in query for query in queries))
+
     def test_url_identity_blocks_fragment_and_trailing_slash_reuse(self):
         stored = "https://Docs.Example.com/auth/?utm_source=test#oauth"
         rediscovered = "https://docs.example.com/auth"

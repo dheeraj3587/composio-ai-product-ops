@@ -13,14 +13,12 @@ The project researches 100 apps across 10 categories and scores whether each one
 - 100 apps researched and rendered in the final report.
 - 100 / 100 rows pass schema, citation, app identity, and source-quality checks.
 - 49 apps have no Composio toolkit yet.
-- 74 apps are marked `Build Now`; 19 need outreach; 5 are partner-gated; 2 are blocked.
-- 70 apps have an official MCP server signal; 25 community; 5 none.
-- 10 high-usage apps were hand-checked against official docs.
-- Hand-check first-pass accuracy: 82.5% across API type, auth, production access, and MCP ownership.
+- 63 apps are marked `Build Now`; 19 need outreach; 16 are partner-gated; 2 are blocked.
+- 69 apps have an official MCP server signal; 25 community; 6 none.
+- 45 reviewer-priority apps were hand-checked against official docs across all 10 categories.
+- The latest pre-fold hand-check measured 91.7% across API type, exact auth, production access, and MCP ownership.
 - After applying the same verified truth set, the checked sample scores 100%.
-- The 7 pre-correction misses are shown in the report instead of hidden.
-
-Hand-checked apps: Salesforce, HubSpot, Slack, GitHub, Notion, Shopify, Stripe, Jira, Google Ads, and WhatsApp Business.
+- All 15 pre-correction field misses across 12 apps remain disclosed in the report.
 
 ## What The Agent Produces
 
@@ -40,10 +38,11 @@ The important distinction is deliberate:
 
 ```text
 research.py
-  data/apps.json + data/preseed.json
+  data/apps.json
+  data/preseed.json       risk sampling only; hypotheses are withheld from the model
     -> composio_lookup.py   checks Composio toolkit coverage
-    -> docs_research.py     finds and fetches official documentation
-    -> synthesis.py         asks the pinned LLM for a strict JSON record
+    -> docs_research.py     fetches balanced auth + pricing/production evidence
+    -> synthesis.py         asks the pinned LLM for a strict, evidence-grounded record
     -> schema.py            validates enums, required fields, and semantic dependencies
     -> verify.py            rebuilds metrics and source-quality checks
     -> handcheck.py         scores and applies official-doc human checks
@@ -52,6 +51,14 @@ research.py
 ```
 
 The production report is static: no backend, no live headless browser, and no runtime model calls.
+
+Fresh research has a fail-closed evidence gate. It reserves fetch slots for auth,
+API shape, and plan/production entitlement; extracts conservative auth and access
+signals; follows official Markdown variants when an HTML docs shell advertises
+one; and rejects unresolved rows before a paid synthesis call. A signup or
+key-generation page alone cannot prove production access. Historical preseeds
+still prioritize risky apps for verification, but their values are never shown
+to the synthesis model.
 
 ## Composio Usage
 
@@ -71,10 +78,10 @@ The project separates automated checks from human judgment:
 Current human-check fields:
 
 - API type: 100%
-- Auth methods: 50%
-- Production access: 80%
+- Auth methods: 84.4%
+- Production access: 82.2%
 - MCP ownership: 100%
-- Overall first pass: 82.5%
+- Overall pre-fold snapshot: 91.7%
 
 ## Run Locally
 

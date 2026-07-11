@@ -48,10 +48,13 @@ def research_app(app: dict, model: str | None = None, log: bool = True,
     rec, reasoning = synthesis.synthesize(
         meta, evidence, composio_signal, preseed=preseed, model=model, write_log=log, lead=lead)
     info = {
-        "preseed_used": bool(preseed),
+        "preseed_available": bool(preseed),
         "degraded": evidence["degraded"],
         "evidence_quality": evidence.get("evidence_quality"),
         "supported_topics": evidence.get("supported_topics", []),
+        "supported_auth_signals": evidence.get("supported_auth_signals", []),
+        "supported_access_signals": evidence.get("supported_access_signals", []),
+        "access_decision_ready": evidence.get("access_decision_ready", False),
         "n_fetched": len(evidence["fetched_urls"]),
         "queries": evidence.get("queries") or [evidence["query"]],
     }

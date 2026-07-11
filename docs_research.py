@@ -18,7 +18,7 @@ import threading
 import time
 from functools import lru_cache
 from html.parser import HTMLParser
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 import requests
 
@@ -127,7 +127,7 @@ ACCESS_OFFICIAL_SEEDS = {
     ],
     "snowflake": [
         "https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/authentication",
-        "https://signup.snowflake.com/",
+        "https://www.snowflake.com/en/pricing-options/",
     ],
     "harvest": [
         "https://support.getharvest.com/hc/en-us/articles/360048180732-The-Harvest-API",
@@ -203,8 +203,38 @@ def fetch(url: str, timeout: int = FETCH_TIMEOUT) -> dict:
     try:
         r = requests.get(url, headers=UA, timeout=timeout)
         ok = r.status_code == 200 and bool(r.text)
-        return {"url": url, "ok": ok, "status": r.status_code,
-                "text": html_to_text(r.text) if ok else "", "error": ""}
+        text = html_to_text(r.text) if ok else ""
+        content_url = url
+
+        # Mintlify-style docs can serve a navigation-heavy HTML shell while
+        # advertising a complete first-party Markdown representation. Fetching
+        # that variant recovers the actual auth instructions without a browser.
+        if ok and ".md for the markdown version" in text.lower():
+            parsed = urlparse(url)
+            if not parsed.path.lower().endswith(".md"):
+                markdown_url = urlunparse(parsed._replace(
+                    path=parsed.path.rstrip("/") + ".md",
+                    fragment="",
+                ))
+                try:
+                    markdown = requests.get(markdown_url, headers=UA, timeout=timeout)
+                    markdown_text = (
+                        html_to_text(markdown.text) if markdown.status_code == 200 else ""
+                    )
+                    if len(markdown_text) >= 200:
+                        text = markdown_text
+                        content_url = markdown_url
+                except requests.RequestException:
+                    pass
+
+        return {
+            "url": url,
+            "ok": ok,
+            "status": r.status_code,
+            "text": text,
+            "error": "",
+            "content_url": content_url,
+        }
     except requests.RequestException as e:
         return {"url": url, "ok": False, "status": 0, "text": "", "error": str(e)}
 
@@ -366,8 +396,9 @@ def _candidate_score(result: dict, hint_url: str = "", app: str = "", slug: str 
 
     for token, weight in (
         ("auth", 9), ("oauth", 9), ("getting-started", 7), ("quickstart", 7),
-        ("api", 6), ("developer", 5), ("reference", 4), ("access", 4),
-        ("credential", 4), ("production", 3), ("sandbox", 3),
+        ("pricing", 9), ("plans", 8), ("subscription", 8),
+        ("api", 6), ("developer", 5), ("reference", 4), ("access", 6),
+        ("credential", 4), ("production", 7), ("sandbox", 4), ("trial", 5),
     ):
         if token in path or token in title.lower():
             score += weight
@@ -392,6 +423,29 @@ def _candidate_score(result: dict, hint_url: str = "", app: str = "", slug: str 
     if any(bad in text for bad in ("top 10", "alternatives", "integration guide by")):
         score -= 8
     return score
+
+
+def _candidate_topic_score(result: dict, topic: str) -> int:
+    """Score a search result for one evidence slot, independent of popularity."""
+    text = " ".join(
+        str(result.get(key, "")) for key in ("url", "title", "snippet")
+    ).lower()
+    patterns = {
+        "auth": (
+            r"authenticat", r"authoriz", r"oauth", r"api.?key", r"access token",
+            r"credential", r"basic auth", r"personal access token",
+        ),
+        "access": (
+            r"production", r"go.?live", r"pricing", r"plans?", r"paid",
+            r"subscription", r"trial", r"sandbox", r"approval", r"app review",
+            r"business verification", r"request access", r"contact sales",
+        ),
+        "api": (
+            r"api reference", r"developer", r"endpoint", r"\brest\b", r"graphql",
+            r"\bsdk\b", r"quickstart", r"getting started",
+        ),
+    }
+    return sum(1 for expression in patterns[topic] if re.search(expression, text))
 
 
 def _dedupe_search_results(groups: list[list[dict]]) -> list[dict]:
@@ -423,6 +477,34 @@ def _candidate_urls(hint_url: str, search_results: list[dict], app: str = "",
         if url.startswith("http") and url not in searched:
             searched.append(url)
 
+    # Reserve distinct search-result slots for authentication, production
+    # entitlement, and API shape. A single high-ranking auth page cannot crowd
+    # the pricing/plan evidence out of the six-page fetch budget.
+    balanced_search: list[str] = []
+    for topic in ("auth", "access", "api"):
+        topic_results = sorted(
+            ranked,
+            key=lambda result: (
+                _candidate_topic_score(result, topic),
+                _candidate_score(result, hint_url, app, slug),
+            ),
+            reverse=True,
+        )
+        for result in topic_results:
+            url = result.get("url", "")
+            if (
+                url.startswith("http")
+                and url not in balanced_search
+                and _candidate_topic_score(result, topic) > 0
+            ):
+                balanced_search.append(url)
+                break
+    for url in searched:
+        if len(balanced_search) >= min(3, len(searched)):
+            break
+        if url not in balanced_search:
+            balanced_search.append(url)
+
     urls: list[str] = []
 
     def add(url: str) -> None:
@@ -430,16 +512,219 @@ def _candidate_urls(hint_url: str, search_results: list[dict], app: str = "",
             urls.append(url)
 
     add(hint_url)
-    for url in ACCESS_OFFICIAL_SEEDS.get(slug, []):
+    seeds = ACCESS_OFFICIAL_SEEDS.get(slug, [])
+    if seeds:
+        add(seeds[0])
+    for url in balanced_search:
         add(url)
-    reserved_search_slots = min(len(searched), max(3, MAX_FETCH // 2))
-    for url in searched[:reserved_search_slots]:
+    for url in seeds[1:]:
         add(url)
     for url in _derived_doc_urls(hint_url):
         add(url)
-    for url in searched[reserved_search_slots:]:
+    for url in searched:
         add(url)
     return urls
+
+
+def auth_evidence_signals(text: str, url: str = "") -> list[str]:
+    """Extract conservative credential labels explicitly named by a page.
+
+    These signals validate model output; they do not choose the final auth set.
+    In particular, an OAuth client ID is not an API key, and a key-pair is
+    surfaced as a Service Account rather than a generic token.
+    """
+    haystack = f"{url} {text}".lower()
+    signals: list[str] = []
+    patterns = {
+        "OAuth2": (
+            r"oauth\s*(?:2(?:\.0)?|v2)\b", r"authorization.?code (?:flow|grant)",
+            r"client.?credentials (?:flow|grant)", r"\bpkce\b",
+            r"facebook login for business", r"login with (?:facebook|google|microsoft)",
+        ),
+        "API Key": (
+            r"\bapi[ _-]?keys?\b", r"\bx-api-keys?\b", r"\bapi tokens?\b",
+            r"\bdeveloper tokens?\b", r"\bapplication keys?\b",
+            r"\bapi (?:and|or) application keys?\b",
+            r"\bapis? (?:use|uses|require|requires).{0,60}client id.{0,30}(?:and|with).{0,30}(?:client )?secret credentials?",
+        ),
+        "Bearer Token": (
+            r"\bbearer[ -](?:api )?tokens?\b", r"authorization\s*:\s*bearer",
+            r"private integration tokens?", r"static (?:access )?tokens?",
+            r"\bbearer credentials?\b", r"\bjwt bearer credentials?\b",
+            r"\bsystem[ -]?user access tokens?\b",
+            r"\b(?:customer|admin|integration) tokens?\b",
+            r"independently issued.{0,50}access tokens?",
+            r"(?:through|via|as) bearer\b",
+        ),
+        "Basic Auth": (
+            r"\bbasic auth(?:entication)?\b", r"\bhttp basic\b",
+        ),
+        "Personal Access Token": (
+            r"\bpersonal access tokens?\b", r"\bprogrammatic access tokens?\b",
+            r"\bpersonal api tokens?\b", r"\bpersonal tokens?\b",
+            r"\baccount access tokens?\b", r"\buser pats?\b",
+        ),
+        "Service Account": (
+            r"\bservice[ -]?accounts?\b", r"\bkey[ -]?pairs?(?: authentication)?\b",
+            r"\bprivate key authentication\b", r"\bworkload identity\b",
+            r"\bjwt authentication\b",
+        ),
+        "Bot Token": (r"\bbot tokens?\b",),
+        "Other Token": (
+            r"oauth\s*1(?:\.0a?)?\b", r"internal[ -]?integration (?:authentication )?tokens?",
+            r"\bworkspace access tokens?\b",
+        ),
+    }
+    for label, expressions in patterns.items():
+        if any(re.search(expression, haystack) for expression in expressions):
+            signals.append(label)
+
+    # Vendor pages often write simply "OAuth" when only OAuth 2 is supported.
+    if "OAuth2" not in signals and re.search(r"\boauth\b", haystack):
+        if "Other Token" not in signals:
+            signals.append("OAuth2")
+    negative_api_key = re.search(
+        r"(?:not (?:an? )?(?:independent )?|does not (?:use|accept|support) |"
+        r"not (?:accepted|supported|used) as (?:an? )?)api[ _-]?keys?|"
+        r"api[ _-]?keys?.{0,50}(?:is |are )?not (?:accepted|supported|used)",
+        haystack,
+    )
+    positive_api_key = re.search(
+        r"(?:uses?|supports?|accepts?|requires?|generate|create).{0,50}api[ _-]?keys?",
+        haystack,
+    )
+    if "API Key" in signals and negative_api_key and not positive_api_key:
+        signals.remove("API Key")
+    return signals
+
+
+def access_evidence_signals(text: str, url: str = "") -> list[str]:
+    """Classify whether a page can resolve the production-access decision."""
+    haystack = re.sub(r"\s+", " ", f"{url} {text}".lower())
+    patterns = {
+        "manual_gate": (
+            r"request (?:production )?access", r"apply for (?:api )?access",
+            r"(?:production|api|app|access|credentials?|developer account).{0,100}(?:requires?|needs?|must|subject to|undergo).{0,60}(?:approval|review|business verification)",
+            r"(?:approval|review|business verification).{0,60}(?:is )?(?:required|needed).{0,60}(?:production|api access|app|credentials?)",
+            r"production apps?.{0,80}app review",
+            r"app (?:must|needs? to) be reviewed",
+            r"business (?:must|needs? to) be verified",
+            r"(?:app review|business verification|partner approval) (?:is )?(?:required|needed)",
+            r"contact sales", r"book a call", r"talk to (?:our )?(?:sales|team)",
+            r"contact (?:your )?(?:account manager|customer success manager|admin)",
+        ),
+        "commercial_gate": (
+            r"existing (?:paid )?customer", r"paid (?:plan|account|subscription|edition|tier)",
+            r"paid.{0,80}(?:plan|account|subscription|edition|tier)",
+            r"paid production (?:plans?|accounts?|editions?|tiers?)",
+            r"existing.{0,30}(?:licensed|customer).{0,30}(?:account|environment|workspace|subscription)",
+            r"customer[ -]?gated", r"licensed environment",
+            r"consumption[ -]?based pricing", r"pre[ -]?paid capacity",
+            r"subscription (?:is )?(?:required|needed)",
+            r"requires?.{0,60}(?:paid plan|paid account|customer subscription|paid subscription)",
+            r"available only (?:to|for) .{0,50}customers",
+            r"included only (?:in|with|on) .{0,50}(?:plan|tier)",
+            r"(?:api access|api calls?).{0,80}(?:paid|starter|pro|professional|business|enterprise) (?:plan|tier)",
+            r"(?:paid|starter|pro|professional|business|enterprise) (?:plan|tier).{0,80}(?:api access|api calls?)",
+            r"(?:plans?|tiers?|editions?) (?:are )?paid",
+            r"after (?:the )?(?:free |temporary )?trial", r"trial (?:ends|expires)",
+            r"upgrade (?:your )?(?:plan|account|subscription)",
+        ),
+        "nonproduction_only": (
+            r"\bsandbox\b", r"\btest mode\b", r"\btest credentials?\b",
+            r"\bfree trial\b", r"\btrial account\b", r"developer (?:edition|environment)",
+        ),
+        "credential_enablement": (
+            r"(?:create|generate|obtain|get|issue).{0,50}(?:api key|api token|access token|credentials?)",
+            r"(?:api key|api token|access token|credentials?).{0,50}(?:dashboard|settings|console)",
+            r"sign[ -]?up.{0,80}(?:api|developer|credentials?|token)",
+        ),
+        "free_account": (
+            r"\bfree (?:account|plan|tier|edition)\b",
+            r"(?:account|plan|tier|edition) (?:is |can be )?free\b",
+            r"\bfree\b.{0,30}(?:\$\s?0|0\s*/\s*month|forever)",
+        ),
+        "free_api_account": (
+            r"(?:free account|free plan|free tier|free edition).{0,60}(?:has|includes?|offers?|provides?|allows?|supports?|with).{0,60}api (?:access|credits?|requests?|calls?)",
+            r"api (?:access|credits?|requests?|calls?).{0,60}(?:included|available|enabled).{0,60}(?:free account|free plan|free tier|free edition)",
+            r"api.{0,60}(?:free edition|free plan|free tier).{0,50}[1-9][\d,]* credits?",
+            r"(?:free edition|free plan|free tier).{0,50}[1-9][\d,]* credits?",
+        ),
+        "self_serve_production": (
+            r"(?:create|generate|obtain|get).{0,80}(?:production|live).{0,50}(?:api key|token|credentials?)",
+            r"(?:production|live).{0,80}(?:api key|token|credentials?).{0,60}(?:dashboard|settings|immediately|without approval)",
+            r"(?:free plan|free tier|free edition)[^.;]{0,60}(?:has|includes?|offers?|provides?|allows?|supports?)[^.;]{0,60}(?:production|live) api (?:access|credits?|requests?)",
+            r"(?:production|live) api (?:access|credits?|requests?)[^.;]{0,60}(?:included|available|enabled)[^.;]{0,60}(?:free plan|free tier|free edition)",
+            r"(?:free account|free plan|free tier).{0,100}(?:run|use|host).{0,60}production",
+            r"(?:free account|free plan|free tier).{0,100}production (?:environment|projects?|workloads?)",
+            r"(?:account|plan|tier) (?:is |can be )?free.{0,100}production (?:environment|projects?|workloads?)",
+            r"free production (?:environment|projects?|workloads?)",
+            r"(?:create|generate|retrieve|obtain).{0,80}(?:app|token|key|credentials?).{0,80}without (?:manual |vendor )?(?:approval|review)",
+            r"(?:api|token|key|credentials?).{0,120}available without (?:manual |vendor )?(?:approval|review)",
+            r"custom distribution.{0,80}without (?:app store |vendor )?(?:approval|review)",
+            r"(?:app|token|key|credentials?).{0,60}(?:is |are |can be )?self[ -]?serve",
+            r"self[ -]?created (?:app|token|key|credentials?)|(?:app|token|key|credentials?).{0,20}self[ -]?created",
+            r"production.{0,80}without (?:manual )?(?:approval|review)",
+        ),
+        "hosted_connection": (
+            r"connect (?:your )?(?:account|workspace|organization)",
+            r"click (?:connect|authorize)", r"sign in.{0,60}(?:authorize|connect)",
+            r"oauth.{0,80}(?:mcp|connect)", r"mcp.{0,80}oauth",
+        ),
+        "non_hosted_surface": (
+            r"open[ -]?source (?:command[ -]?line|cli|library)",
+            r"(?:local|command[ -]?line) tool.{0,80}(?:not|no) (?:a )?hosted api",
+            r"no (?:public|hosted) api", r"does not (?:provide|offer|have) (?:a )?(?:public|hosted) api",
+        ),
+    }
+    signals = []
+    for label, expressions in patterns.items():
+        if any(re.search(expression, haystack) for expression in expressions):
+            signals.append(label)
+    if "free_api_account" in signals and re.search(
+        r"(?:free account|free plan|free tier|free edition).{0,80}(?:zero|no|without|not included).{0,40}api (?:access|credits?|requests?|calls?)",
+        haystack,
+    ):
+        signals.remove("free_api_account")
+    paid_pricing = re.search(
+        r"\$\s?[1-9][\d,.]*.{0,60}(?:/\s?month|per month|per seat,? per month|usd/\s?month)",
+        haystack,
+    )
+    if (
+        paid_pricing
+        and "nonproduction_only" in signals
+        and "free_api_account" not in signals
+        and "commercial_gate" not in signals
+    ):
+        signals.append("commercial_gate")
+    if (
+        paid_pricing
+        and re.search(r"/pricing(?:\b|/)", haystack)
+        and "free_account" not in signals
+        and "free_api_account" not in signals
+        and "commercial_gate" not in signals
+    ):
+        signals.append("commercial_gate")
+    return signals
+
+
+def access_decision_ready(items: list[dict]) -> bool:
+    """Return whether fetched evidence can decide production access honestly."""
+    for item in items:
+        if not item.get("ok"):
+            continue
+        signals = set(
+            item.get("access_signals")
+            or access_evidence_signals(item.get("text", ""), item.get("url", ""))
+        )
+        if signals & {
+            "manual_gate", "commercial_gate", "self_serve_production",
+            "free_api_account", "non_hosted_surface",
+        }:
+            return True
+        if "hosted_connection" in signals and "mcp" in item.get("support_tags", []):
+            return True
+    return False
 
 
 def support_tags(text: str, url: str = "") -> list[str]:
@@ -452,7 +737,8 @@ def support_tags(text: str, url: str = "") -> list[str]:
         "access": (
             r"production", r"sandbox", r"request access", r"approval", r"app review",
             r"business verification", r"paid plan", r"existing customer", r"partner",
-            r"self.?serve", r"sign.?up", r"free trial", r"developer account",
+            r"self.?serve", r"sign.?up", r"free trial", r"free (?:account|plan|tier|edition)",
+            r"developer account",
             r"account settings", r"create (an )?api key", r"generate (an )?api key",
             r"generate (an )?(access )?token",
             r"activate.{0,30}api", r"api (mode|access)", r"open your dashboard",
@@ -462,6 +748,10 @@ def support_tags(text: str, url: str = "") -> list[str]:
             r"standalone contract", r"contract agreement",
         ),
         "mcp": (r"\bmcp\b", r"model context protocol"),
+        "non_hosted": (
+            r"open[ -]?source (?:command[ -]?line|cli|library)",
+            r"no (?:public|hosted) api", r"not a hosted api",
+        ),
     }
     for tag, expressions in patterns.items():
         if any(re.search(expression, haystack) for expression in expressions):
@@ -480,11 +770,14 @@ def _source_kind(url: str, hint_url: str, search_urls: set[str]) -> str:
 def _annotate_fetch(item: dict, hint_url: str, search_lookup: dict[str, dict],
                     app: str, slug: str) -> dict:
     result = search_lookup.get(item["url"], {"url": item["url"]})
+    text = item.get("text", "")
     return {
         **item,
         "source_kind": _source_kind(item["url"], hint_url, set(search_lookup)),
         "relevance_score": _candidate_score(result, hint_url, app, slug),
-        "support_tags": support_tags(item.get("text", ""), item["url"]) if item.get("ok") else [],
+        "support_tags": support_tags(text, item["url"]) if item.get("ok") else [],
+        "auth_signals": auth_evidence_signals(text, item["url"]) if item.get("ok") else [],
+        "access_signals": access_evidence_signals(text, item["url"]) if item.get("ok") else [],
     }
 
 
@@ -504,6 +797,8 @@ def _browser_verified_evidence(slug: str) -> list[dict]:
             "source_kind": "browser_verified_summary",
             "relevance_score": 100,
             "support_tags": support_tags(item["text"], item["url"]),
+            "auth_signals": auth_evidence_signals(item["text"], item["url"]),
+            "access_signals": access_evidence_signals(item["text"], item["url"]),
             "browser_capture": {
                 "captured_at": item.get("captured_at", ""),
                 "method": item.get("method", ""),
@@ -577,7 +872,13 @@ def gather_mcp_evidence(app: str, slug: str = "", k: int = 8, max_fetch: int = 4
             continue
         f = fetch(u)
         if f["ok"]:
-            fetched.append({**f, "support_tags": support_tags(f.get("text", ""), u)})
+            text = f.get("text", "")
+            fetched.append({
+                **f,
+                "support_tags": support_tags(text, u),
+                "auth_signals": auth_evidence_signals(text, u),
+                "access_signals": access_evidence_signals(text, u),
+            })
         time.sleep(0.2)
     return {
         "query": q,
@@ -593,6 +894,7 @@ def gather_evidence(app: str, slug: str, hint_url: str = "", category: str = "",
     queries = [
         query or f"{app} official API authentication developer documentation",
         f"{app} API production access approval credentials official documentation",
+        f"{app} official pricing API access free plan trial production plan",
     ]
     results = _dedupe_search_results([search_many(queries, k=8)])
     candidates = _candidate_urls(hint_url, results, app=app, slug=slug)
@@ -609,22 +911,45 @@ def gather_evidence(app: str, slug: str, hint_url: str = "", category: str = "",
 
     ok_urls = [f["url"] for f in fetched if f["ok"]]
     mcp = gather_mcp_evidence(app, slug)
+    evidence_items = [*fetched, *mcp.get("fetched", [])]
     supported_topics = sorted({
         tag
-        for item in [*fetched, *mcp.get("fetched", [])]
+        for item in evidence_items
         if item.get("ok")
         for tag in item.get("support_tags", [])
     })
-    adequate = bool(
-        ("api" in supported_topics and ({"auth", "access"} & set(supported_topics)))
-        or ("mcp" in supported_topics and "auth" in supported_topics)
+    supported_auth_signals = sorted({
+        signal
+        for item in evidence_items
+        if item.get("ok")
+        for signal in (
+            item.get("auth_signals")
+            or auth_evidence_signals(item.get("text", ""), item.get("url", ""))
+        )
+    })
+    supported_access_signals = sorted({
+        signal
+        for item in evidence_items
+        if item.get("ok")
+        for signal in (
+            item.get("access_signals")
+            or access_evidence_signals(item.get("text", ""), item.get("url", ""))
+        )
+    })
+    decision_ready = access_decision_ready(evidence_items)
+    topics = set(supported_topics)
+    usable_hosted_surface = bool(
+        "auth" in topics and ({"api", "mcp"} & topics)
     )
+    explicit_non_hosted = "non_hosted" in topics
+    adequate = bool(explicit_non_hosted or (usable_hosted_surface and decision_ready))
     degraded = not adequate
     if degraded and log:
         _log_failure(
             slug,
             "insufficient claim-bearing evidence; "
-            f"queries={queries!r}; topics={supported_topics}; candidates={candidates}",
+            f"queries={queries!r}; topics={supported_topics}; "
+            f"access_signals={supported_access_signals}; candidates={candidates}",
             phase="evidence",
         )
 
@@ -636,6 +961,9 @@ def gather_evidence(app: str, slug: str, hint_url: str = "", category: str = "",
         # Flag D whitelist for evidence_urls (MCP-probe pages are citable too)
         "fetched_urls": ok_urls + [u for u in mcp["fetched_urls"] if u not in ok_urls],
         "supported_topics": supported_topics,
+        "supported_auth_signals": supported_auth_signals,
+        "supported_access_signals": supported_access_signals,
+        "access_decision_ready": decision_ready,
         "evidence_quality": "adequate" if adequate else "degraded",
         "degraded": degraded,
         "mcp": mcp,

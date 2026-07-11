@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import re
 from typing import Literal
 
 import config
@@ -35,12 +36,15 @@ Evidence rules:
 - Use only fetched documentation. Search-result snippets help discovery but cannot support a final claim by themselves.
 - evidence_urls must contain only URLs from ALLOWED_URLS and must cite the pages supporting your decisions.
 - If evidence is thin or contradictory, state that in reasoning and lower confidence. Never fill a gap by guessing.
-- PRESEED_HYPOTHESIS is an unverified prior. Trust fetched evidence over it.
+- Historical preseeds are deliberately withheld from synthesis to avoid anchoring. Decide only from fetched evidence.
 
 Controlled vocabularies:
 - auth_methods must use ONLY: {json.dumps(normalize.CANONICAL)}.
 - OAuth2 means an OAuth grant, including authorization-code and client-credentials flows. Do not also add Bearer Token merely because an OAuth access token is sent in a Bearer header.
 - Bearer Token means a static vendor-issued bearer token with no OAuth grant. API Key means a static API key/token. Use Other Token only when official docs identify a distinct credential that fits no other label.
+- An OAuth client ID/client secret used only for registration or token exchange is not an independent API Key method. If vendor docs require a client ID/secret directly on every API request, treat that static pair as API Key.
+- Map personal/programmatic access tokens to Personal Access Token, key-pair/private-key auth to Service Account, and OAuth 1.x to Other Token.
+- Include Basic Auth when official docs explicitly require HTTP Basic for API requests, even when the username is an API key.
 - List only credentials independently accepted by the dominant public API or the recommended official MCP surface. Do not list account IDs, client IDs, scopes, or bearer transport as separate auth methods.
 - Prefer the vendor's most specific credential label. A personal access token or bot token sent in an Authorization: Bearer header is one method, not both that label and Bearer Token.
 - OAuth2 and a static token may coexist only when official docs show they are independently issued alternatives for API access.
@@ -52,6 +56,8 @@ Production access rubric:
 - Self-Serve means a new developer can obtain credentials usable in production without manual vendor approval, partnership, business verification, or already being a paying customer.
 - A sandbox/trial alone does not make production access Self-Serve.
 - Gated means production use needs approval, review, partnership, business verification, or an existing paid account.
+- A key-generation page proves credential mechanics, not production entitlement. Check plan/pricing/production evidence before choosing Self-Serve.
+- If free access expires and continued API use needs a paid plan, classify Gated. Do not treat a temporary trial as a free production tier.
 - If REST is gated but an official MCP is self-serve, describe both surfaces in access_model.note and base the recommendation on the surface actually proposed.
 
 Decision rubric:
@@ -126,9 +132,20 @@ def _evidence_block(evidence: dict, per_source: int = 2800, max_sources: int = 6
     blocks = []
     for item in _ranked_fetched(evidence)[:max_sources]:
         topics = ", ".join(item.get("support_tags", [])) or "unclassified"
+        content_source = item.get("content_url") or item["url"]
+        auth_signals = ", ".join(
+            item.get("auth_signals")
+            or docs_research.auth_evidence_signals(item.get("text", ""), item["url"])
+        ) or "none"
+        access_signals = ", ".join(
+            item.get("access_signals")
+            or docs_research.access_evidence_signals(item.get("text", ""), item["url"])
+        ) or "none"
         blocks.append(
             f"URL: {item['url']}\nSOURCE: {item.get('source_kind', 'unknown')}\n"
-            f"TOPICS: {topics}\nTEXT: {item['text'][:per_source]}"
+            f"CONTENT_URL: {content_source}\n"
+            f"TOPICS: {topics}\nAUTH_SIGNALS: {auth_signals}\n"
+            f"ACCESS_SIGNALS: {access_signals}\nTEXT: {item['text'][:per_source]}"
         )
     snippets = [
         f"- {result.get('title', '')} ({result.get('url', '')}): {result.get('snippet', '')[:200]}"
@@ -144,7 +161,11 @@ def _mcp_block(evidence: dict, per_source: int = 1800) -> str:
         for result in mcp.get("search_results", [])[:5]
     ]
     blocks = [
-        f"URL: {item['url']}\nTEXT: {item['text'][:per_source]}"
+        f"URL: {item['url']}\n"
+        f"CONTENT_URL: {item.get('content_url') or item['url']}\n"
+        f"AUTH_SIGNALS: {', '.join(item.get('auth_signals') or docs_research.auth_evidence_signals(item.get('text', ''), item['url'])) or 'none'}\n"
+        f"ACCESS_SIGNALS: {', '.join(item.get('access_signals') or docs_research.access_evidence_signals(item.get('text', ''), item['url'])) or 'none'}\n"
+        f"TEXT: {item['text'][:per_source]}"
         for item in mcp.get("fetched", [])
         if item.get("ok") and item.get("text")
     ]
@@ -154,16 +175,14 @@ def _mcp_block(evidence: dict, per_source: int = 1800) -> str:
 def build_messages(evidence: dict, composio_signal: dict, preseed: dict | None = None):
     evidence_text, snippets = _evidence_block(evidence)
     mcp_text = _mcp_block(evidence)
-    preseed_text = (
-        json.dumps(preseed.get("hypothesis"), ensure_ascii=False)
-        if preseed and preseed.get("hypothesis")
-        else "none"
-    )
+    preseed_status = "withheld (available for risk sampling only)" if preseed else "none"
     user = f"""APP: {evidence['app']} (category: {evidence.get('category', '')})
 COMPOSIO_TOOLKIT (deterministic; do not change): {composio_signal.get('composio_toolkit')}
-PRESEED_HYPOTHESIS: {preseed_text}
+PRESEED_STATUS: {preseed_status}
 RESEARCH_QUERIES: {json.dumps(evidence.get('queries') or [evidence.get('query')])}
 EVIDENCE_QUALITY: {evidence.get('evidence_quality', 'unknown')}
+AGGREGATE_AUTH_SIGNALS: {json.dumps(evidence.get('supported_auth_signals', []))}
+AGGREGATE_ACCESS_SIGNALS: {json.dumps(evidence.get('supported_access_signals', []))}
 
 ALLOWED_URLS:
 {json.dumps(evidence.get('fetched_urls', []), ensure_ascii=False)}
@@ -284,6 +303,169 @@ def _validate_source_quality(record: dict, evidence: dict, app_meta: dict) -> No
             )
 
 
+def _cited_items(record: dict, evidence: dict) -> list[dict]:
+    wanted = set(record["evidence_urls"])
+    return [
+        item
+        for item in [
+            *evidence.get("fetched", []),
+            *(evidence.get("mcp") or {}).get("fetched", []),
+        ]
+        if item.get("ok") and item.get("url") in wanted
+    ]
+
+
+def _auth_signals(items: list[dict]) -> set[str]:
+    return {
+        signal
+        for item in items
+        for signal in (
+            item.get("auth_signals")
+            or docs_research.auth_evidence_signals(
+                item.get("text", ""), item.get("url", "")
+            )
+        )
+    }
+
+
+def _access_signals(items: list[dict]) -> set[str]:
+    return {
+        signal
+        for item in items
+        for signal in (
+            item.get("access_signals")
+            or docs_research.access_evidence_signals(
+                item.get("text", ""), item.get("url", "")
+            )
+        )
+    }
+
+
+def _explicit_basic_for_api_requests(item: dict) -> bool:
+    text = re.sub(
+        r"\s+", " ", f"{item.get('url', '')} {item.get('text', '')}".lower()
+    )
+    if re.search(
+        r"basic (?:auth(?:entication)?|transport).{0,80}not (?:an? )?independent|"
+        r"basic auth(?:entication)?.{0,50}(?:deprecated|not supported|no longer supported)",
+        text,
+    ):
+        return False
+    return bool(
+        "basic-auth" in text
+        or "basic_auth" in text
+        or re.search(
+            r"(?:api key|api token).{0,160}(?:basic auth|http basic)|"
+            r"(?:basic auth|http basic).{0,160}(?:api key|api token|api requests?)|"
+            r"authenticate (?:your )?(?:api )?requests?.{0,100}(?:basic auth|http basic)",
+            text,
+        )
+    )
+
+
+def _validate_auth_grounding(record: dict, evidence: dict) -> None:
+    """Reject auth labels that are unsupported or less specific than the docs."""
+    if record["api_type"] == "None":
+        return
+    items = _cited_items(record, evidence)
+    signals = _auth_signals(items)
+    auth = set(record["auth_methods"])
+
+    if (
+        "Personal Access Token" in signals
+        and "Bearer Token" in auth
+        and "Personal Access Token" not in auth
+    ):
+        raise ValueError(
+            "cited evidence names a personal/programmatic access token; use the specific canonical label"
+        )
+    if (
+        "Service Account" in signals
+        and "Other Token" in auth
+        and "Service Account" not in auth
+    ):
+        raise ValueError(
+            "cited evidence names key-pair/service-account auth; use Service Account"
+        )
+    if "Other Token" in signals and "Other Token" not in auth:
+        raise ValueError("cited evidence names OAuth 1.x; represent it as Other Token")
+
+    for label in auth & {
+        "OAuth2", "API Key", "Basic Auth", "Personal Access Token",
+        "Service Account", "Bot Token", "Bearer Token", "Other Token",
+    }:
+        if label not in signals:
+            raise ValueError(
+                f"auth_methods includes {label!r}, but cited evidence does not name that scheme"
+            )
+    if any(_explicit_basic_for_api_requests(item) for item in items):
+        if "Basic Auth" not in auth:
+            raise ValueError(
+                "cited evidence explicitly requires HTTP Basic for API requests; include Basic Auth"
+            )
+
+    if {"OAuth2", "Bearer Token"} <= auth:
+        static_bearer = any(
+            re.search(
+                r"private integration token|static (?:access )?token|"
+                r"independent bearer token|bearer[ -](?:api )?token|"
+                r"independently issued.{0,60}access token|"
+                r"storefront access token|service keys?.{0,80}bearer|"
+                r"(?:customer|admin|integration) token|"
+                r"api key.{0,80}bearer",
+                f"{item.get('url', '')} {item.get('text', '')}".lower(),
+            )
+            for item in items
+        )
+        if not static_bearer:
+            raise ValueError(
+                "OAuth2 plus Bearer Token needs evidence for an independently issued static token"
+            )
+
+
+def _validate_access_grounding(record: dict, evidence: dict) -> None:
+    """Require cited evidence to resolve production entitlement, not just signup."""
+    if record["api_type"] == "None":
+        return
+    items = _cited_items(record, evidence)
+    signals = _access_signals(items)
+    if not docs_research.access_decision_ready(items):
+        raise ValueError(
+            "cited evidence does not resolve production access; fetch a plan, pricing, "
+            "approval, production, or official hosted-connection page"
+        )
+
+    kind = record["access_model"]["kind"]
+    note = record["access_model"]["note"].lower()
+    gate_signals = signals & {"manual_gate", "commercial_gate"}
+    if kind == "Gated" and not gate_signals:
+        raise ValueError("Gated access requires cited approval, customer, or paid-plan evidence")
+    if kind != "Self-Serve":
+        return
+
+    free_production = "self_serve_production" in signals
+    hosted_mcp = "hosted_connection" in signals and "mcp" in note
+    free_api_path = "free_api_account" in signals
+    if not (free_production or hosted_mcp or free_api_path):
+        raise ValueError(
+            "Self-Serve requires explicit free production credentials or a self-serve "
+            "official MCP connection; signup/key generation alone is insufficient"
+        )
+    if gate_signals:
+        free_exception = bool(
+            re.search(r"\bfree (?:plan|tier|edition)\b", note)
+            and not re.search(r"\b(?:free )?trial\b", note)
+        )
+        split_surface = hosted_mcp and bool(
+            re.search(r"(?:rest|api).{0,80}gat|gat.{0,80}(?:rest|api)", note)
+        )
+        if not (free_exception or split_surface):
+            raise ValueError(
+                "Self-Serve conflicts with cited paid/approval evidence and no distinct "
+                "free production or MCP path is explained"
+            )
+
+
 def _validate_semantics(record: dict) -> None:
     api_type = record["api_type"]
     buildability = record["buildability"]
@@ -324,6 +506,22 @@ def _validate_semantics(record: dict) -> None:
         raise ValueError("recommended_next_action=Blocked requires buildability=Blocked")
     if access == "Gated" and not record["main_blocker"].strip():
         raise ValueError("Gated access requires a concrete main_blocker")
+    if access == "Self-Serve":
+        access_text = " ".join([
+            record["access_model"]["note"], record["main_blocker"]
+        ]).lower()
+        contradictory_gate = re.search(
+            r"requires?.{0,60}(?:paid (?:plan|account)|existing customer|approval|review)|"
+            r"after (?:the )?(?:free )?trial|trial (?:ends|expires)|"
+            r"contact sales|business verification|partner approval",
+            access_text,
+        )
+        if contradictory_gate and not re.search(
+            r"\bfree (?:plan|tier|edition)\b|official mcp", access_text
+        ):
+            raise ValueError(
+                "Self-Serve contradicts the record's own paid/trial/approval requirement"
+            )
 
 
 def _record_from_parsed(app_meta: dict, evidence: dict, composio_signal: dict,
@@ -408,6 +606,8 @@ def _record_from_parsed(app_meta: dict, evidence: dict, composio_signal: dict,
     }
     _validate_citations(record, evidence)
     _validate_source_quality(record, evidence, app_meta)
+    _validate_auth_grounding(record, evidence)
+    _validate_access_grounding(record, evidence)
     _validate_semantics(record)
     reasoning = str(parsed.get("reasoning") or "").strip()
     if not reasoning:
@@ -422,6 +622,11 @@ def synthesize(app_meta: dict, evidence: dict, composio_signal: dict,
     if not evidence.get("fetched_urls"):
         raise ValueError(
             f"{app_meta['slug']}: no fetched evidence; pipeline will log a failure instead of guessing"
+        )
+    if evidence.get("degraded"):
+        raise ValueError(
+            f"{app_meta['slug']}: evidence is degraded; production access and auth "
+            "must be resolved before synthesis"
         )
     messages = build_messages(evidence, composio_signal, preseed)
     try:
@@ -522,8 +727,12 @@ def _write_reasoning(
     for item in evidence.get("fetched", []):
         status = item.get("status", 0)
         topics = ",".join(item.get("support_tags", [])) or "none"
+        content_note = ""
+        if item.get("content_url") and item["content_url"] != item.get("url"):
+            content_note = f" | content={item['content_url']}"
         fetched_lines.append(
-            f"- {item.get('url')} | HTTP {status} | {item.get('source_kind', 'unknown')} | topics={topics}"
+            f"- {item.get('url')} | HTTP {status} | {item.get('source_kind', 'unknown')} "
+            f"| topics={topics}{content_note}"
         )
     lines = [
         f"# {app_meta['app']} - synthesis reasoning",
@@ -555,7 +764,8 @@ def _write_reasoning(
     if preseed and preseed.get("hypothesis"):
         lines.extend([
             "",
-            "## Preseed hypothesis (unverified prior)",
+            "## Risk seed (withheld from synthesis)",
+            "This prior was retained only for audit sampling and was not shown to the model.",
             "```json",
             json.dumps(preseed["hypothesis"], indent=2, ensure_ascii=False),
             "```",

@@ -79,15 +79,20 @@ def build_batch_task(chunk: list[dict]) -> str:
              for r in chunk]
     return (
         "You are verifying developer-API facts. For EACH app below, find its official "
-        "API documentation (navigate past the marketing homepage to the real docs), then "
+        "API authentication documentation AND its official pricing/plan or production-access "
+        "page (navigate past the marketing homepage), then "
         "determine: has_public_api (bool), api_type (REST/GraphQL/SDK/SOAP/MCP-only/None), "
         f"auth_methods (use only {normalize.CANONICAL}), access_model ('Self-Serve' only if a "
         "new developer can obtain credentials usable in PRODUCTION without approval, partnership, "
         "business verification, or already being a paying customer; a sandbox alone is not "
-        "Self-Serve; otherwise use 'Gated'), the exact "
+        "Self-Serve; a temporary trial that becomes paid is Gated; otherwise use 'Gated'), the exact "
         "evidence_url you used, and a short note.\n\nApps:\n" + "\n".join(lines) +
         "\n\nOAuth2 is a grant scheme: do not also add Bearer Token merely because an OAuth "
-        "access token uses a Bearer header. Return one verdict per app, reusing the exact slug."
+        "access token uses a Bearer header. OAuth client IDs used only for registration are not "
+        "API keys, but a static client ID/secret required directly on each API call is; use Personal Access "
+        "Token for named personal/programmatic tokens, Service Account for key-pair auth, and "
+        "include Basic Auth when the docs explicitly require it for API requests. Return one "
+        "verdict per app, reusing the exact slug."
     )
 
 

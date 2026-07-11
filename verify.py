@@ -19,14 +19,18 @@ import config
 import docs_research
 import normalize
 import pipeline
+import synthesis
 
 VERIFY_SYSTEM = f"""Independently derive auth_methods and production access from fetched official documentation.
 
 - Use only the supplied evidence and return strict JSON with exactly auth_methods and access_model.
 - auth_methods must use only: {normalize.CANONICAL}.
 - OAuth2 is the grant scheme; do not add Bearer Token just because an OAuth token uses a Bearer header.
+- An OAuth client ID/client secret used only for registration or token exchange is not an API Key; a static client ID/secret required directly on API calls is. Use Personal Access Token for personal/programmatic tokens, Service Account for key-pair auth, and Other Token for OAuth 1.x.
+- Include Basic Auth when official docs explicitly require HTTP Basic for API requests.
 - Self-Serve means a new developer can obtain credentials usable in production without manual approval, partnership, business verification, or already being a paying customer.
 - A sandbox/trial alone is not production Self-Serve. Otherwise use Gated.
+- Key generation proves credential mechanics, not production entitlement; use the plan/pricing/production evidence too.
 - access_model must be {{"kind":"Self-Serve"|"Gated","note":"..."}}.
 - If the evidence cannot establish a field, explain that in the note rather than guessing."""
 
@@ -45,6 +49,7 @@ def _blind_queries(app: str) -> list[str]:
     return [
         f"{app} official API authentication OAuth API key developer documentation",
         f"{app} API production access approval sandbox existing customer official documentation",
+        f"{app} official pricing API access free plan trial production plan",
     ]
 
 
@@ -76,6 +81,20 @@ def _canonical_verdict(parsed: dict) -> dict:
     if not note:
         raise ValueError("verifier access_model.note must explain production access")
     return {"auth_methods": auth, "access_model": {"kind": kind, "note": note}}
+
+
+def _ground_verdict(verdict: dict, fetched: list[dict]) -> None:
+    """Apply the same evidence-grounding rules as first-pass synthesis."""
+    auth = verdict["auth_methods"]
+    record = {
+        "api_type": "None" if auth == ["None / Not Applicable"] else "REST",
+        "auth_methods": auth,
+        "access_model": verdict["access_model"],
+        "evidence_urls": [item["url"] for item in fetched],
+    }
+    evidence = {"fetched": fetched, "mcp": {"fetched": []}}
+    synthesis._validate_auth_grounding(record, evidence)
+    synthesis._validate_access_grounding(record, evidence)
 
 
 def _url_identity(url: str) -> str:
@@ -114,16 +133,25 @@ def _rederive(app: str, exclude_urls: set[str], model: str | None,
     for url in candidates:
         item = docs_research.fetch(url)
         if item.get("ok"):
-            item["support_tags"] = docs_research.support_tags(item.get("text", ""), url)
+            text = item.get("text", "")
+            item["support_tags"] = docs_research.support_tags(text, url)
+            item["auth_signals"] = docs_research.auth_evidence_signals(text, url)
+            item["access_signals"] = docs_research.access_evidence_signals(text, url)
             fetched.append(item)
         if len(fetched) >= 4:
             break
     topics = {tag for item in fetched for tag in item.get("support_tags", [])}
-    if not fetched or not ({"auth", "access"} & topics):
+    if (
+        not fetched
+        or "auth" not in topics
+        or not docs_research.access_decision_ready(fetched)
+    ):
         return None
 
     evidence_text = "\n\n".join(
         f"URL: {item['url']}\nTOPICS: {','.join(item['support_tags']) or 'none'}\n"
+        f"AUTH_SIGNALS: {','.join(item['auth_signals']) or 'none'}\n"
+        f"ACCESS_SIGNALS: {','.join(item['access_signals']) or 'none'}\n"
         f"TEXT: {item['text'][:2800]}"
         for item in fetched
     )
@@ -159,6 +187,7 @@ def _rederive(app: str, exclude_urls: set[str], model: str | None,
         )
     try:
         verdict = _canonical_verdict(parsed)
+        _ground_verdict(verdict, fetched)
     except ValueError as exc:
         repair_messages = [
             *messages,
@@ -177,6 +206,7 @@ def _rederive(app: str, exclude_urls: set[str], model: str | None,
             response_schema=VerificationOutput,
         )
         verdict = _canonical_verdict(repaired)
+        _ground_verdict(verdict, fetched)
     used_urls = [item["url"] for item in fetched]
     stored_hosts = {urlparse(url).netloc.lower() for url in exclude_urls}
     used_hosts = {urlparse(url).netloc.lower() for url in used_urls}
@@ -294,7 +324,7 @@ def run_verification(sample_size: int | None = None, model: str | None = None) -
 
     verification = {
         "method": (
-            "Blind re-search with two fresh queries, independent fetched URLs, and a model blind "
+            "Blind re-search with three fresh queries, independent fetched URLs, and a model blind "
             "to pass-1 values. Automated output is retained as a disagreement, never auto-folded."
         ),
         "n_verified": n,

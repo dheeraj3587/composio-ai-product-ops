@@ -65,6 +65,11 @@ def _prepare_one(app: dict) -> dict:
     )
     if not evidence.get("fetched_urls"):
         raise ValueError("no fetched documentation URL is available")
+    if evidence.get("degraded"):
+        raise ValueError(
+            "decision-grade auth and production-access evidence is incomplete; "
+            "add browser evidence before submitting this app to the model"
+        )
     return {
         "app_meta": meta,
         "evidence": evidence,
