@@ -1,4 +1,4 @@
-"""Environment, paths, atomic JSON helpers, and paid LLM provider access."""
+"""Environment, paths, atomic JSON helpers, and native Google Gen AI access."""
 from __future__ import annotations
 
 import json
@@ -81,46 +81,31 @@ def save_json(path: Path, data: Any) -> None:
 
 
 # --------------------------------------------------------------------------- #
-# LLM providers
+# LLM - one native provider, intentionally no gateway fallback
 # --------------------------------------------------------------------------- #
 COMPOSIO_API_KEY = os.getenv("COMPOSIO_API_KEY", "")
 PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY", "")
 LLM_TIMEOUT_SECONDS = float(os.getenv("LLM_TIMEOUT_SECONDS", "180"))
 GOOGLE_MAX_WORKERS = int(os.getenv("GOOGLE_MAX_WORKERS", "2"))
-AIAND_MAX_WORKERS = int(os.getenv("AIAND_MAX_WORKERS", "2"))
 GOOGLE_API_KEY = (
     os.getenv("GOOGLE_GENAI_API_KEY")
     or os.getenv("GOOGLE_API_KEY")
     or os.getenv("GEMINI_API_KEY", "")
 )
-AIAND_API_KEY = os.getenv("AIAND_API_KEY", "")
-AIAND_BASE_URL = os.getenv("AIAND_BASE_URL", "https://api.aiand.com/v1").rstrip("/")
-PRIMARY_PROVIDER = os.getenv("PRIMARY_LLM_PROVIDER", "aiand").lower()
-PRIMARY_MODEL = os.getenv(
-    "PRIMARY_LLM_MODEL",
-    os.getenv("AIAND_MODEL", "zai-org/glm-5.2"),
-)
-GOOGLE_MODEL = os.getenv("GOOGLE_GENAI_MODEL", "gemini-3.1-pro-preview")
+PRIMARY_PROVIDER = "google"
+PRIMARY_MODEL = os.getenv("GOOGLE_GENAI_MODEL", "gemini-3.1-pro-preview")
 GOOGLE_THINKING_LEVEL = os.getenv("GOOGLE_THINKING_LEVEL", "medium")
-AIAND_REASONING_EFFORT = os.getenv("AIAND_REASONING_EFFORT", "max")
 GOOGLE_TOKEN_PRICES = {
     "gemini-3.1-pro-preview": (2.0, 12.0),
     "gemini-3-flash-preview": (0.5, 3.0),
     "gemini-3.5-flash": (1.5, 9.0),
     "gemini-3.1-flash-lite": (0.25, 1.5),
 }
-AIAND_INPUT_USD_PER_MILLION = float(os.getenv("AIAND_INPUT_USD_PER_MILLION", "2.0"))
-AIAND_OUTPUT_USD_PER_MILLION = float(os.getenv("AIAND_OUTPUT_USD_PER_MILLION", "12.0"))
 
 
 def _google_token_prices(model: str) -> tuple[float, float]:
     """USD per 1M input/output tokens; unknown models use the conservative Pro rate."""
     return GOOGLE_TOKEN_PRICES.get(model, (2.0, 12.0))
-
-
-def _aiand_token_prices(model: str) -> tuple[float, float]:
-    """USD per 1M tokens. Defaults are conservative until provider pricing is pinned."""
-    return AIAND_INPUT_USD_PER_MILLION, AIAND_OUTPUT_USD_PER_MILLION
 
 
 @lru_cache(maxsize=1)
@@ -146,25 +131,10 @@ def get_llm_client():
     return get_client("google")
 
 
-def _split_model(model: str | None, lead: str | None = None) -> tuple[str, str]:
-    if model and ":" in model:
-        provider, selected_model = model.split(":", 1)
-        provider = provider.strip().lower()
-        selected_model = selected_model.strip()
-    else:
-        provider = (lead or PRIMARY_PROVIDER).strip().lower()
-        selected_model = (model or PRIMARY_MODEL).strip()
-    if provider not in {"google", "aiand"}:
-        raise RuntimeError(f"unsupported LLM provider {provider!r}")
-    if not selected_model:
-        raise RuntimeError("LLM model is empty")
-    return provider, selected_model
-
-
 def _model_chain(model: str | None, lead: str | None = None) -> list[tuple[str, str]]:
-    if lead not in (None, "google", "aiand"):
+    if lead not in (None, "google"):
         raise RuntimeError(f"provider sharding is disabled; invalid lead={lead!r}")
-    return [_split_model(model, lead=lead)]
+    return [("google", model or PRIMARY_MODEL)]
 
 
 def configured_model_chain(model: str | None = None) -> list[tuple[str, str]]:
@@ -192,23 +162,6 @@ def _extract_json_object(text: str) -> dict:
         raise
 
 
-def _extract_chat_text(payload: dict) -> str:
-    choices = payload.get("choices") or []
-    if not choices:
-        return ""
-    message = choices[0].get("message") or {}
-    content = message.get("content")
-    if isinstance(content, str):
-        return content
-    if isinstance(content, list):
-        return "\n".join(
-            str(part.get("text") or part.get("content") or "")
-            for part in content
-            if isinstance(part, dict)
-        )
-    return str(content or "")
-
-
 class StructuredOutputError(ValueError):
     """The provider answered, but not with a complete JSON object."""
 
@@ -222,29 +175,18 @@ class ProviderCapacityUnavailable(RuntimeError):
 
 
 def _classify_error(exc) -> str:
-    if exc.__class__.__name__ in {"Timeout", "ReadTimeout", "ConnectTimeout"}:
-        return "retry"
-    response = getattr(exc, "response", None)
-    code = (
-        getattr(exc, "code", None)
-        or getattr(exc, "status_code", None)
-        or getattr(response, "status_code", None)
-    )
+    code = getattr(exc, "code", None) or getattr(exc, "status_code", None)
     try:
         code = int(code)
     except (TypeError, ValueError):
         return "other"
     message = str(exc).lower()
-    if code in {402, 429} and any(
+    if code == 429 and any(
         marker in message
         for marker in (
             "generate_requests_per_model_per_day",
             "generaterequestsperdayperprojectpermodel",
             "requests per day",
-            "insufficient",
-            "quota",
-            "credit",
-            "billing",
         )
     ):
         return "quota"
@@ -253,8 +195,6 @@ def _classify_error(exc) -> str:
 
 def is_capacity_error(exc) -> bool:
     """Return true for provider-wide high-demand failures after local retries."""
-    if exc.__class__.__name__ in {"Timeout", "ReadTimeout", "ConnectTimeout"}:
-        return True
     code = getattr(exc, "code", None) or getattr(exc, "status_code", None)
     try:
         code = int(code)
@@ -264,19 +204,6 @@ def is_capacity_error(exc) -> bool:
     return code == 503 and any(
         marker in message for marker in ("high demand", "capacity", "unavailable")
     )
-
-
-def provider_for_model(model: str | None = None, lead: str | None = None) -> str:
-    return _split_model(model, lead=lead)[0]
-
-
-def model_name_for_provider(model: str | None = None, lead: str | None = None) -> str:
-    return _split_model(model, lead=lead)[1]
-
-
-def max_workers_for_model(model: str | None = None, lead: str | None = None) -> int:
-    provider = provider_for_model(model, lead=lead)
-    return GOOGLE_MAX_WORKERS if provider == "google" else AIAND_MAX_WORKERS
 
 
 def _google_contents(messages: list[dict]):
@@ -308,21 +235,12 @@ def llm_json(
     thinking_level: str | None = None,
     response_schema: Any | None = None,
 ) -> tuple[dict, str]:
-    """Call the configured paid LLM and return parsed strict JSON."""
+    """Call Gemini through the native Google SDK and return parsed strict JSON."""
     from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
+    from google.genai import types
     import usage_tracker
 
     provider, selected_model = _model_chain(model, lead=lead)[0]
-    if provider == "aiand":
-        return _aiand_llm_json(
-            messages,
-            selected_model,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            thinking_level=thinking_level,
-        )
-
-    from google.genai import types
     system, contents = _google_contents(messages)
     input_price, output_price = _google_token_prices(selected_model)
     input_estimate = sum(len(str(message.get("content", ""))) for message in messages) / 4
@@ -400,112 +318,4 @@ def llm_json(
             f"incomplete JSON from google:{selected_model}"
         ) from exc
     _last_llm.value = f"google:{selected_model}"
-    return obj, raw
-
-
-def _aiand_llm_json(
-    messages: list[dict],
-    selected_model: str,
-    temperature: float,
-    max_tokens: int,
-    thinking_level: str | None,
-) -> tuple[dict, str]:
-    """OpenAI-compatible chat completions path for AIAND-hosted models."""
-    from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
-    import requests
-    import usage_tracker
-
-    if not AIAND_API_KEY:
-        raise RuntimeError("AIAND_API_KEY is not set")
-
-    max_tokens = max(max_tokens, 1024)
-    input_price, output_price = _aiand_token_prices(selected_model)
-    input_estimate = sum(len(str(message.get("content", ""))) for message in messages) / 4
-    conservative_cost = (
-        input_estimate * input_price / 1_000_000
-        + max_tokens * output_price / 1_000_000
-    )
-    usage_tracker.ensure_budget("aiand", conservative_cost)
-
-    effort = thinking_level or AIAND_REASONING_EFFORT
-    if effort == "max":
-        # AIAND's documented highest Chat Completions level is xhigh.
-        effort = "xhigh"
-    payload: dict[str, Any] = {
-        "model": selected_model,
-        "messages": messages,
-        "temperature": temperature,
-        "max_completion_tokens": max_tokens,
-        "response_format": {"type": "json_object"},
-    }
-    if effort:
-        payload["reasoning_effort"] = effort
-
-    @retry(
-        retry=retry_if_exception(lambda exc: _classify_error(exc) == "retry"),
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1, min=3, max=30),
-        reraise=True,
-    )
-    def _call() -> dict:
-        response = requests.post(
-            f"{AIAND_BASE_URL}/chat/completions",
-            headers={
-                "Authorization": f"Bearer {AIAND_API_KEY}",
-                "Content-Type": "application/json",
-            },
-            json=payload,
-            timeout=LLM_TIMEOUT_SECONDS,
-        )
-        if response.status_code in {401, 402, 403, 429}:
-            response.raise_for_status()
-        if response.status_code >= 500:
-            response.raise_for_status()
-        response.raise_for_status()
-        return response.json()
-
-    try:
-        response = _call()
-    except Exception as exc:
-        if _classify_error(exc) == "quota":
-            raise ProviderQuotaExhausted(str(exc)) from exc
-        raise
-
-    raw = _extract_chat_text(response)
-    usage = response.get("usage") or {}
-    prompt_tokens = int(usage.get("prompt_tokens") or 0)
-    answer_tokens = int(usage.get("completion_tokens") or 0)
-    details = usage.get("completion_tokens_details") or {}
-    reasoning_tokens = int(details.get("reasoning_tokens") or 0)
-    if not prompt_tokens:
-        prompt_tokens = int(input_estimate)
-    if not answer_tokens:
-        answer_tokens = int(max(len(raw) / 4, 0))
-    estimated_cost = (
-        prompt_tokens * input_price / 1_000_000
-        + answer_tokens * output_price / 1_000_000
-    )
-    usage_tracker.record("aiand", "chat_completions", estimated_cost, {
-        "model": selected_model,
-        "prompt_tokens": prompt_tokens,
-        "answer_tokens": answer_tokens,
-        "reasoning_tokens": reasoning_tokens,
-        "input_usd_per_million": input_price,
-        "output_usd_per_million": output_price,
-        "reasoning_effort": effort,
-        "finish_reason": str((response.get("choices") or [{}])[0].get("finish_reason") or ""),
-    })
-    try:
-        if not raw.strip():
-            raise ValueError("empty completion")
-        obj = _extract_json_object(raw)
-        if isinstance(obj, list):
-            obj = next((item for item in obj if isinstance(item, dict)), None)
-        if not isinstance(obj, dict):
-            raise ValueError("model did not return a JSON object")
-    except (json.JSONDecodeError, TypeError, ValueError) as exc:
-        raise StructuredOutputError(
-            f"incomplete JSON from aiand:{selected_model}"
-        ) from exc
-    _last_llm.value = f"aiand:{selected_model}"
     return obj, raw

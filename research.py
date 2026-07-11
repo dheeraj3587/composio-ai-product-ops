@@ -37,32 +37,22 @@ def cmd_app(slug: str, model: str | None) -> None:
     _print_record(rec.model_dump(mode="json"), info)
 
 
-def _preflight_paid_runtime(workers: int, model: str | None = None,
-                            require_google: bool = False) -> None:
+def _preflight_paid_runtime(workers: int) -> None:
     """Fail before archiving when this interpreter cannot run the paid pipeline."""
     errors = []
     if not config.PERPLEXITY_API_KEY:
         errors.append("PERPLEXITY_API_KEY is not set")
-    provider = "google" if require_google else config.provider_for_model(model)
-    if require_google and config.provider_for_model(model or config.GOOGLE_MODEL) != "google":
-        errors.append("--batch-submit/--batch-recover require a google:... model")
-    if provider == "google" and not config.GOOGLE_API_KEY:
+    if not config.GOOGLE_API_KEY:
         errors.append("GOOGLE_GENAI_API_KEY/GOOGLE_API_KEY is not set")
-    if provider == "aiand" and not config.AIAND_API_KEY:
-        errors.append("AIAND_API_KEY is not set")
-    modules = [("perplexity", "perplexityai")]
-    if provider == "google":
-        modules.append(("google.genai", "google-genai"))
-    for module, package in modules:
+    for module, package in (("perplexity", "perplexityai"), ("google.genai", "google-genai")):
         try:
             importlib.import_module(module)
         except ImportError:
             errors.append(f"{package} is not installed in {sys.executable}")
-    max_workers = config.GOOGLE_MAX_WORKERS if require_google else config.max_workers_for_model(model)
-    if workers < 1 or workers > max_workers:
+    if workers < 1 or workers > config.GOOGLE_MAX_WORKERS:
         errors.append(
-            f"--workers must be 1..{max_workers}; the configured paid model "
-            "is intentionally capped for stable, checkpointed runs"
+            f"--workers must be 1..{config.GOOGLE_MAX_WORKERS}; the configured preview "
+            "model was unstable above that concurrency"
         )
     if errors:
         raise SystemExit("paid-run preflight failed:\n- " + "\n- ".join(errors))
@@ -99,7 +89,7 @@ def _archive_current_run() -> None:
 
 
 def cmd_batch(slugs, limit, workers, model, resume, shard, fresh_run=False) -> None:
-    _preflight_paid_runtime(workers, model=model)
+    _preflight_paid_runtime(workers)
     if fresh_run:
         _archive_current_run()
         resume = False
@@ -139,13 +129,10 @@ def cmd_batch(slugs, limit, workers, model, resume, shard, fresh_run=False) -> N
 def cmd_batch_submit(model: str | None, workers: int, fresh_run: bool) -> None:
     import batch_pipeline
 
-    _preflight_paid_runtime(workers, model=model or config.GOOGLE_MODEL, require_google=True)
+    _preflight_paid_runtime(workers)
     if fresh_run:
         _archive_current_run()
-    batch_pipeline.submit(
-        config.model_name_for_provider(model or config.GOOGLE_MODEL, lead="google"),
-        workers=workers,
-    )
+    batch_pipeline.submit(model or config.PRIMARY_MODEL, workers=workers)
 
 
 def cmd_batch_status() -> None:
@@ -157,11 +144,9 @@ def cmd_batch_status() -> None:
 def cmd_batch_recover(job_name: str, model: str | None, workers: int) -> None:
     import batch_pipeline
 
-    _preflight_paid_runtime(workers, model=model or config.GOOGLE_MODEL, require_google=True)
+    _preflight_paid_runtime(workers)
     batch_pipeline.recover(
-        job_name,
-        config.model_name_for_provider(model or config.GOOGLE_MODEL, lead="google"),
-        workers=workers,
+        job_name, model or config.PRIMARY_MODEL, workers=workers
     )
 
 
@@ -174,7 +159,7 @@ def cmd_batch_collect() -> None:
 def cmd_batch_retry_failures(workers: int) -> None:
     import batch_pipeline
 
-    _preflight_paid_runtime(workers, model=config.GOOGLE_MODEL, require_google=True)
+    _preflight_paid_runtime(workers)
     batch_pipeline.retry_failures(workers=workers)
 
 
@@ -275,14 +260,8 @@ def main() -> None:
     p.add_argument("--all", action="store_true", help="research all 100 apps")
     p.add_argument("--slugs", help="comma-separated slugs to research")
     p.add_argument("--limit", type=int, help="research only the first N apps (dry run)")
-    p.add_argument("--workers", type=int, default=config.max_workers_for_model())
-    p.add_argument(
-        "--model",
-        help=(
-            "override synthesis model; use provider:model for non-default providers "
-            "(examples: aiand:zai-org/glm-5.2, google:gemini-3.1-pro-preview)"
-        ),
-    )
+    p.add_argument("--workers", type=int, default=config.GOOGLE_MAX_WORKERS)
+    p.add_argument("--model", help="override the native Google Gemini model")
     p.add_argument(
         "--no-resume", action="store_true", help="ignore cached results.json"
     )
@@ -365,7 +344,7 @@ def main() -> None:
         p.error("--fresh-run must be used with --all or --batch-submit")
     if args.fresh_run and len(config.configured_model_chain(args.model)) != 1:
         p.error(
-            "--fresh-run requires the single paid model policy."
+            "--fresh-run requires the single native Google model policy."
         )
 
     if args.batch_submit:

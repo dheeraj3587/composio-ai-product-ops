@@ -97,8 +97,7 @@ Required keys for fresh research:
 | Key | Purpose |
 | --- | --- |
 | `PERPLEXITY_API_KEY` | Documentation search |
-| `AIAND_API_KEY` | Default synthesis and verification |
-| `GOOGLE_GENAI_API_KEY` | Optional Gemini async batch path |
+| `GOOGLE_GENAI_API_KEY` | Synthesis and verification |
 | `COMPOSIO_API_KEY` | Composio toolkit lookup |
 | `BROWSER_USE_API_KEY` | Optional browser verification loop |
 
@@ -106,7 +105,9 @@ Required keys for fresh research:
 
 ```bash
 python research.py --app stripe
-python research.py --all --fresh-run --model aiand:zai-org/glm-5.2
+python research.py --batch-submit --fresh-run --model gemini-3.1-pro-preview
+python research.py --batch-status
+python research.py --batch-collect
 python research.py --verify --sample 24
 python research.py --handcheck-template 24
 # Fill handcheck/handcheck.json from official docs.
@@ -115,17 +116,6 @@ python research.py --apply-handcheck
 python research.py --accuracy-movement
 python research.py --metrics
 python research.py --build-report
-```
-
-The default paid synthesis provider is AIAND (`zai-org/glm-5.2`) through an
-OpenAI-compatible `/chat/completions` call with the highest supported
-`reasoning_effort=xhigh`. Gemini is
-still available for the async batch-only path:
-
-```bash
-python research.py --batch-submit --fresh-run --model google:gemini-3.1-pro-preview
-python research.py --batch-status
-python research.py --batch-collect
 ```
 
 Generated runtime state such as provider usage ledgers, batch state, failures, cache files, and previous archives is ignored. The committed evidence is the final dataset, metrics, reasoning logs, browser evidence summary, and handcheck file.

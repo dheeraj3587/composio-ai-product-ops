@@ -12,7 +12,6 @@ _lock = threading.Lock()
 DEFAULT_BUDGETS = {
     "perplexity": 2.0,
     "google": 8.0,
-    "aiand": 50.0,
 }
 
 
