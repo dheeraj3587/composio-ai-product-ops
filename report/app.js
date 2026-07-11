@@ -540,7 +540,6 @@ function renderVerification() {
   const quality = metrics.quality || {};
   const handcheck = metrics.handcheck || {};
   const movement = metrics.accuracy_movement || {};
-  const verification = metrics.verification || {};
   const browserUse = metrics.browser_use || {};
   const misses = handcheck.misses || [];
   const checkedPills = (handcheck.checked || []).map((item) => {
@@ -578,14 +577,6 @@ function renderVerification() {
         : "No browser-assisted evidence was required for this run.",
       detail: "<span class=\"pill blue\">Evidence acquisition</span>",
     },
-    {
-      title: "Blind re-search agreement",
-      value: verification.n_verified ? pct(verification.overall_agreement_rate) : "Pending",
-      body: verification.n_verified
-        ? `${verification.n_verified} fresh-source re-checks measured reproducibility independently from human accuracy.`
-        : "A separate blind re-search sample has not been recorded for this fresh run. It is not substituted with the hand-check score.",
-      detail: `<span class="pill ${verification.n_verified ? "green" : "amber"}">${verification.n_verified ? `${verification.n_verified} checked` : "Open limitation"}</span>`,
-    },
   ];
 
   $("verification-grid").innerHTML = cards.map((card) => `
@@ -604,7 +595,6 @@ function renderVerification() {
 
   const warnings = [];
   if (!handcheck.n) warnings.push("Independent human accuracy is pending for this run.");
-  if (!verification.n_verified) warnings.push("Blind re-search agreement remains pending and is shown as an open limitation.");
   $("verification-warning").innerHTML = warnings.length
     ? `<div class="warning">${esc(warnings.join(" "))}</div>`
     : "";
