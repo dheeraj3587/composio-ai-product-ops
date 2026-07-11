@@ -841,6 +841,7 @@ class FreshRunTests(unittest.TestCase):
         metrics = json.loads((root / "out" / "metrics.json").read_text(encoding="utf-8"))
         self.assertIn('"Archived first pass"', app_js)
         self.assertIn('title: "Latest staged agreement"', app_js)
+        self.assertIn("Math.round(Number(value) * 1000) / 10", app_js)
         self.assertIn("not a blind first-pass estimate", app_js)
         self.assertIn('title: "Independent browser check"', app_js)
         self.assertIn("Independent browser correction applied", app_js)

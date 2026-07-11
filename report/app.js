@@ -50,7 +50,7 @@ let metrics = {};
 let reasoning = {};
 
 const pct = (value) => Number.isFinite(Number(value))
-  ? `${Math.round(Number(value) * 100)}%`
+  ? `${Math.round(Number(value) * 1000) / 10}%`
   : "Pending";
 
 const pill = (text, kind) => (
