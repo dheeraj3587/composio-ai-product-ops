@@ -59,3 +59,42 @@ The official documentation confirms a REST API with OAuth2 and Bearer Token auth
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Coda",
+  "category": "Productivity/PM",
+  "one_liner": "Coda (now Superhuman Docs) provides a comprehensive REST API and an official MCP server for interacting with docs...",
+  "auth_methods": [
+    "OAuth2",
+    "Personal Access Token"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Standard API tokens and OAuth2 apps can be created by users, though some Admin API endpoints require Enterprise plans."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://coda.io/developers/apis/v1",
+    "https://help.coda.io/hc/en-us/articles/44722769665549-Security-recommendations-for-the-Coda-MCP",
+    "https://help.coda.io/hc/en-us/articles/44722661982989-Connect-to-the-Coda-MCP"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "coda",
+  "primary_docs_url": "https://coda.io/developers/apis/v1",
+  "rate_limit_note": "Rate limiting is enforced; specific limits are detailed in the API documentation.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

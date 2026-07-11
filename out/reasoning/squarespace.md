@@ -59,3 +59,42 @@ The documentation clearly outlines OAuth 2.0 and API Key authentication for the 
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Squarespace",
+  "category": "Commerce",
+  "one_liner": "Squarespace provides REST Commerce APIs to manage merchant site data such as products, orders, inventory, and...",
+  "auth_methods": [
+    "OAuth2",
+    "API Key"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "API keys require a Commerce Advanced plan. OAuth client registration requires submitting a form for manual review by Squarespace."
+  },
+  "api_type": "REST",
+  "api_breadth": "Moderate",
+  "existing_mcp": "Community",
+  "composio_toolkit": "No",
+  "buildability": "Hard",
+  "main_blocker": "OAuth client registration requires manual review, and generating API keys requires an existing Commerce Advanced paid plan.",
+  "recommended_next_action": "Needs Outreach",
+  "evidence_urls": [
+    "https://developers.squarespace.com/oauth",
+    "https://developers.squarespace.com/commerce-apis/authentication-and-permissions",
+    "https://github.com/BusyBee3333/squarespace-mcp-2026-complete"
+  ],
+  "confidence": 0.9,
+  "verification_status": "Hand-Checked",
+  "slug": "squarespace",
+  "primary_docs_url": "https://developers.squarespace.com/oauth",
+  "rate_limit_note": "No specific rate limits were found in the provided documentation.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

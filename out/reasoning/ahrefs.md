@@ -68,3 +68,42 @@ The documentation clearly details both a REST API and an official hosted MCP ser
   "main_blocker": "API access likely requires a paid Ahrefs plan at a certain tier (verify)."
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Ahrefs",
+  "category": "Research/Scraping",
+  "one_liner": "Ahrefs provides a REST API and an official MCP server to access comprehensive SEO, marketing, and search data.",
+  "auth_methods": [
+    "API Key",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Production access to the API and the remote MCP server requires a paid Ahrefs subscription (Lite plan or higher). Free test queries are available without a paid plan."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Moderate",
+  "main_blocker": "Accessing real production data requires an active paid Ahrefs subscription.",
+  "recommended_next_action": "Needs Outreach",
+  "evidence_urls": [
+    "https://docs.ahrefs.com/en/api/docs/introduction",
+    "https://docs.ahrefs.com/ahrefs-connect/docs/oauth-guide",
+    "https://docs.ahrefs.com/en/mcp/docs/introduction"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "ahrefs",
+  "primary_docs_url": "https://docs.ahrefs.com/en/api/docs/introduction",
+  "rate_limit_note": "API requests consume units based on rows and fields returned (minimum 50 units per request). The MCP server also enforces row and request limits based on the subscription tier.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

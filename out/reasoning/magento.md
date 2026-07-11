@@ -61,3 +61,44 @@ The official documentation details REST and GraphQL APIs with token-based and OA
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Magento (Adobe Commerce)",
+  "category": "Commerce",
+  "one_liner": "Adobe Commerce and Magento Open Source provide comprehensive REST and GraphQL APIs for headless commerce integrations.",
+  "auth_methods": [
+    "Bearer Token",
+    "OAuth2",
+    "Other Token"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Magento Open Source can be downloaded and installed freely to generate API credentials, though Adobe Commerce cloud hosting requires a paid contract."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Community",
+  "composio_toolkit": "No",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://developer.adobe.com/commerce/webapi/get-started/authentication/",
+    "https://developer.adobe.com/commerce/webapi/get-started/authentication/gs-authentication-oauth",
+    "https://developer.adobe.com/commerce/webapi/rest/authentication/user",
+    "https://lobehub.com/mcp/codexpect-adobe-commerce-mcp"
+  ],
+  "confidence": 0.9,
+  "verification_status": "Hand-Checked",
+  "slug": "magento",
+  "primary_docs_url": "https://developer.adobe.com/commerce/webapi/get-started/authentication/",
+  "rate_limit_note": "Rate limits depend on the specific hosting environment and infrastructure configuration of the Magento instance.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

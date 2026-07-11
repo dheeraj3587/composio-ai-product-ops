@@ -62,3 +62,42 @@ Added MCP documentation URL to evidence_urls to support the existing_mcp claim. 
   "last_verified": "2026-07-11"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Sentry",
+  "category": "DevInfra",
+  "one_liner": "Sentry provides a comprehensive REST API and an official MCP server for error tracking and performance monitoring.",
+  "auth_methods": [
+    "Personal Access Token",
+    "OAuth2",
+    "Other Token"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Personal access tokens and internal integration tokens are self-serve. Creating a public OAuth2 application requires partner registration and approval."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://docs.sentry.io/api/auth/",
+    "https://github.com/getsentry/sentry-mcp"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "sentry",
+  "primary_docs_url": "https://docs.sentry.io/api/auth/",
+  "rate_limit_note": "Rate limits apply and are documented in the API reference, though specific limits depend on the endpoint and account.",
+  "last_verified": "2026-07-11"
+}
+```
+<!-- final-state:end -->

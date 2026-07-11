@@ -191,8 +191,7 @@
     "category": "CRM",
     "one_liner": "Zoho CRM is a comprehensive customer relationship management platform offering REST APIs and official MCP servers...",
     "auth_methods": [
-      "OAuth2",
-      "API Key"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -207,12 +206,11 @@
     "recommended_next_action": "Build Now",
     "evidence_urls": [
       "https://www.zoho.com/crm/developer/docs/api/v8/auth-request.html",
-      "https://www.zoho.com/crm/developer/docs/api/v8/oauth-overview.html",
-      "https://www.zoho.com/crm/developer/docs/mcp/overview.html",
-      "https://www.zoho.com/mcp/"
+      "https://www.zoho.com/crm/developer/docs/api/v8/api-limits.html",
+      "https://www.zoho.com/crm/developer/docs/mcp/overview.html"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "zoho-crm",
     "primary_docs_url": "https://www.zoho.com/crm/developer/docs/api/v8/auth-request.html",
     "rate_limit_note": "OAuth 2.0 access tokens expire after 60 minutes.",
@@ -224,29 +222,30 @@
     "one_liner": "Close is a sales CRM providing a comprehensive REST API and an official MCP server for AI agents.",
     "auth_methods": [
       "API Key",
+      "Basic Auth",
       "OAuth2"
     ],
     "access_model": {
-      "kind": "Self-Serve",
-      "note": "Developers can create API keys or register OAuth applications directly from the Close settings dashboard without manual approval."
+      "kind": "Gated",
+      "note": "Close provides a temporary trial; continued production API and MCP use requires a paid Close subscription."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "Official",
     "composio_toolkit": "Yes",
-    "buildability": "Easy",
-    "main_blocker": "None",
-    "recommended_next_action": "Build Now",
+    "buildability": "Moderate",
+    "main_blocker": "Production credentials require an existing paid customer account.",
+    "recommended_next_action": "Partner-Gated",
     "evidence_urls": [
-      "https://developer.close.com/integrations/create-an-oauth-app",
-      "https://help.close.com/docs/api-keys-oauth",
-      "https://developer.close.com",
-      "https://help.close.com/docs/mcp-server"
+      "https://developer.close.com/api/overview/api-key-authentication",
+      "https://developer.close.com/api/overview/oauth-authentication",
+      "https://developer.close.com/mcp",
+      "https://close.com/pricing"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "close",
-    "primary_docs_url": "https://developer.close.com/integrations/create-an-oauth-app",
+    "primary_docs_url": "https://developer.close.com/api/overview/api-key-authentication",
     "rate_limit_note": "Rate limits exist and are documented in the API reference, though specific thresholds are not detailed in the fetched snippets.",
     "last_verified": "2026-07-10"
   },
@@ -259,27 +258,26 @@
       "API Key"
     ],
     "access_model": {
-      "kind": "Self-Serve",
-      "note": "Developers can sign up for a free trial and create API keys or configure OAuth2 applications directly."
+      "kind": "Gated",
+      "note": "Copper provides a temporary trial; continued production API use requires a paid Copper subscription."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "Community",
     "composio_toolkit": "No",
-    "buildability": "Easy",
-    "main_blocker": "None",
-    "recommended_next_action": "Build Now",
+    "buildability": "Moderate",
+    "main_blocker": "Production credentials require an existing paid customer account.",
+    "recommended_next_action": "Partner-Gated",
     "evidence_urls": [
-      "https://developer.copper.com/introduction/oauth/flow.html",
       "https://developer.copper.com/introduction/oauth/index.html",
       "https://developer.copper.com/introduction/requests.html",
-      "https://copper.com",
+      "https://www.copper.com/pricing",
       "https://www.synchub.io/connectors/copper/knowledge-base/mcp"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "copper",
-    "primary_docs_url": "https://developer.copper.com/introduction/oauth/flow.html",
+    "primary_docs_url": "https://developer.copper.com/introduction/oauth/index.html",
     "rate_limit_note": "Rate limits are enforced and detailed in the API documentation.",
     "last_verified": "2026-07-10"
   },
@@ -304,10 +302,11 @@
     "recommended_next_action": "Partner-Gated",
     "evidence_urls": [
       "https://api.docs.dealcloud.com/docs/token",
-      "https://api.docs.dealcloud.com/docs/apikeys"
+      "https://api.docs.dealcloud.com/docs/apikeys",
+      "https://api.docs.dealcloud.com/releases"
     ],
     "confidence": 0.8,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "dealcloud",
     "primary_docs_url": "https://api.docs.dealcloud.com/docs/token",
     "rate_limit_note": "Rate limits are mentioned in the documentation index, but specific thresholds are not detailed in the fetched snippets.",
@@ -510,22 +509,23 @@
       "OAuth2"
     ],
     "access_model": {
-      "kind": "Self-Serve",
-      "note": "Developers can generate API keys from their workspace settings or use OAuth for the official MCP server."
+      "kind": "Gated",
+      "note": "Plain provides a seven-day trial; production API and MCP use requires a paid Foundation, Horizon, or Frontier workspace."
     },
     "api_type": "GraphQL",
     "api_breadth": "Broad",
     "existing_mcp": "Official",
     "composio_toolkit": "Yes",
-    "buildability": "Easy",
-    "main_blocker": "None",
-    "recommended_next_action": "Build Now",
+    "buildability": "Moderate",
+    "main_blocker": "Production credentials require an existing paid customer account.",
+    "recommended_next_action": "Partner-Gated",
     "evidence_urls": [
       "https://help.plain.com/article/api-quickstart",
-      "https://help.plain.com/article/mcp-server"
+      "https://help.plain.com/article/mcp-server",
+      "https://www.plain.com/pricing"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "plain",
     "primary_docs_url": "https://help.plain.com/article/api-quickstart",
     "rate_limit_note": "Rate limits exist but specific details are not provided in the quickstart.",
@@ -537,29 +537,30 @@
     "one_liner": "Help Scout provides a comprehensive REST API for managing support conversations, customers, and knowledge base docs.",
     "auth_methods": [
       "OAuth2",
-      "API Key"
+      "API Key",
+      "Basic Auth"
     ],
     "access_model": {
-      "kind": "Self-Serve",
-      "note": "Developers can sign up for a Help Scout account and generate API keys or OAuth credentials directly from their profile or settings."
+      "kind": "Gated",
+      "note": "Help Scout provides a temporary trial; continued production API use requires an active paid Help Scout account."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "Community",
     "composio_toolkit": "Yes",
-    "buildability": "Easy",
-    "main_blocker": "",
-    "recommended_next_action": "Build Now",
+    "buildability": "Moderate",
+    "main_blocker": "Production credentials require an existing paid customer account.",
+    "recommended_next_action": "Partner-Gated",
     "evidence_urls": [
-      "https://developer.helpscout.com/mailbox-api/",
-      "https://developer.helpscout.com/docs-api/restricted-docs/",
-      "https://helpscout.com",
+      "https://developer.helpscout.com/mailbox-api/overview/authentication/",
+      "https://developer.helpscout.com/docs-api/",
+      "https://docs.helpscout.com/article/596-billing-and-plans-guide",
       "https://mcpengage.com/helpscout"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "help-scout",
-    "primary_docs_url": "https://developer.helpscout.com/mailbox-api/",
+    "primary_docs_url": "https://developer.helpscout.com/mailbox-api/overview/authentication/",
     "rate_limit_note": "Rate limiting is enforced and documented in the API overview.",
     "last_verified": "2026-07-10"
   },
@@ -573,25 +574,26 @@
       "OAuth2"
     ],
     "access_model": {
-      "kind": "Self-Serve",
-      "note": "API keys can be generated directly from the helpdesk settings for private apps. Public apps require developer portal registration and review."
+      "kind": "Gated",
+      "note": "Gorgias provides a seven-day trial; continued production API and MCP use requires a paid plan."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "Official",
     "composio_toolkit": "Yes",
-    "buildability": "Easy",
-    "main_blocker": "None.",
-    "recommended_next_action": "Build Now",
+    "buildability": "Moderate",
+    "main_blocker": "Production credentials require an existing paid customer account.",
+    "recommended_next_action": "Partner-Gated",
     "evidence_urls": [
-      "https://docs.gorgias.com/en-US/rest-api-208286",
-      "https://developers.gorgias.com/docs/create-a-ticket-using-api",
+      "https://developers.gorgias.com/reference/authentication",
+      "https://developers.gorgias.com/docs/access-tokens-api-keys",
+      "https://www.gorgias.com/pricing/choose-your-plan",
       "https://docs.gorgias.com/en-US/connect-your-ai-assistant-to-the-gorgias-mcp-6310546"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "gorgias",
-    "primary_docs_url": "https://docs.gorgias.com/en-US/rest-api-208286",
+    "primary_docs_url": "https://developers.gorgias.com/reference/authentication",
     "rate_limit_note": "Not explicitly detailed in the provided snippets.",
     "last_verified": "2026-07-10"
   },
@@ -887,26 +889,26 @@
       "OAuth2"
     ],
     "access_model": {
-      "kind": "Self-Serve",
-      "note": "Basic Auth credentials (API ID and Token) can be generated directly in the Aircall dashboard. OAuth for multi-tenant apps requires contacting the marketplace team for approval."
+      "kind": "Gated",
+      "note": "Aircall API access is bundled with paid Aircall plans and therefore requires an existing customer account."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "Community",
     "composio_toolkit": "No",
-    "buildability": "Easy",
-    "main_blocker": "None for single-tenant integrations using Basic Auth. Multi-tenant OAuth applications require vendor outreach and approval.",
-    "recommended_next_action": "Build Now",
+    "buildability": "Moderate",
+    "main_blocker": "Production credentials require an existing paid customer account.",
+    "recommended_next_action": "Partner-Gated",
     "evidence_urls": [
       "https://developer.aircall.io/tutorials/basic-authentication/",
-      "https://developer.aircall.io/tutorials/how-aircall-oauth-flow-works/",
       "https://developer.aircall.io/api-references/",
+      "https://aircall.io/pricing/",
       "https://lobehub.com/mcp/themobilefirstco-aircall-mcp-server"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "aircall",
-    "primary_docs_url": "https://developer.aircall.io/tutorials/how-aircall-oauth-flow-works/",
+    "primary_docs_url": "https://developer.aircall.io/tutorials/basic-authentication/",
     "rate_limit_note": "Rate limiting is listed in the API references menu, though specific limits are not detailed in the provided text.",
     "last_verified": "2026-07-10"
   },
@@ -932,15 +934,14 @@
     "main_blocker": "None",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://developer.vonage.com/en/getting-started/concepts/authentication",
       "https://developer.vonage.com/en/verify/concepts/authentication",
-      "https://developer.vonage.com/en/mcp-server/overview",
-      "https://developer.vonage.com/en/mcp-server/conceptual-guides/introduction-to-vonage-mcp"
+      "https://developer.vonage.com/en/getting-started/overview",
+      "https://developer.vonage.com/en/mcp-server/overview"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "vonage",
-    "primary_docs_url": "https://developer.vonage.com/en/getting-started/concepts/authentication",
+    "primary_docs_url": "https://developer.vonage.com/en/verify/concepts/authentication",
     "rate_limit_note": "No specific rate limit details were found in the provided documentation snippets.",
     "last_verified": "2026-07-10"
   },
@@ -1041,31 +1042,29 @@
     "one_liner": "GoHighLevel provides a comprehensive REST API and an official MCP server for CRM, marketing, and automation workflows.",
     "auth_methods": [
       "OAuth2",
-      "API Key",
-      "Basic Auth"
+      "Bearer Token"
     ],
     "access_model": {
-      "kind": "Self-Serve",
-      "note": "Private integrations and API keys are self-serve; public Marketplace apps require a review process."
+      "kind": "Gated",
+      "note": "HighLevel API access is available on paid agency plans after the temporary trial."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "Official",
     "composio_toolkit": "No",
-    "buildability": "Easy",
-    "main_blocker": "None for private integrations. Public marketplace distribution requires app review.",
-    "recommended_next_action": "Build Now",
+    "buildability": "Moderate",
+    "main_blocker": "Production credentials require an existing paid customer account.",
+    "recommended_next_action": "Partner-Gated",
     "evidence_urls": [
-      "https://marketplace.gohighlevel.com/docs/Authorization/DeveloperGlossary/",
-      "https://marketplace.gohighlevel.com/docs/oauth/ExternalAuthentication/index.html",
-      "https://help.gohighlevel.com/support/solutions/articles/155000005741-how-to-use-the-highlevel-mcp-server",
-      "https://www.gohighlevel.com/post/introducing-the-mcp-server",
-      "https://marketplace.gohighlevel.com/docs/2021-07-28/other/mcp/index.html"
+      "https://marketplace.gohighlevel.com/docs/Authorization/authorization_doc/",
+      "https://marketplace.gohighlevel.com/docs/",
+      "https://www.gohighlevel.com/pricing",
+      "https://marketplace.gohighlevel.com/docs/other/mcp/index.html"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "gohighlevel",
-    "primary_docs_url": "https://marketplace.gohighlevel.com/docs/Authorization/DeveloperGlossary/",
+    "primary_docs_url": "https://marketplace.gohighlevel.com/docs/Authorization/authorization_doc/",
     "rate_limit_note": "Not explicitly detailed in the provided evidence.",
     "last_verified": "2026-07-10"
   },
@@ -1180,15 +1179,14 @@
     "main_blocker": "Upgrading from Trial to Standard access requires recording and submitting a video demo of the application for vendor approval.",
     "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
-      "https://community.n8n.io/t/pinterest-api-trial-standard-any-success-stories-tips-for-standard-access-approval/257516?tl=en",
-      "https://developers.pinterest.com",
-      "https://github.com/clugtu/pinterest-mcp",
-      "https://github.com/pinterest/api-quickstart/blob/main/nodejs/README.md"
+      "https://developers.pinterest.com/docs/getting-started/set-up-authentication-and-authorization/",
+      "https://developers.pinterest.com/docs/key-concepts/access-tiers/",
+      "https://github.com/clugtu/pinterest-mcp"
     ],
     "confidence": 0.5,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "pinterest",
-    "primary_docs_url": "https://github.com/pinterest/api-quickstart/blob/main/nodejs/README.md",
+    "primary_docs_url": "https://developers.pinterest.com/docs/getting-started/set-up-authentication-and-authorization/",
     "rate_limit_note": "Trial access restricts certain POST endpoints; Standard access lifts these restrictions upon approval.",
     "last_verified": "2026-07-11"
   },
@@ -1233,26 +1231,26 @@
       "Basic Auth"
     ],
     "access_model": {
-      "kind": "Self-Serve",
-      "note": "Developers can create a SendGrid account and generate API keys directly from the console."
+      "kind": "Gated",
+      "note": "New SendGrid accounts receive a time-limited trial; continuing production email API use requires a paid plan."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "Community",
     "composio_toolkit": "Yes",
-    "buildability": "Easy",
-    "main_blocker": "None",
-    "recommended_next_action": "Build Now",
+    "buildability": "Moderate",
+    "main_blocker": "Production credentials require an existing paid customer account.",
+    "recommended_next_action": "Partner-Gated",
     "evidence_urls": [
-      "https://www.twilio.com/docs/sendgrid/for-developers/sending-email/api-getting-started",
+      "https://www.twilio.com/docs/sendgrid/api-reference/how-to-use-the-sendgrid-v3-api/authentication",
       "https://www.twilio.com/docs/sendgrid/for-developers/sending-email/authentication",
-      "https://github.com/Garoth/sendgrid-mcp",
-      "https://jsr.io/@cong/sendgrid-mcp"
+      "https://support.sendgrid.com/hc/en-us/articles/35270136965403-Twilio-SendGrid-Trial-Account-Plan",
+      "https://github.com/Garoth/sendgrid-mcp"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "sendgrid",
-    "primary_docs_url": "https://sendgrid.com",
+    "primary_docs_url": "https://www.twilio.com/docs/sendgrid/api-reference/how-to-use-the-sendgrid-v3-api/authentication",
     "rate_limit_note": "Rate limits apply to the API and are detailed in the 'Rate Limits' section of the v3 API documentation.",
     "last_verified": "2026-07-10"
   },
@@ -1385,7 +1383,8 @@
     "one_liner": "Adobe Commerce and Magento Open Source provide comprehensive REST and GraphQL APIs for headless commerce integrations.",
     "auth_methods": [
       "Bearer Token",
-      "OAuth2"
+      "OAuth2",
+      "Other Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1400,12 +1399,12 @@
     "recommended_next_action": "Build Now",
     "evidence_urls": [
       "https://developer.adobe.com/commerce/webapi/get-started/authentication/",
-      "https://developer.adobe.com/commerce",
-      "https://lobehub.com/mcp/codexpect-adobe-commerce-mcp",
-      "https://conare.ai/marketplace/mcp/magento-mcp"
+      "https://developer.adobe.com/commerce/webapi/get-started/authentication/gs-authentication-oauth",
+      "https://developer.adobe.com/commerce/webapi/rest/authentication/user",
+      "https://lobehub.com/mcp/codexpect-adobe-commerce-mcp"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "magento",
     "primary_docs_url": "https://developer.adobe.com/commerce/webapi/get-started/authentication/",
     "rate_limit_note": "Rate limits depend on the specific hosting environment and infrastructure configuration of the Magento instance.",
@@ -1436,7 +1435,7 @@
       "https://github.com/BusyBee3333/squarespace-mcp-2026-complete"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "squarespace",
     "primary_docs_url": "https://developers.squarespace.com/oauth",
     "rate_limit_note": "No specific rate limits were found in the provided documentation.",
@@ -1645,13 +1644,13 @@
     "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
       "https://docs.ahrefs.com/en/api/docs/introduction",
-      "https://docs.ahrefs.com/en/mcp/docs/introduction",
-      "https://docs.ahrefs.com/ahrefs-connect/docs/oauth-guide"
+      "https://docs.ahrefs.com/ahrefs-connect/docs/oauth-guide",
+      "https://docs.ahrefs.com/en/mcp/docs/introduction"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "ahrefs",
-    "primary_docs_url": "https://docs.ahrefs.com/ahrefs-connect/docs/oauth-guide",
+    "primary_docs_url": "https://docs.ahrefs.com/en/api/docs/introduction",
     "rate_limit_note": "API requests consume units based on rows and fields returned (minimum 50 units per request). The MCP server also enforces row and request limits based on the subscription tier.",
     "last_verified": "2026-07-10"
   },
@@ -1707,9 +1706,9 @@
       "https://docs.apify.com/platform/integrations/mcp"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "apify",
-    "primary_docs_url": "https://apify.com/straightforward_understanding/actor-adopte-get-auth-token/api",
+    "primary_docs_url": "https://docs.apify.com/api/v2/getting-started",
     "rate_limit_note": "Rate limits are not explicitly detailed in the provided snippets, but standard API usage limits apply based on the pricing plan.",
     "last_verified": "2026-07-10"
   },
@@ -1949,14 +1948,14 @@
     "recommended_next_action": "Build Now",
     "evidence_urls": [
       "https://docs.netlify.com/api",
+      "https://docs.netlify.com/start/glossary/",
       "https://developers.netlify.com/sdk/oauth/get-started/",
-      "https://github.com/netlify/netlify-mcp",
-      "https://www.netlify.com/press/netlify-launches-official-mcp-server-setting-the-standard-for-agent-native-development/"
+      "https://github.com/netlify/netlify-mcp"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "netlify",
-    "primary_docs_url": "https://developers.netlify.com/sdk/oauth/get-started/",
+    "primary_docs_url": "https://docs.netlify.com/api",
     "rate_limit_note": "Rate limiting is enforced on the API; specific limits are detailed in the API documentation's Rate limiting section.",
     "last_verified": "2026-07-10"
   },
@@ -2061,7 +2060,7 @@
     "auth_methods": [
       "OAuth2",
       "Personal Access Token",
-      "Other Token"
+      "Service Account"
     ],
     "access_model": {
       "kind": "Gated",
@@ -2076,12 +2075,11 @@
     "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
       "https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/authentication",
-      "https://developer.snowflake.com",
       "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-mcp",
       "https://github.com/Snowflake-Labs/mcp"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "snowflake",
     "primary_docs_url": "https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/authentication",
     "rate_limit_note": "Rate limits depend on warehouse sizing and account tier.",
@@ -2176,14 +2174,12 @@
     "recommended_next_action": "Build Now",
     "evidence_urls": [
       "https://docs.sentry.io/api/auth/",
-      "https://docs.sentry.io/api/",
-      "https://docs.sentry.io/product/partnership-platform/oauth-integration/",
-      "https://docs.sentry.io/platforms/python/integrations/mcp/"
+      "https://github.com/getsentry/sentry-mcp"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "sentry",
-    "primary_docs_url": "https://docs.sentry.io/product/partnership-platform/oauth-integration/",
+    "primary_docs_url": "https://docs.sentry.io/api/auth/",
     "rate_limit_note": "Rate limits apply and are documented in the API reference, though specific limits depend on the endpoint and account.",
     "last_verified": "2026-07-11"
   },
@@ -2412,7 +2408,7 @@
     "one_liner": "Coda (now Superhuman Docs) provides a comprehensive REST API and an official MCP server for interacting with docs...",
     "auth_methods": [
       "OAuth2",
-      "Bearer Token"
+      "Personal Access Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2427,13 +2423,13 @@
     "recommended_next_action": "Build Now",
     "evidence_urls": [
       "https://coda.io/developers/apis/v1",
-      "https://coda.io/packs/build/latest/guides/basics/authentication/oauth2/",
-      "https://coda.io/resources/guides/getting_started_with_coda_mcp"
+      "https://help.coda.io/hc/en-us/articles/44722769665549-Security-recommendations-for-the-Coda-MCP",
+      "https://help.coda.io/hc/en-us/articles/44722661982989-Connect-to-the-Coda-MCP"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "coda",
-    "primary_docs_url": "https://coda.io/packs/build/latest/guides/basics/authentication/oauth2/",
+    "primary_docs_url": "https://coda.io/developers/apis/v1",
     "rate_limit_note": "Rate limiting is enforced; specific limits are detailed in the API documentation.",
     "last_verified": "2026-07-10"
   },

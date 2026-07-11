@@ -61,3 +61,44 @@ The documentation clearly outlines self-serve access for both API keys and OAuth
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Close",
+  "category": "CRM",
+  "one_liner": "Close is a sales CRM providing a comprehensive REST API and an official MCP server for AI agents.",
+  "auth_methods": [
+    "API Key",
+    "Basic Auth",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Close provides a temporary trial; continued production API and MCP use requires a paid Close subscription."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Moderate",
+  "main_blocker": "Production credentials require an existing paid customer account.",
+  "recommended_next_action": "Partner-Gated",
+  "evidence_urls": [
+    "https://developer.close.com/api/overview/api-key-authentication",
+    "https://developer.close.com/api/overview/oauth-authentication",
+    "https://developer.close.com/mcp",
+    "https://close.com/pricing"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "close",
+  "primary_docs_url": "https://developer.close.com/api/overview/api-key-authentication",
+  "rate_limit_note": "Rate limits exist and are documented in the API reference, though specific thresholds are not detailed in the fetched snippets.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

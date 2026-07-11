@@ -62,3 +62,43 @@ Snowflake's REST APIs support OAuth, PATs, and Key-Pair authentication (Other To
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Snowflake",
+  "category": "DevInfra",
+  "one_liner": "Snowflake provides extensive REST APIs and an official MCP server for data management, analytics, and Cortex AI.",
+  "auth_methods": [
+    "OAuth2",
+    "Personal Access Token",
+    "Service Account"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Production use requires a paid Snowflake account; trial accounts are available for testing."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Moderate",
+  "main_blocker": "Production access requires an active, paid Snowflake enterprise account.",
+  "recommended_next_action": "Needs Outreach",
+  "evidence_urls": [
+    "https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/authentication",
+    "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-mcp",
+    "https://github.com/Snowflake-Labs/mcp"
+  ],
+  "confidence": 0.9,
+  "verification_status": "Hand-Checked",
+  "slug": "snowflake",
+  "primary_docs_url": "https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/authentication",
+  "rate_limit_note": "Rate limits depend on warehouse sizing and account tier.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

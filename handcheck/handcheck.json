@@ -12,8 +12,8 @@
     "None / Not Applicable"
   ],
   "access_rubric": "Self-Serve only when a new developer can obtain credentials usable in production without manual approval, partnership, business verification, or already being a paying customer. A sandbox or trial alone is not production Self-Serve; otherwise use Gated.",
-  "selection": "Twenty-five reviewer-priority, broadly adopted apps across all catalog categories; the latest fifteen exclude both the prior ten hand-checks and the fifteen cloud-browser checks.",
-  "method": "Manual review of first-party API, authentication, production-access, and MCP documentation. Community MCP ownership is labeled only when no vendor-owned server was found.",
+  "selection": "Forty-five reviewer-priority apps across every catalog category; each new batch excludes all prior human and cloud-browser verification sets.",
+  "method": "Manual review of first-party API, authentication, production-access, pricing, and MCP documentation. Community MCP ownership is labeled only when no vendor-owned server was found.",
   "generated": "2026-07-11",
   "rows": [
     {
@@ -881,6 +881,752 @@
           "https://developers.fathom.ai/mcp-docs"
         ],
         "notes": "Fathom explicitly documents API-key, bearer-token, and OAuth 2.0 SDK authentication. API keys are generated in settings, and Fathom hosts the official MCP server."
+      },
+      "filled": true
+    },
+    {
+      "slug": "zoho-crm",
+      "app": "Zoho CRM",
+      "category": "CRM",
+      "primary_docs_url": "https://www.zoho.com/crm/developer/docs/api/v8/auth-request.html",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2",
+          "API Key"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://www.zoho.com/crm/developer/docs/api/v8/auth-request.html",
+          "https://www.zoho.com/crm/developer/docs/api/v8/api-limits.html",
+          "https://www.zoho.com/crm/developer/docs/mcp/overview.html"
+        ],
+        "notes": "Zoho CRM V8 uses OAuth 2.0 access tokens; client IDs are OAuth client credentials, not an independent API-key auth scheme. The Free edition has production API credits, and Zoho publishes its MCP servers."
+      },
+      "filled": true
+    },
+    {
+      "slug": "close",
+      "app": "Close",
+      "category": "CRM",
+      "primary_docs_url": "https://developer.close.com/api/overview/api-key-authentication",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "API Key",
+          "OAuth2"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "API Key",
+          "Basic Auth",
+          "OAuth2"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://developer.close.com/api/overview/api-key-authentication",
+          "https://developer.close.com/api/overview/oauth-authentication",
+          "https://developer.close.com/mcp",
+          "https://close.com/pricing"
+        ],
+        "notes": "Close REST supports API keys over HTTP Basic and OAuth 2.0. Production accounts are paid after the temporary trial, and Close hosts the official MCP endpoint."
+      },
+      "filled": true,
+      "correction": {
+        "access_note": "Close provides a temporary trial; continued production API and MCP use requires a paid Close subscription.",
+        "buildability": "Moderate",
+        "recommended_next_action": "Partner-Gated",
+        "main_blocker": "Production credentials require an existing paid customer account."
+      }
+    },
+    {
+      "slug": "copper",
+      "app": "Copper",
+      "category": "CRM",
+      "primary_docs_url": "https://developer.copper.com/introduction/oauth/index.html",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2",
+          "API Key"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Community",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.9
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2",
+          "API Key"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Community",
+        "evidence_urls": [
+          "https://developer.copper.com/introduction/oauth/index.html",
+          "https://developer.copper.com/introduction/requests.html",
+          "https://www.copper.com/pricing",
+          "https://www.synchub.io/connectors/copper/knowledge-base/mcp"
+        ],
+        "notes": "Copper documents OAuth and X-PW-AccessToken API-key authentication. The account becomes paid after its trial, so production credentials require a customer subscription. The identified MCP is third-party."
+      },
+      "filled": true,
+      "correction": {
+        "access_note": "Copper provides a temporary trial; continued production API use requires a paid Copper subscription.",
+        "buildability": "Moderate",
+        "recommended_next_action": "Partner-Gated",
+        "main_blocker": "Production credentials require an existing paid customer account."
+      }
+    },
+    {
+      "slug": "dealcloud",
+      "app": "DealCloud",
+      "category": "CRM",
+      "primary_docs_url": "https://api.docs.dealcloud.com/docs/token",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2",
+          "API Key"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Partner-Gated",
+        "confidence": 0.8
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2",
+          "API Key"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://api.docs.dealcloud.com/docs/token",
+          "https://api.docs.dealcloud.com/docs/apikeys",
+          "https://api.docs.dealcloud.com/releases"
+        ],
+        "notes": "DealCloud REST supports authorization tokens and API keys inside an existing licensed environment. Production access is customer-gated, and DealCloud now documents its own MCP server."
+      },
+      "filled": true
+    },
+    {
+      "slug": "help-scout",
+      "app": "Help Scout",
+      "category": "Support",
+      "primary_docs_url": "https://developer.helpscout.com/mailbox-api/overview/authentication/",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2",
+          "API Key"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Community",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2",
+          "API Key",
+          "Basic Auth"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Community",
+        "evidence_urls": [
+          "https://developer.helpscout.com/mailbox-api/overview/authentication/",
+          "https://developer.helpscout.com/docs-api/",
+          "https://docs.helpscout.com/article/596-billing-and-plans-guide",
+          "https://mcpengage.com/helpscout"
+        ],
+        "notes": "Help Scout Inbox API uses OAuth 2.0 while its Docs API uses an API key over HTTP Basic. Production access requires a paid account after the trial. The identified MCP is community-owned."
+      },
+      "filled": true,
+      "correction": {
+        "access_note": "Help Scout provides a temporary trial; continued production API use requires an active paid Help Scout account.",
+        "buildability": "Moderate",
+        "recommended_next_action": "Partner-Gated",
+        "main_blocker": "Production credentials require an existing paid customer account."
+      }
+    },
+    {
+      "slug": "gorgias",
+      "app": "Gorgias",
+      "category": "Support",
+      "primary_docs_url": "https://developers.gorgias.com/reference/authentication",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "Basic Auth",
+          "API Key",
+          "OAuth2"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "Basic Auth",
+          "API Key",
+          "OAuth2"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://developers.gorgias.com/reference/authentication",
+          "https://developers.gorgias.com/docs/access-tokens-api-keys",
+          "https://www.gorgias.com/pricing/choose-your-plan",
+          "https://docs.gorgias.com/en-US/connect-your-ai-assistant-to-the-gorgias-mcp-6310546"
+        ],
+        "notes": "Gorgias private apps use API keys over Basic Auth and public apps use OAuth 2.0. Only a short trial is free, so production requires a paid plan. Gorgias documents its MCP integration."
+      },
+      "filled": true,
+      "correction": {
+        "access_note": "Gorgias provides a seven-day trial; continued production API and MCP use requires a paid plan.",
+        "buildability": "Moderate",
+        "recommended_next_action": "Partner-Gated",
+        "main_blocker": "Production credentials require an existing paid customer account."
+      }
+    },
+    {
+      "slug": "plain",
+      "app": "Plain",
+      "category": "Support",
+      "primary_docs_url": "https://help.plain.com/article/api-quickstart",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "GraphQL",
+        "auth_methods": [
+          "API Key",
+          "OAuth2"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.9
+      },
+      "truth": {
+        "api_type": "GraphQL",
+        "auth_methods": [
+          "API Key",
+          "OAuth2"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://help.plain.com/article/api-quickstart",
+          "https://help.plain.com/article/mcp-server",
+          "https://www.plain.com/pricing"
+        ],
+        "notes": "Plain GraphQL uses workspace API keys and the official MCP uses OAuth. The seven-day trial is temporary and all production plans are paid."
+      },
+      "filled": true,
+      "correction": {
+        "access_note": "Plain provides a seven-day trial; production API and MCP use requires a paid Foundation, Horizon, or Frontier workspace.",
+        "buildability": "Moderate",
+        "recommended_next_action": "Partner-Gated",
+        "main_blocker": "Production credentials require an existing paid customer account."
+      }
+    },
+    {
+      "slug": "aircall",
+      "app": "Aircall",
+      "category": "Comms",
+      "primary_docs_url": "https://developer.aircall.io/tutorials/basic-authentication/",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "Basic Auth",
+          "OAuth2"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Community",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "Basic Auth",
+          "OAuth2"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Community",
+        "evidence_urls": [
+          "https://developer.aircall.io/tutorials/basic-authentication/",
+          "https://developer.aircall.io/api-references/",
+          "https://aircall.io/pricing/",
+          "https://lobehub.com/mcp/themobilefirstco-aircall-mcp-server"
+        ],
+        "notes": "Aircall REST supports Basic Auth for customer credentials and OAuth for partner apps. API access is attached to a paid Aircall plan, so production is customer-gated. The identified MCP is community-owned."
+      },
+      "filled": true,
+      "correction": {
+        "access_note": "Aircall API access is bundled with paid Aircall plans and therefore requires an existing customer account.",
+        "buildability": "Moderate",
+        "recommended_next_action": "Partner-Gated",
+        "main_blocker": "Production credentials require an existing paid customer account."
+      }
+    },
+    {
+      "slug": "vonage",
+      "app": "Vonage",
+      "category": "Comms",
+      "primary_docs_url": "https://developer.vonage.com/en/verify/concepts/authentication",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "Basic Auth",
+          "API Key",
+          "Bearer Token",
+          "OAuth2"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "Basic Auth",
+          "API Key",
+          "Bearer Token",
+          "OAuth2"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://developer.vonage.com/en/verify/concepts/authentication",
+          "https://developer.vonage.com/en/getting-started/overview",
+          "https://developer.vonage.com/en/mcp-server/overview"
+        ],
+        "notes": "Vonage APIs span API-key/secret Basic auth, JWT bearer credentials, and OAuth-based network APIs. Credentials are issued from the self-serve developer dashboard, and Vonage publishes official MCP servers."
+      },
+      "filled": true
+    },
+    {
+      "slug": "gohighlevel",
+      "app": "GoHighLevel",
+      "category": "Ads/Marketing",
+      "primary_docs_url": "https://marketplace.gohighlevel.com/docs/Authorization/authorization_doc/",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2",
+          "API Key",
+          "Basic Auth"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.9
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2",
+          "Bearer Token"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://marketplace.gohighlevel.com/docs/Authorization/authorization_doc/",
+          "https://marketplace.gohighlevel.com/docs/",
+          "https://www.gohighlevel.com/pricing",
+          "https://marketplace.gohighlevel.com/docs/other/mcp/index.html"
+        ],
+        "notes": "HighLevel platform APIs use OAuth 2.0 or a private integration token sent as Bearer. API access starts on paid agency plans after the trial. HighLevel hosts the official MCP endpoint."
+      },
+      "filled": true,
+      "correction": {
+        "access_note": "HighLevel API access is available on paid agency plans after the temporary trial.",
+        "buildability": "Moderate",
+        "recommended_next_action": "Partner-Gated",
+        "main_blocker": "Production credentials require an existing paid customer account."
+      }
+    },
+    {
+      "slug": "pinterest",
+      "app": "Pinterest",
+      "category": "Ads/Marketing",
+      "primary_docs_url": "https://developers.pinterest.com/docs/getting-started/set-up-authentication-and-authorization/",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Community",
+        "recommended_next_action": "Needs Outreach",
+        "confidence": 0.5
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Community",
+        "evidence_urls": [
+          "https://developers.pinterest.com/docs/getting-started/set-up-authentication-and-authorization/",
+          "https://developers.pinterest.com/docs/key-concepts/access-tiers/",
+          "https://github.com/clugtu/pinterest-mcp"
+        ],
+        "notes": "Pinterest API uses OAuth 2.0. Trial access is development-only and Standard production access requires a reviewed upgrade with a video demonstration. The identified MCP is community-owned."
+      },
+      "filled": true
+    },
+    {
+      "slug": "sendgrid",
+      "app": "SendGrid",
+      "category": "Ads/Marketing",
+      "primary_docs_url": "https://www.twilio.com/docs/sendgrid/api-reference/how-to-use-the-sendgrid-v3-api/authentication",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "API Key",
+          "Bearer Token",
+          "Basic Auth"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Community",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "API Key",
+          "Bearer Token",
+          "Basic Auth"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Community",
+        "evidence_urls": [
+          "https://www.twilio.com/docs/sendgrid/api-reference/how-to-use-the-sendgrid-v3-api/authentication",
+          "https://www.twilio.com/docs/sendgrid/for-developers/sending-email/authentication",
+          "https://support.sendgrid.com/hc/en-us/articles/35270136965403-Twilio-SendGrid-Trial-Account-Plan",
+          "https://github.com/Garoth/sendgrid-mcp"
+        ],
+        "notes": "SendGrid uses API keys through Bearer or supported Basic authentication. New free access is a time-limited trial, so continuing production use requires a paid plan. The identified MCP is community-owned."
+      },
+      "filled": true,
+      "correction": {
+        "access_note": "New SendGrid accounts receive a time-limited trial; continuing production email API use requires a paid plan.",
+        "buildability": "Moderate",
+        "recommended_next_action": "Partner-Gated",
+        "main_blocker": "Production credentials require an existing paid customer account."
+      }
+    },
+    {
+      "slug": "magento",
+      "app": "Magento (Adobe Commerce)",
+      "category": "Commerce",
+      "primary_docs_url": "https://developer.adobe.com/commerce/webapi/get-started/authentication/",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "Bearer Token",
+          "OAuth2"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Community",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.9
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "Bearer Token",
+          "OAuth2",
+          "Other Token"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Community",
+        "evidence_urls": [
+          "https://developer.adobe.com/commerce/webapi/get-started/authentication/",
+          "https://developer.adobe.com/commerce/webapi/get-started/authentication/gs-authentication-oauth",
+          "https://developer.adobe.com/commerce/webapi/rest/authentication/user",
+          "https://lobehub.com/mcp/codexpect-adobe-commerce-mcp"
+        ],
+        "notes": "Magento Open Source and Adobe Commerce support bearer tokens and OAuth-family flows. PaaS integrations use OAuth 1.0a, represented as Other Token because the locked vocabulary has no OAuth1 label; Cloud Service supports OAuth2. Magento Open Source is self-hostable, and the identified MCP is community-owned."
+      },
+      "filled": true
+    },
+    {
+      "slug": "squarespace",
+      "app": "Squarespace",
+      "category": "Commerce",
+      "primary_docs_url": "https://developers.squarespace.com/oauth",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2",
+          "API Key"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Community",
+        "recommended_next_action": "Needs Outreach",
+        "confidence": 0.9
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2",
+          "API Key"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Community",
+        "evidence_urls": [
+          "https://developers.squarespace.com/oauth",
+          "https://developers.squarespace.com/commerce-apis/authentication-and-permissions",
+          "https://github.com/BusyBee3333/squarespace-mcp-2026-complete"
+        ],
+        "notes": "Squarespace Commerce APIs support OAuth and API keys. API keys require an eligible paid Commerce plan and OAuth clients require review. The identified MCP is community-owned."
+      },
+      "filled": true
+    },
+    {
+      "slug": "ahrefs",
+      "app": "Ahrefs",
+      "category": "Research/Scraping",
+      "primary_docs_url": "https://docs.ahrefs.com/en/api/docs/introduction",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "API Key",
+          "OAuth2"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Needs Outreach",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "API Key",
+          "OAuth2"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://docs.ahrefs.com/en/api/docs/introduction",
+          "https://docs.ahrefs.com/ahrefs-connect/docs/oauth-guide",
+          "https://docs.ahrefs.com/en/mcp/docs/introduction"
+        ],
+        "notes": "Ahrefs supports API credentials and OAuth through Ahrefs Connect. Production API and MCP use require a paid Ahrefs subscription, and Ahrefs publishes the MCP server."
+      },
+      "filled": true
+    },
+    {
+      "slug": "apify",
+      "app": "Apify",
+      "category": "Research/Scraping",
+      "primary_docs_url": "https://docs.apify.com/api/v2/getting-started",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "API Key"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "API Key"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://docs.apify.com/api/v2/getting-started",
+          "https://docs.apify.com/platform/integrations/mcp"
+        ],
+        "notes": "Apify REST authenticates with a self-created API token, canonicalized as API Key. A free account can run production actors within its limits, and Apify publishes the official MCP server."
+      },
+      "filled": true
+    },
+    {
+      "slug": "netlify",
+      "app": "Netlify",
+      "category": "DevInfra",
+      "primary_docs_url": "https://docs.netlify.com/api",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "Personal Access Token",
+          "OAuth2"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "Personal Access Token",
+          "OAuth2"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://docs.netlify.com/api",
+          "https://docs.netlify.com/start/glossary/",
+          "https://developers.netlify.com/sdk/oauth/get-started/",
+          "https://github.com/netlify/netlify-mcp"
+        ],
+        "notes": "Netlify REST supports personal access tokens and OAuth integrations. Tokens are self-created on free accounts, and the netlify-owned repository provides the official MCP server."
+      },
+      "filled": true
+    },
+    {
+      "slug": "snowflake",
+      "app": "Snowflake",
+      "category": "DevInfra",
+      "primary_docs_url": "https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/authentication",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2",
+          "Personal Access Token",
+          "Other Token"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Needs Outreach",
+        "confidence": 0.9
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2",
+          "Personal Access Token",
+          "Service Account"
+        ],
+        "access_model": "Gated",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://docs.snowflake.com/en/developer-guide/snowflake-rest-api/authentication",
+          "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-mcp",
+          "https://github.com/Snowflake-Labs/mcp"
+        ],
+        "notes": "Snowflake REST supports OAuth, programmatic access tokens, and key-pair JWT authentication; the latter is canonicalized as Service Account rather than Other Token. Production requires a paid Snowflake account, and Snowflake publishes official MCP tooling."
+      },
+      "filled": true
+    },
+    {
+      "slug": "sentry",
+      "app": "Sentry",
+      "category": "DevInfra",
+      "primary_docs_url": "https://docs.sentry.io/api/auth/",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "Personal Access Token",
+          "OAuth2",
+          "Other Token"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "Personal Access Token",
+          "OAuth2",
+          "Other Token"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://docs.sentry.io/api/auth/",
+          "https://github.com/getsentry/sentry-mcp"
+        ],
+        "notes": "Sentry supports personal tokens, OAuth 2.0, and a distinct static internal-integration authentication token represented as Other Token. Free production projects are available, and the getsentry organization owns the official MCP server."
+      },
+      "filled": true
+    },
+    {
+      "slug": "coda",
+      "app": "Coda",
+      "category": "Productivity/PM",
+      "primary_docs_url": "https://coda.io/developers/apis/v1",
+      "selection_reason": "next high-usage unchecked catalog batch",
+      "agent": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2",
+          "Bearer Token"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "recommended_next_action": "Build Now",
+        "confidence": 0.95
+      },
+      "truth": {
+        "api_type": "REST",
+        "auth_methods": [
+          "OAuth2",
+          "Personal Access Token"
+        ],
+        "access_model": "Self-Serve",
+        "existing_mcp": "Official",
+        "evidence_urls": [
+          "https://coda.io/developers/apis/v1",
+          "https://help.coda.io/hc/en-us/articles/44722769665549-Security-recommendations-for-the-Coda-MCP",
+          "https://help.coda.io/hc/en-us/articles/44722661982989-Connect-to-the-Coda-MCP"
+        ],
+        "notes": "Coda REST and MCP use user-generated personal access tokens, while MCP also supports OAuth2 with PKCE. Coda explicitly makes the API available to free workspaces and publishes the official MCP endpoint."
       },
       "filled": true
     }

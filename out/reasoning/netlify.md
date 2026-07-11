@@ -61,3 +61,43 @@ The fetched documentation confirms a REST API that supports Personal Access Toke
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Netlify",
+  "category": "DevInfra",
+  "one_liner": "Netlify provides a comprehensive REST API and an official MCP server for managing sites, deploys, and platform...",
+  "auth_methods": [
+    "Personal Access Token",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can sign up for a free account and generate personal access tokens or configure OAuth applications without manual approval."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "No",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://docs.netlify.com/api",
+    "https://docs.netlify.com/start/glossary/",
+    "https://developers.netlify.com/sdk/oauth/get-started/",
+    "https://github.com/netlify/netlify-mcp"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "netlify",
+  "primary_docs_url": "https://docs.netlify.com/api",
+  "rate_limit_note": "Rate limiting is enforced on the API; specific limits are detailed in the API documentation's Rate limiting section.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

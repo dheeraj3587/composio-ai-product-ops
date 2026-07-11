@@ -62,3 +62,44 @@ SendGrid offers a comprehensive, self-serve REST API authenticated via API keys 
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "SendGrid",
+  "category": "Ads/Marketing",
+  "one_liner": "SendGrid provides a cloud-based email delivery service with a robust REST API for transactional and marketing emails.",
+  "auth_methods": [
+    "API Key",
+    "Bearer Token",
+    "Basic Auth"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "New SendGrid accounts receive a time-limited trial; continuing production email API use requires a paid plan."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Community",
+  "composio_toolkit": "Yes",
+  "buildability": "Moderate",
+  "main_blocker": "Production credentials require an existing paid customer account.",
+  "recommended_next_action": "Partner-Gated",
+  "evidence_urls": [
+    "https://www.twilio.com/docs/sendgrid/api-reference/how-to-use-the-sendgrid-v3-api/authentication",
+    "https://www.twilio.com/docs/sendgrid/for-developers/sending-email/authentication",
+    "https://support.sendgrid.com/hc/en-us/articles/35270136965403-Twilio-SendGrid-Trial-Account-Plan",
+    "https://github.com/Garoth/sendgrid-mcp"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "sendgrid",
+  "primary_docs_url": "https://www.twilio.com/docs/sendgrid/api-reference/how-to-use-the-sendgrid-v3-api/authentication",
+  "rate_limit_note": "Rate limits apply to the API and are detailed in the 'Rate Limits' section of the v3 API documentation.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

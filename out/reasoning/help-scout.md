@@ -61,3 +61,44 @@ Help Scout offers well-documented REST APIs (Inbox API and Docs API) using OAuth
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Help Scout",
+  "category": "Support",
+  "one_liner": "Help Scout provides a comprehensive REST API for managing support conversations, customers, and knowledge base docs.",
+  "auth_methods": [
+    "OAuth2",
+    "API Key",
+    "Basic Auth"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Help Scout provides a temporary trial; continued production API use requires an active paid Help Scout account."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Community",
+  "composio_toolkit": "Yes",
+  "buildability": "Moderate",
+  "main_blocker": "Production credentials require an existing paid customer account.",
+  "recommended_next_action": "Partner-Gated",
+  "evidence_urls": [
+    "https://developer.helpscout.com/mailbox-api/overview/authentication/",
+    "https://developer.helpscout.com/docs-api/",
+    "https://docs.helpscout.com/article/596-billing-and-plans-guide",
+    "https://mcpengage.com/helpscout"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "help-scout",
+  "primary_docs_url": "https://developer.helpscout.com/mailbox-api/overview/authentication/",
+  "rate_limit_note": "Rate limiting is enforced and documented in the API overview.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

@@ -64,7 +64,7 @@ Telegram offers a free and open Bot API that uses a Bot Token for authentication
 
 <!-- final-state:start -->
 ## Final pipeline state
-_Updated 2026-07-11 by current handcheck fold; this supersedes earlier key decisions._
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
 
 ```json
 {

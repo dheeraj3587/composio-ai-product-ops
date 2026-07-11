@@ -56,3 +56,40 @@ The documentation clearly outlines a REST API and an official MCP server. Authen
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Apify",
+  "category": "Research/Scraping",
+  "one_liner": "Apify provides a platform for web scraping and automation, offering a REST API and an official MCP server to run Actors.",
+  "auth_methods": [
+    "API Key"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can sign up for an Apify account and immediately generate an API token from the console."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://docs.apify.com/api/v2/getting-started",
+    "https://docs.apify.com/platform/integrations/mcp"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "apify",
+  "primary_docs_url": "https://docs.apify.com/api/v2/getting-started",
+  "rate_limit_note": "Rate limits are not explicitly detailed in the provided snippets, but standard API usage limits apply based on the pricing plan.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

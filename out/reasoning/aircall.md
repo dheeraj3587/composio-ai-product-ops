@@ -61,3 +61,43 @@ The documentation clearly outlines Basic Auth for single-tenant use (self-serve)
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Aircall",
+  "category": "Comms",
+  "one_liner": "Aircall provides a comprehensive REST API for managing calls, contacts, and users, supported by community MCP servers.",
+  "auth_methods": [
+    "Basic Auth",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Aircall API access is bundled with paid Aircall plans and therefore requires an existing customer account."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Community",
+  "composio_toolkit": "No",
+  "buildability": "Moderate",
+  "main_blocker": "Production credentials require an existing paid customer account.",
+  "recommended_next_action": "Partner-Gated",
+  "evidence_urls": [
+    "https://developer.aircall.io/tutorials/basic-authentication/",
+    "https://developer.aircall.io/api-references/",
+    "https://aircall.io/pricing/",
+    "https://lobehub.com/mcp/themobilefirstco-aircall-mcp-server"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "aircall",
+  "primary_docs_url": "https://developer.aircall.io/tutorials/basic-authentication/",
+  "rate_limit_note": "Rate limiting is listed in the API references menu, though specific limits are not detailed in the provided text.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

@@ -3,19 +3,19 @@
     "n": 100,
     "buildability": {
       "Hard": 18,
-      "Easy": 71,
-      "Moderate": 9,
+      "Easy": 63,
+      "Moderate": 17,
       "Blocked": 2
     },
     "recommended_next_action": {
-      "Partner-Gated": 8,
-      "Build Now": 71,
+      "Partner-Gated": 16,
+      "Build Now": 63,
       "Needs Outreach": 19,
       "Blocked": 2
     },
     "access_model": {
-      "Gated": 27,
-      "Self-Serve": 73
+      "Gated": 35,
+      "Self-Serve": 65
     },
     "api_type": {
       "REST": 94,
@@ -38,23 +38,23 @@
       ],
       [
         "API Key",
-        48
+        46
+      ],
+      [
+        "Personal Access Token",
+        19
       ],
       [
         "Bearer Token",
         18
       ],
       [
-        "Personal Access Token",
-        18
-      ],
-      [
         "Basic Auth",
-        13
+        14
       ],
       [
         "Service Account",
-        5
+        6
       ],
       [
         "Other Token",
@@ -67,20 +67,20 @@
     ],
     "access_by_category": {
       "CRM": {
-        "Gated": 2,
-        "Self-Serve": 8
-      },
-      "Support": {
         "Gated": 4,
         "Self-Serve": 6
       },
+      "Support": {
+        "Gated": 7,
+        "Self-Serve": 3
+      },
       "Comms": {
-        "Self-Serve": 8,
-        "Gated": 2
+        "Self-Serve": 7,
+        "Gated": 3
       },
       "Ads/Marketing": {
-        "Gated": 5,
-        "Self-Serve": 5
+        "Gated": 7,
+        "Self-Serve": 3
       },
       "Commerce": {
         "Self-Serve": 6,
@@ -109,11 +109,15 @@
     "top_blockers": [
       [
         "None",
-        46
+        42
       ],
       [
         "None.",
-        10
+        9
+      ],
+      [
+        "Production credentials require an existing paid customer account.",
+        8
       ],
       [
         "Production API access requires an existing customer on a supported paid edition or an API access add-on.",
@@ -126,22 +130,18 @@
       [
         "Production access requires an active paid Zendesk account.",
         1
-      ],
-      [
-        "The official MCP server is currently only supported in US hosted workspaces.",
-        1
       ]
     ],
-    "build_now": 71,
-    "partner_gated": 8,
+    "build_now": 63,
+    "partner_gated": 16,
     "avg_confidence": 0.912
   },
   "n_results": 100,
   "unresolved_failures": [],
   "headline_accuracy": {
     "hand_checked_accuracy": {
-      "value": 0.92,
-      "n": 25,
+      "value": 0.917,
+      "n": 45,
       "label": "Current hand-checked accuracy (ground truth)"
     },
     "automated_agreement": {
@@ -163,17 +163,61 @@
     "metric_scope": "Current results at fold time",
     "method": "Human comparison against official docs for api_type, exact canonical auth set, production access, and MCP ownership. No historical agent values are substituted.",
     "access_rubric": "Self-Serve only when a new developer can obtain credentials usable in production without manual approval, partnership, business verification, or already being a paying customer. A sandbox or trial alone is not production Self-Serve; otherwise use Gated.",
-    "selection": "Twenty-five reviewer-priority, broadly adopted apps across all catalog categories; the latest fifteen exclude both the prior ten hand-checks and the fifteen cloud-browser checks.",
-    "n": 25,
+    "selection": "Forty-five reviewer-priority apps across every catalog category; each new batch excludes all prior human and cloud-browser verification sets.",
+    "n": 45,
     "api_type_accuracy": 1.0,
-    "mcp_accuracy": 0.96,
-    "auth_accuracy": 0.8,
-    "access_accuracy": 0.92,
-    "accuracy": 0.92,
+    "mcp_accuracy": 1.0,
+    "auth_accuracy": 0.844,
+    "access_accuracy": 0.822,
+    "accuracy": 0.917,
     "misses": [
       {
-        "slug": "attio",
-        "app": "Attio",
+        "slug": "zoho-crm",
+        "app": "Zoho CRM",
+        "field": "auth_methods",
+        "current": [
+          "OAuth2",
+          "API Key"
+        ],
+        "truth": [
+          "OAuth2"
+        ],
+        "notes": "Zoho CRM V8 uses OAuth 2.0 access tokens; client IDs are OAuth client credentials, not an independent API-key auth scheme. The Free edition has production API credits, and Zoho publishes its MCP servers."
+      },
+      {
+        "slug": "close",
+        "app": "Close",
+        "field": "auth_methods",
+        "current": [
+          "API Key",
+          "OAuth2"
+        ],
+        "truth": [
+          "API Key",
+          "Basic Auth",
+          "OAuth2"
+        ],
+        "notes": "Close REST supports API keys over HTTP Basic and OAuth 2.0. Production accounts are paid after the temporary trial, and Close hosts the official MCP endpoint."
+      },
+      {
+        "slug": "close",
+        "app": "Close",
+        "field": "access_model",
+        "current": "Self-Serve",
+        "truth": "Gated",
+        "notes": "Close REST supports API keys over HTTP Basic and OAuth 2.0. Production accounts are paid after the temporary trial, and Close hosts the official MCP endpoint."
+      },
+      {
+        "slug": "copper",
+        "app": "Copper",
+        "field": "access_model",
+        "current": "Self-Serve",
+        "truth": "Gated",
+        "notes": "Copper documents OAuth and X-PW-AccessToken API-key authentication. The account becomes paid after its trial, so production credentials require a customer subscription. The identified MCP is third-party."
+      },
+      {
+        "slug": "help-scout",
+        "app": "Help Scout",
         "field": "auth_methods",
         "current": [
           "OAuth2",
@@ -184,84 +228,115 @@
           "API Key",
           "Basic Auth"
         ],
-        "notes": "Attio documents OAuth 2.0, workspace API keys, and optional HTTP Basic authentication. Production workspace keys are self-serve, and Attio hosts the MCP server."
+        "notes": "Help Scout Inbox API uses OAuth 2.0 while its Docs API uses an API key over HTTP Basic. Production access requires a paid account after the trial. The identified MCP is community-owned."
       },
       {
-        "slug": "freshdesk",
-        "app": "Freshdesk",
-        "field": "auth_methods",
-        "current": [
-          "API Key"
-        ],
-        "truth": [
-          "API Key",
-          "Basic Auth"
-        ],
-        "notes": "Freshdesk authenticates an API key through HTTP Basic. The free plan has zero API calls and the trial is temporary, so production API access requires a paid plan. Freshdesk documents its vendor MCP integration."
-      },
-      {
-        "slug": "freshdesk",
-        "app": "Freshdesk",
+        "slug": "help-scout",
+        "app": "Help Scout",
         "field": "access_model",
         "current": "Self-Serve",
         "truth": "Gated",
-        "notes": "Freshdesk authenticates an API key through HTTP Basic. The free plan has zero API calls and the trial is temporary, so production API access requires a paid plan. Freshdesk documents its vendor MCP integration."
+        "notes": "Help Scout Inbox API uses OAuth 2.0 while its Docs API uses an API key over HTTP Basic. Production access requires a paid account after the trial. The identified MCP is community-owned."
       },
       {
-        "slug": "front",
-        "app": "Front",
+        "slug": "gorgias",
+        "app": "Gorgias",
         "field": "access_model",
         "current": "Self-Serve",
         "truth": "Gated",
-        "notes": "Front supports bearer API tokens and OAuth. API quotas are attached to paid Starter, Professional, or Enterprise plans, so production access requires a paying customer. Front hosts an official MCP server."
+        "notes": "Gorgias private apps use API keys over Basic Auth and public apps use OAuth 2.0. Only a short trial is free, so production requires a paid plan. Gorgias documents its MCP integration."
       },
       {
-        "slug": "telegram",
-        "app": "Telegram",
-        "field": "auth_methods",
-        "current": [
-          "Bot Token",
-          "Other Token"
-        ],
-        "truth": [
-          "Bot Token"
-        ],
-        "notes": "The HTTP Bot API uses the single bot token issued self-serve by BotFather. API ID and hash belong to the separate MTProto surface and are not another REST Bot API auth method. The cited MCP is community-owned."
+        "slug": "plain",
+        "app": "Plain",
+        "field": "access_model",
+        "current": "Self-Serve",
+        "truth": "Gated",
+        "notes": "Plain GraphQL uses workspace API keys and the official MCP uses OAuth. The seven-day trial is temporary and all production plans are paid."
       },
       {
-        "slug": "woocommerce",
-        "app": "WooCommerce",
+        "slug": "aircall",
+        "app": "Aircall",
+        "field": "access_model",
+        "current": "Self-Serve",
+        "truth": "Gated",
+        "notes": "Aircall REST supports Basic Auth for customer credentials and OAuth for partner apps. API access is attached to a paid Aircall plan, so production is customer-gated. The identified MCP is community-owned."
+      },
+      {
+        "slug": "gohighlevel",
+        "app": "GoHighLevel",
         "field": "auth_methods",
         "current": [
-          "API Key"
-        ],
-        "truth": [
+          "OAuth2",
           "API Key",
           "Basic Auth"
         ],
-        "notes": "WooCommerce generates consumer API keys and sends them with HTTP Basic over HTTPS. Store owners can create keys without vendor approval, and WooCommerce includes native MCP support in developer preview."
+        "truth": [
+          "OAuth2",
+          "Bearer Token"
+        ],
+        "notes": "HighLevel platform APIs use OAuth 2.0 or a private integration token sent as Bearer. API access starts on paid agency plans after the trial. HighLevel hosts the official MCP endpoint."
       },
       {
-        "slug": "amazon-selling-partner",
-        "app": "Amazon Selling Partner",
-        "field": "existing_mcp",
-        "current": "Official",
-        "truth": "None",
-        "notes": "SP-API is REST and uses Login with Amazon OAuth 2.0 tokens. Production requires a professional seller/vendor relationship, registration, roles, and approval. No Amazon-owned SP-API MCP is documented; the previously cited AWS Partner Central MCP serves a different product."
+        "slug": "gohighlevel",
+        "app": "GoHighLevel",
+        "field": "access_model",
+        "current": "Self-Serve",
+        "truth": "Gated",
+        "notes": "HighLevel platform APIs use OAuth 2.0 or a private integration token sent as Bearer. API access starts on paid agency plans after the trial. HighLevel hosts the official MCP endpoint."
       },
       {
-        "slug": "supabase",
-        "app": "Supabase",
+        "slug": "sendgrid",
+        "app": "SendGrid",
+        "field": "access_model",
+        "current": "Self-Serve",
+        "truth": "Gated",
+        "notes": "SendGrid uses API keys through Bearer or supported Basic authentication. New free access is a time-limited trial, so continuing production use requires a paid plan. The identified MCP is community-owned."
+      },
+      {
+        "slug": "magento",
+        "app": "Magento (Adobe Commerce)",
         "field": "auth_methods",
         "current": [
           "Bearer Token",
           "OAuth2"
         ],
         "truth": [
-          "Personal Access Token",
-          "OAuth2"
+          "Bearer Token",
+          "OAuth2",
+          "Other Token"
         ],
-        "notes": "The Management API documents personal access tokens and OAuth 2.0. Both are available without manual approval, and Supabase hosts the official MCP server."
+        "notes": "Magento Open Source and Adobe Commerce support bearer tokens and OAuth-family flows. PaaS integrations use OAuth 1.0a, represented as Other Token because the locked vocabulary has no OAuth1 label; Cloud Service supports OAuth2. Magento Open Source is self-hostable, and the identified MCP is community-owned."
+      },
+      {
+        "slug": "snowflake",
+        "app": "Snowflake",
+        "field": "auth_methods",
+        "current": [
+          "OAuth2",
+          "Personal Access Token",
+          "Other Token"
+        ],
+        "truth": [
+          "OAuth2",
+          "Personal Access Token",
+          "Service Account"
+        ],
+        "notes": "Snowflake REST supports OAuth, programmatic access tokens, and key-pair JWT authentication; the latter is canonicalized as Service Account rather than Other Token. Production requires a paid Snowflake account, and Snowflake publishes official MCP tooling."
+      },
+      {
+        "slug": "coda",
+        "app": "Coda",
+        "field": "auth_methods",
+        "current": [
+          "OAuth2",
+          "Bearer Token"
+        ],
+        "truth": [
+          "OAuth2",
+          "Personal Access Token"
+        ],
+        "notes": "Coda REST and MCP use user-generated personal access tokens, while MCP also supports OAuth2 with PKCE. Coda explicitly makes the API available to free workspaces and publishes the official MCP endpoint."
       }
     ],
     "checked": [
@@ -350,7 +425,7 @@
         "app": "Attio",
         "api_ok": true,
         "mcp_ok": true,
-        "auth_ok": false,
+        "auth_ok": true,
         "access_ok": true
       },
       {
@@ -358,8 +433,8 @@
         "app": "Freshdesk",
         "api_ok": true,
         "mcp_ok": true,
-        "auth_ok": false,
-        "access_ok": false
+        "auth_ok": true,
+        "access_ok": true
       },
       {
         "slug": "front",
@@ -367,14 +442,14 @@
         "api_ok": true,
         "mcp_ok": true,
         "auth_ok": true,
-        "access_ok": false
+        "access_ok": true
       },
       {
         "slug": "telegram",
         "app": "Telegram",
         "api_ok": true,
         "mcp_ok": true,
-        "auth_ok": false,
+        "auth_ok": true,
         "access_ok": true
       },
       {
@@ -406,14 +481,14 @@
         "app": "WooCommerce",
         "api_ok": true,
         "mcp_ok": true,
-        "auth_ok": false,
+        "auth_ok": true,
         "access_ok": true
       },
       {
         "slug": "amazon-selling-partner",
         "app": "Amazon Selling Partner",
         "api_ok": true,
-        "mcp_ok": false,
+        "mcp_ok": true,
         "auth_ok": true,
         "access_ok": true
       },
@@ -430,7 +505,7 @@
         "app": "Supabase",
         "api_ok": true,
         "mcp_ok": true,
-        "auth_ok": false,
+        "auth_ok": true,
         "access_ok": true
       },
       {
@@ -464,6 +539,166 @@
         "mcp_ok": true,
         "auth_ok": true,
         "access_ok": true
+      },
+      {
+        "slug": "zoho-crm",
+        "app": "Zoho CRM",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "close",
+        "app": "Close",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": false
+      },
+      {
+        "slug": "copper",
+        "app": "Copper",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": false
+      },
+      {
+        "slug": "dealcloud",
+        "app": "DealCloud",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "help-scout",
+        "app": "Help Scout",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": false
+      },
+      {
+        "slug": "gorgias",
+        "app": "Gorgias",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": false
+      },
+      {
+        "slug": "plain",
+        "app": "Plain",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": false
+      },
+      {
+        "slug": "aircall",
+        "app": "Aircall",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": false
+      },
+      {
+        "slug": "vonage",
+        "app": "Vonage",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "gohighlevel",
+        "app": "GoHighLevel",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": false
+      },
+      {
+        "slug": "pinterest",
+        "app": "Pinterest",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "sendgrid",
+        "app": "SendGrid",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": false
+      },
+      {
+        "slug": "magento",
+        "app": "Magento (Adobe Commerce)",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "squarespace",
+        "app": "Squarespace",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "ahrefs",
+        "app": "Ahrefs",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "apify",
+        "app": "Apify",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "netlify",
+        "app": "Netlify",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "snowflake",
+        "app": "Snowflake",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "sentry",
+        "app": "Sentry",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "coda",
+        "app": "Coda",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": true
       }
     ],
     "generated": "2026-07-11",
@@ -471,8 +706,8 @@
   },
   "accuracy_movement": {
     "method": "Field-level accuracy against one hand-verified truth set, comparing the archived first pass to current results. Auth uses exact canonical-set equality.",
-    "n": 25,
-    "first_pass_accuracy": 0.82,
+    "n": 45,
+    "first_pass_accuracy": 0.8,
     "post_verification_accuracy": 1.0,
     "improved_apps": [
       "salesforce",
@@ -489,7 +724,20 @@
       "meta-ads",
       "woocommerce",
       "amazon-selling-partner",
-      "supabase"
+      "supabase",
+      "zoho-crm",
+      "close",
+      "copper",
+      "help-scout",
+      "gorgias",
+      "plain",
+      "aircall",
+      "gohighlevel",
+      "sendgrid",
+      "magento",
+      "snowflake",
+      "sentry",
+      "coda"
     ],
     "regressed_apps": [],
     "per_app": [
@@ -616,6 +864,106 @@
       {
         "slug": "fathom",
         "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "zoho-crm",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "close",
+        "first_pass": "2/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "copper",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "dealcloud",
+        "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "help-scout",
+        "first_pass": "2/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "gorgias",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "plain",
+        "first_pass": "1/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "aircall",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "vonage",
+        "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "gohighlevel",
+        "first_pass": "2/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "pinterest",
+        "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "sendgrid",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "magento",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "squarespace",
+        "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "ahrefs",
+        "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "apify",
+        "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "netlify",
+        "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "snowflake",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "sentry",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "coda",
+        "first_pass": "3/4",
         "current": "4/4"
       }
     ],

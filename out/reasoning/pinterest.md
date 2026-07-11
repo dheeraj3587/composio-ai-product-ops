@@ -60,3 +60,41 @@ First-party documentation snippets lack explicit details on authentication metho
   "last_verified": "2026-07-11"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Pinterest",
+  "category": "Ads/Marketing",
+  "one_liner": "Pinterest provides a REST API for managing pins, boards, ads, and catalogs, with production access requiring a video...",
+  "auth_methods": [
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Trial access is self-serve, but Standard (production) access requires submitting a video demo of the OAuth flow and core actions for manual approval."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Community",
+  "composio_toolkit": "No",
+  "buildability": "Hard",
+  "main_blocker": "Upgrading from Trial to Standard access requires recording and submitting a video demo of the application for vendor approval.",
+  "recommended_next_action": "Needs Outreach",
+  "evidence_urls": [
+    "https://developers.pinterest.com/docs/getting-started/set-up-authentication-and-authorization/",
+    "https://developers.pinterest.com/docs/key-concepts/access-tiers/",
+    "https://github.com/clugtu/pinterest-mcp"
+  ],
+  "confidence": 0.5,
+  "verification_status": "Hand-Checked",
+  "slug": "pinterest",
+  "primary_docs_url": "https://developers.pinterest.com/docs/getting-started/set-up-authentication-and-authorization/",
+  "rate_limit_note": "Trial access restricts certain POST endpoints; Standard access lifts these restrictions upon approval.",
+  "last_verified": "2026-07-11"
+}
+```
+<!-- final-state:end -->

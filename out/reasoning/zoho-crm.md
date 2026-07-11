@@ -61,3 +61,41 @@ Zoho CRM provides extensive REST APIs authenticated via OAuth 2.0 and has recent
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Zoho CRM",
+  "category": "CRM",
+  "one_liner": "Zoho CRM is a comprehensive customer relationship management platform offering REST APIs and official MCP servers...",
+  "auth_methods": [
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can sign up for a free account or developer environment to access the API and MCP servers."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "No",
+  "buildability": "Easy",
+  "main_blocker": "None.",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://www.zoho.com/crm/developer/docs/api/v8/auth-request.html",
+    "https://www.zoho.com/crm/developer/docs/api/v8/api-limits.html",
+    "https://www.zoho.com/crm/developer/docs/mcp/overview.html"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "zoho-crm",
+  "primary_docs_url": "https://www.zoho.com/crm/developer/docs/api/v8/auth-request.html",
+  "rate_limit_note": "OAuth 2.0 access tokens expire after 60 minutes.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

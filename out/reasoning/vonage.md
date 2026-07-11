@@ -63,3 +63,44 @@ The documentation clearly outlines self-serve access to API keys upon account cr
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Vonage",
+  "category": "Comms",
+  "one_liner": "Vonage provides a broad suite of communication APIs for voice, video, messaging, and verification, along with...",
+  "auth_methods": [
+    "Basic Auth",
+    "API Key",
+    "Bearer Token",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can create a Vonage account and immediately access API keys and secrets from the dashboard for production use."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "No",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://developer.vonage.com/en/verify/concepts/authentication",
+    "https://developer.vonage.com/en/getting-started/overview",
+    "https://developer.vonage.com/en/mcp-server/overview"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "vonage",
+  "primary_docs_url": "https://developer.vonage.com/en/verify/concepts/authentication",
+  "rate_limit_note": "No specific rate limit details were found in the provided documentation snippets.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

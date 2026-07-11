@@ -60,3 +60,44 @@ Gorgias provides comprehensive REST API documentation with self-serve API keys v
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current human handcheck correction; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Gorgias",
+  "category": "Support",
+  "one_liner": "Gorgias provides a REST API and an official MCP server for managing e-commerce helpdesk tickets and customer data.",
+  "auth_methods": [
+    "Basic Auth",
+    "API Key",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Gorgias provides a seven-day trial; continued production API and MCP use requires a paid plan."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Moderate",
+  "main_blocker": "Production credentials require an existing paid customer account.",
+  "recommended_next_action": "Partner-Gated",
+  "evidence_urls": [
+    "https://developers.gorgias.com/reference/authentication",
+    "https://developers.gorgias.com/docs/access-tokens-api-keys",
+    "https://www.gorgias.com/pricing/choose-your-plan",
+    "https://docs.gorgias.com/en-US/connect-your-ai-assistant-to-the-gorgias-mcp-6310546"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "gorgias",
+  "primary_docs_url": "https://developers.gorgias.com/reference/authentication",
+  "rate_limit_note": "Not explicitly detailed in the provided snippets.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->
