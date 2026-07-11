@@ -3,19 +3,19 @@
     "n": 100,
     "buildability": {
       "Hard": 18,
-      "Easy": 73,
-      "Moderate": 7,
+      "Easy": 71,
+      "Moderate": 9,
       "Blocked": 2
     },
     "recommended_next_action": {
-      "Partner-Gated": 6,
-      "Build Now": 73,
+      "Partner-Gated": 8,
+      "Build Now": 71,
       "Needs Outreach": 19,
       "Blocked": 2
     },
     "access_model": {
-      "Gated": 25,
-      "Self-Serve": 75
+      "Gated": 27,
+      "Self-Serve": 73
     },
     "api_type": {
       "REST": 94,
@@ -23,8 +23,8 @@
       "None": 2
     },
     "existing_mcp": {
-      "Official": 70,
-      "None": 5,
+      "Official": 69,
+      "None": 6,
       "Community": 25
     },
     "composio_toolkit": {
@@ -42,15 +42,15 @@
       ],
       [
         "Bearer Token",
-        19
+        18
       ],
       [
         "Personal Access Token",
-        17
+        18
       ],
       [
         "Basic Auth",
-        10
+        13
       ],
       [
         "Service Account",
@@ -58,7 +58,7 @@
       ],
       [
         "Other Token",
-        4
+        3
       ],
       [
         "Bot Token",
@@ -71,8 +71,8 @@
         "Self-Serve": 8
       },
       "Support": {
-        "Gated": 2,
-        "Self-Serve": 8
+        "Gated": 4,
+        "Self-Serve": 6
       },
       "Comms": {
         "Self-Serve": 8,
@@ -132,16 +132,16 @@
         1
       ]
     ],
-    "build_now": 73,
-    "partner_gated": 6,
+    "build_now": 71,
+    "partner_gated": 8,
     "avg_confidence": 0.912
   },
   "n_results": 100,
   "unresolved_failures": [],
   "headline_accuracy": {
     "hand_checked_accuracy": {
-      "value": 0.825,
-      "n": 10,
+      "value": 0.92,
+      "n": 25,
       "label": "Current hand-checked accuracy (ground truth)"
     },
     "automated_agreement": {
@@ -163,102 +163,105 @@
     "metric_scope": "Current results at fold time",
     "method": "Human comparison against official docs for api_type, exact canonical auth set, production access, and MCP ownership. No historical agent values are substituted.",
     "access_rubric": "Self-Serve only when a new developer can obtain credentials usable in production without manual approval, partnership, business verification, or already being a paying customer. A sandbox or trial alone is not production Self-Serve; otherwise use Gated.",
-    "selection": "Ten reviewer-priority, broadly adopted apps from the catalog, spanning CRM, developer tools, collaboration, commerce, advertising, and messaging.",
-    "n": 10,
+    "selection": "Twenty-five reviewer-priority, broadly adopted apps across all catalog categories; the latest fifteen exclude both the prior ten hand-checks and the fifteen cloud-browser checks.",
+    "n": 25,
     "api_type_accuracy": 1.0,
-    "mcp_accuracy": 1.0,
-    "auth_accuracy": 0.5,
-    "access_accuracy": 0.8,
-    "accuracy": 0.825,
+    "mcp_accuracy": 0.96,
+    "auth_accuracy": 0.8,
+    "access_accuracy": 0.92,
+    "accuracy": 0.92,
     "misses": [
       {
-        "slug": "salesforce",
-        "app": "Salesforce",
-        "field": "access_model",
-        "current": "Self-Serve",
-        "truth": "Gated",
-        "notes": "Connect REST uses OAuth and the Salesforce DX MCP is vendor-owned. API access is enabled in paid production editions; the free Developer Edition is documented as a development/testing environment before moving changes to production, so the strict production rubric is Gated."
-      },
-      {
-        "slug": "hubspot",
-        "app": "HubSpot",
+        "slug": "attio",
+        "app": "Attio",
         "field": "auth_methods",
         "current": [
           "OAuth2",
           "API Key"
-        ],
-        "truth": [
-          "OAuth2",
-          "Bearer Token"
-        ],
-        "notes": "HubSpot documents OAuth and independently issued service keys sent as Bearer credentials. A standard account can be free and is explicitly the production environment. HubSpot publishes its own remote MCP server."
-      },
-      {
-        "slug": "notion",
-        "app": "Notion",
-        "field": "auth_methods",
-        "current": [
-          "OAuth2",
-          "Personal Access Token",
-          "API Key"
-        ],
-        "truth": [
-          "OAuth2",
-          "Personal Access Token"
-        ],
-        "notes": "Notion documents OAuth for public connections and personal access tokens for user-scoped API access. It does not document a separate API-key credential for the REST API. Workspace owners can create PATs on the free plan. Notion MCP is hosted by Notion."
-      },
-      {
-        "slug": "shopify",
-        "app": "Shopify",
-        "field": "auth_methods",
-        "current": [
-          "OAuth2",
-          "API Key"
-        ],
-        "truth": [
-          "OAuth2",
-          "Bearer Token"
-        ],
-        "notes": "Shopify's primary Admin and Storefront surfaces are GraphQL. API calls use OAuth-derived Admin tokens or independently issued Storefront access tokens; a client API key is not accepted as the API credential. Custom distribution is available without App Store review. Shopify owns Storefront MCP."
-      },
-      {
-        "slug": "stripe",
-        "app": "Stripe",
-        "field": "access_model",
-        "current": "Self-Serve",
-        "truth": "Gated",
-        "notes": "Stripe REST accepts secret or restricted API keys and Connect supports OAuth. Stripe explicitly requires business verification before services can be used on a live account, so test keys alone do not make production access Self-Serve under the rubric. Stripe hosts its MCP server."
-      },
-      {
-        "slug": "jira",
-        "app": "Jira",
-        "field": "auth_methods",
-        "current": [
-          "OAuth2",
-          "Basic Auth",
-          "API Key"
-        ],
-        "truth": [
-          "OAuth2",
-          "API Key"
-        ],
-        "notes": "Jira Cloud REST accepts a self-created API token through Basic transport and supports OAuth 2.0 3LO. Basic Auth is not an independent credential in this case, so the exact credential set is API Key plus OAuth2. Sharing an unreviewed 3LO app is allowed with a warning. Atlassian Rovo MCP supports Jira."
-      },
-      {
-        "slug": "google-ads",
-        "app": "Google Ads",
-        "field": "auth_methods",
-        "current": [
-          "OAuth2",
-          "Other Token"
         ],
         "truth": [
           "OAuth2",
           "API Key",
-          "Service Account"
+          "Basic Auth"
         ],
-        "notes": "Google Ads requires OAuth 2.0 plus a developer token on every API call and documents both authorized-user and service-account workflows. Developer-token applications can be restricted to test access or require review for broader production levels. Google publishes the MCP server guide."
+        "notes": "Attio documents OAuth 2.0, workspace API keys, and optional HTTP Basic authentication. Production workspace keys are self-serve, and Attio hosts the MCP server."
+      },
+      {
+        "slug": "freshdesk",
+        "app": "Freshdesk",
+        "field": "auth_methods",
+        "current": [
+          "API Key"
+        ],
+        "truth": [
+          "API Key",
+          "Basic Auth"
+        ],
+        "notes": "Freshdesk authenticates an API key through HTTP Basic. The free plan has zero API calls and the trial is temporary, so production API access requires a paid plan. Freshdesk documents its vendor MCP integration."
+      },
+      {
+        "slug": "freshdesk",
+        "app": "Freshdesk",
+        "field": "access_model",
+        "current": "Self-Serve",
+        "truth": "Gated",
+        "notes": "Freshdesk authenticates an API key through HTTP Basic. The free plan has zero API calls and the trial is temporary, so production API access requires a paid plan. Freshdesk documents its vendor MCP integration."
+      },
+      {
+        "slug": "front",
+        "app": "Front",
+        "field": "access_model",
+        "current": "Self-Serve",
+        "truth": "Gated",
+        "notes": "Front supports bearer API tokens and OAuth. API quotas are attached to paid Starter, Professional, or Enterprise plans, so production access requires a paying customer. Front hosts an official MCP server."
+      },
+      {
+        "slug": "telegram",
+        "app": "Telegram",
+        "field": "auth_methods",
+        "current": [
+          "Bot Token",
+          "Other Token"
+        ],
+        "truth": [
+          "Bot Token"
+        ],
+        "notes": "The HTTP Bot API uses the single bot token issued self-serve by BotFather. API ID and hash belong to the separate MTProto surface and are not another REST Bot API auth method. The cited MCP is community-owned."
+      },
+      {
+        "slug": "woocommerce",
+        "app": "WooCommerce",
+        "field": "auth_methods",
+        "current": [
+          "API Key"
+        ],
+        "truth": [
+          "API Key",
+          "Basic Auth"
+        ],
+        "notes": "WooCommerce generates consumer API keys and sends them with HTTP Basic over HTTPS. Store owners can create keys without vendor approval, and WooCommerce includes native MCP support in developer preview."
+      },
+      {
+        "slug": "amazon-selling-partner",
+        "app": "Amazon Selling Partner",
+        "field": "existing_mcp",
+        "current": "Official",
+        "truth": "None",
+        "notes": "SP-API is REST and uses Login with Amazon OAuth 2.0 tokens. Production requires a professional seller/vendor relationship, registration, roles, and approval. No Amazon-owned SP-API MCP is documented; the previously cited AWS Partner Central MCP serves a different product."
+      },
+      {
+        "slug": "supabase",
+        "app": "Supabase",
+        "field": "auth_methods",
+        "current": [
+          "Bearer Token",
+          "OAuth2"
+        ],
+        "truth": [
+          "Personal Access Token",
+          "OAuth2"
+        ],
+        "notes": "The Management API documents personal access tokens and OAuth 2.0. Both are available without manual approval, and Supabase hosts the official MCP server."
       }
     ],
     "checked": [
@@ -268,14 +271,14 @@
         "api_ok": true,
         "mcp_ok": true,
         "auth_ok": true,
-        "access_ok": false
+        "access_ok": true
       },
       {
         "slug": "hubspot",
         "app": "HubSpot",
         "api_ok": true,
         "mcp_ok": true,
-        "auth_ok": false,
+        "auth_ok": true,
         "access_ok": true
       },
       {
@@ -299,7 +302,7 @@
         "app": "Notion",
         "api_ok": true,
         "mcp_ok": true,
-        "auth_ok": false,
+        "auth_ok": true,
         "access_ok": true
       },
       {
@@ -307,7 +310,7 @@
         "app": "Shopify",
         "api_ok": true,
         "mcp_ok": true,
-        "auth_ok": false,
+        "auth_ok": true,
         "access_ok": true
       },
       {
@@ -316,14 +319,14 @@
         "api_ok": true,
         "mcp_ok": true,
         "auth_ok": true,
-        "access_ok": false
+        "access_ok": true
       },
       {
         "slug": "jira",
         "app": "Jira",
         "api_ok": true,
         "mcp_ok": true,
-        "auth_ok": false,
+        "auth_ok": true,
         "access_ok": true
       },
       {
@@ -331,12 +334,132 @@
         "app": "Google Ads",
         "api_ok": true,
         "mcp_ok": true,
-        "auth_ok": false,
+        "auth_ok": true,
         "access_ok": true
       },
       {
         "slug": "whatsapp-business",
         "app": "WhatsApp Business",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "attio",
+        "app": "Attio",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "freshdesk",
+        "app": "Freshdesk",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": false
+      },
+      {
+        "slug": "front",
+        "app": "Front",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": false
+      },
+      {
+        "slug": "telegram",
+        "app": "Telegram",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "meta-ads",
+        "app": "Meta Ads",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "linkedin-ads",
+        "app": "LinkedIn Ads",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "klaviyo",
+        "app": "Klaviyo",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "woocommerce",
+        "app": "WooCommerce",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "amazon-selling-partner",
+        "app": "Amazon Selling Partner",
+        "api_ok": true,
+        "mcp_ok": false,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "vercel",
+        "app": "Vercel",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "supabase",
+        "app": "Supabase",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": false,
+        "access_ok": true
+      },
+      {
+        "slug": "datadog",
+        "app": "Datadog",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "monday",
+        "app": "Monday.com",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "plaid",
+        "app": "Plaid",
+        "api_ok": true,
+        "mcp_ok": true,
+        "auth_ok": true,
+        "access_ok": true
+      },
+      {
+        "slug": "fathom",
+        "app": "Fathom",
         "api_ok": true,
         "mcp_ok": true,
         "auth_ok": true,
@@ -348,8 +471,8 @@
   },
   "accuracy_movement": {
     "method": "Field-level accuracy against one hand-verified truth set, comparing the archived first pass to current results. Auth uses exact canonical-set equality.",
-    "n": 10,
-    "first_pass_accuracy": 0.825,
+    "n": 25,
+    "first_pass_accuracy": 0.82,
     "post_verification_accuracy": 1.0,
     "improved_apps": [
       "salesforce",
@@ -358,7 +481,15 @@
       "shopify",
       "stripe",
       "jira",
-      "google-ads"
+      "google-ads",
+      "attio",
+      "freshdesk",
+      "front",
+      "telegram",
+      "meta-ads",
+      "woocommerce",
+      "amazon-selling-partner",
+      "supabase"
     ],
     "regressed_apps": [],
     "per_app": [
@@ -411,6 +542,81 @@
         "slug": "whatsapp-business",
         "first_pass": "4/4",
         "current": "4/4"
+      },
+      {
+        "slug": "attio",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "freshdesk",
+        "first_pass": "2/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "front",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "telegram",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "meta-ads",
+        "first_pass": "1/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "linkedin-ads",
+        "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "klaviyo",
+        "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "woocommerce",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "amazon-selling-partner",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "vercel",
+        "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "supabase",
+        "first_pass": "3/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "datadog",
+        "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "monday",
+        "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "plaid",
+        "first_pass": "4/4",
+        "current": "4/4"
+      },
+      {
+        "slug": "fathom",
+        "first_pass": "4/4",
+        "current": "4/4"
       }
     ],
     "generated": "2026-07-11"
@@ -447,5 +653,195 @@
       "mongodb-atlas",
       "asana"
     ]
+  },
+  "handcheck_historical": {
+    "label": "Prior published hand-check snapshot",
+    "snapshot": {
+      "metric_scope": "Current results at fold time",
+      "method": "Human comparison against official docs for api_type, exact canonical auth set, production access, and MCP ownership. No historical agent values are substituted.",
+      "access_rubric": "Self-Serve only when a new developer can obtain credentials usable in production without manual approval, partnership, business verification, or already being a paying customer. A sandbox or trial alone is not production Self-Serve; otherwise use Gated.",
+      "selection": "Ten reviewer-priority, broadly adopted apps from the catalog, spanning CRM, developer tools, collaboration, commerce, advertising, and messaging.",
+      "n": 10,
+      "api_type_accuracy": 1.0,
+      "mcp_accuracy": 1.0,
+      "auth_accuracy": 0.5,
+      "access_accuracy": 0.8,
+      "accuracy": 0.825,
+      "misses": [
+        {
+          "slug": "salesforce",
+          "app": "Salesforce",
+          "field": "access_model",
+          "current": "Self-Serve",
+          "truth": "Gated",
+          "notes": "Connect REST uses OAuth and the Salesforce DX MCP is vendor-owned. API access is enabled in paid production editions; the free Developer Edition is documented as a development/testing environment before moving changes to production, so the strict production rubric is Gated."
+        },
+        {
+          "slug": "hubspot",
+          "app": "HubSpot",
+          "field": "auth_methods",
+          "current": [
+            "OAuth2",
+            "API Key"
+          ],
+          "truth": [
+            "OAuth2",
+            "Bearer Token"
+          ],
+          "notes": "HubSpot documents OAuth and independently issued service keys sent as Bearer credentials. A standard account can be free and is explicitly the production environment. HubSpot publishes its own remote MCP server."
+        },
+        {
+          "slug": "notion",
+          "app": "Notion",
+          "field": "auth_methods",
+          "current": [
+            "OAuth2",
+            "Personal Access Token",
+            "API Key"
+          ],
+          "truth": [
+            "OAuth2",
+            "Personal Access Token"
+          ],
+          "notes": "Notion documents OAuth for public connections and personal access tokens for user-scoped API access. It does not document a separate API-key credential for the REST API. Workspace owners can create PATs on the free plan. Notion MCP is hosted by Notion."
+        },
+        {
+          "slug": "shopify",
+          "app": "Shopify",
+          "field": "auth_methods",
+          "current": [
+            "OAuth2",
+            "API Key"
+          ],
+          "truth": [
+            "OAuth2",
+            "Bearer Token"
+          ],
+          "notes": "Shopify's primary Admin and Storefront surfaces are GraphQL. API calls use OAuth-derived Admin tokens or independently issued Storefront access tokens; a client API key is not accepted as the API credential. Custom distribution is available without App Store review. Shopify owns Storefront MCP."
+        },
+        {
+          "slug": "stripe",
+          "app": "Stripe",
+          "field": "access_model",
+          "current": "Self-Serve",
+          "truth": "Gated",
+          "notes": "Stripe REST accepts secret or restricted API keys and Connect supports OAuth. Stripe explicitly requires business verification before services can be used on a live account, so test keys alone do not make production access Self-Serve under the rubric. Stripe hosts its MCP server."
+        },
+        {
+          "slug": "jira",
+          "app": "Jira",
+          "field": "auth_methods",
+          "current": [
+            "OAuth2",
+            "Basic Auth",
+            "API Key"
+          ],
+          "truth": [
+            "OAuth2",
+            "API Key"
+          ],
+          "notes": "Jira Cloud REST accepts a self-created API token through Basic transport and supports OAuth 2.0 3LO. Basic Auth is not an independent credential in this case, so the exact credential set is API Key plus OAuth2. Sharing an unreviewed 3LO app is allowed with a warning. Atlassian Rovo MCP supports Jira."
+        },
+        {
+          "slug": "google-ads",
+          "app": "Google Ads",
+          "field": "auth_methods",
+          "current": [
+            "OAuth2",
+            "Other Token"
+          ],
+          "truth": [
+            "OAuth2",
+            "API Key",
+            "Service Account"
+          ],
+          "notes": "Google Ads requires OAuth 2.0 plus a developer token on every API call and documents both authorized-user and service-account workflows. Developer-token applications can be restricted to test access or require review for broader production levels. Google publishes the MCP server guide."
+        }
+      ],
+      "checked": [
+        {
+          "slug": "salesforce",
+          "app": "Salesforce",
+          "api_ok": true,
+          "mcp_ok": true,
+          "auth_ok": true,
+          "access_ok": false
+        },
+        {
+          "slug": "hubspot",
+          "app": "HubSpot",
+          "api_ok": true,
+          "mcp_ok": true,
+          "auth_ok": false,
+          "access_ok": true
+        },
+        {
+          "slug": "slack",
+          "app": "Slack",
+          "api_ok": true,
+          "mcp_ok": true,
+          "auth_ok": true,
+          "access_ok": true
+        },
+        {
+          "slug": "github",
+          "app": "GitHub",
+          "api_ok": true,
+          "mcp_ok": true,
+          "auth_ok": true,
+          "access_ok": true
+        },
+        {
+          "slug": "notion",
+          "app": "Notion",
+          "api_ok": true,
+          "mcp_ok": true,
+          "auth_ok": false,
+          "access_ok": true
+        },
+        {
+          "slug": "shopify",
+          "app": "Shopify",
+          "api_ok": true,
+          "mcp_ok": true,
+          "auth_ok": false,
+          "access_ok": true
+        },
+        {
+          "slug": "stripe",
+          "app": "Stripe",
+          "api_ok": true,
+          "mcp_ok": true,
+          "auth_ok": true,
+          "access_ok": false
+        },
+        {
+          "slug": "jira",
+          "app": "Jira",
+          "api_ok": true,
+          "mcp_ok": true,
+          "auth_ok": false,
+          "access_ok": true
+        },
+        {
+          "slug": "google-ads",
+          "app": "Google Ads",
+          "api_ok": true,
+          "mcp_ok": true,
+          "auth_ok": false,
+          "access_ok": true
+        },
+        {
+          "slug": "whatsapp-business",
+          "app": "WhatsApp Business",
+          "api_ok": true,
+          "mcp_ok": true,
+          "auth_ok": true,
+          "access_ok": true
+        }
+      ],
+      "generated": "2026-07-11",
+      "note": "This is a current score. Earlier published/as-measured snapshots are stored separately."
+    }
   }
 }

@@ -61,3 +61,41 @@ Telegram offers a free and open Bot API that uses a Bot Token for authentication
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current handcheck fold; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Telegram",
+  "category": "Comms",
+  "one_liner": "Telegram provides a self-serve HTTP-based Bot API and a custom client API for building bots and messaging applications.",
+  "auth_methods": [
+    "Bot Token"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can freely create bots and obtain Bot Tokens without manual approval."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Community",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://core.telegram.org/bots/api",
+    "https://core.telegram.org/bots",
+    "https://github.com/sparfenyuk/mcp-telegram"
+  ],
+  "confidence": 0.9,
+  "verification_status": "Hand-Checked",
+  "slug": "telegram",
+  "primary_docs_url": "https://core.telegram.org/bots/api",
+  "rate_limit_note": "Not explicitly detailed in the fetched evidence.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

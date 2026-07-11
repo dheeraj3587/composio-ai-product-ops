@@ -65,3 +65,40 @@ The REST API requires app review and business verification for production access
   "main_blocker": "Marketing API is behind Meta app review + business verification."
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current handcheck fold; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Meta Ads",
+  "category": "Ads/Marketing",
+  "one_liner": "Meta Ads provides a Marketing API for managing campaigns, though production access requires app review and business...",
+  "auth_methods": [
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Production access to the Marketing API requires app review and business verification. Community MCPs exist but require these same gated credentials."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Community",
+  "composio_toolkit": "Yes",
+  "buildability": "Hard",
+  "main_blocker": "Marketing API is behind Meta app review and business verification.",
+  "recommended_next_action": "Needs Outreach",
+  "evidence_urls": [
+    "https://developers.facebook.com/documentation/ads-commerce/marketing-api/get-started/authorization",
+    "https://www.augmentcode.com/mcp/meta-ads-mcp"
+  ],
+  "confidence": 0.9,
+  "verification_status": "Hand-Checked",
+  "slug": "meta-ads",
+  "primary_docs_url": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/get-started/authorization",
+  "rate_limit_note": "Rate limiting is applied dynamically based on the app and account tier.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

@@ -67,3 +67,41 @@ The official documentation confirms that the Advertising API uses OAuth 2.0 and 
   "main_blocker": "Marketing API access requires LinkedIn Marketing Developer Platform / partner approval."
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current handcheck fold; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "LinkedIn Ads",
+  "category": "Ads/Marketing",
+  "one_liner": "The LinkedIn Ads API enables developers to manage campaigns, target audiences, and track advertising performance.",
+  "auth_methods": [
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Access to the Advertising API requires applying for approval through the LinkedIn Developer Portal, which is evaluated by LinkedIn and not guaranteed."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Community",
+  "composio_toolkit": "Yes",
+  "buildability": "Hard",
+  "main_blocker": "Production access requires manual approval for the Advertising API product from LinkedIn, which can take days and is not guaranteed.",
+  "recommended_next_action": "Needs Outreach",
+  "evidence_urls": [
+    "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication",
+    "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access?view=li-lms-2026-06",
+    "https://libraries.io/pypi/linkedin-ads-mcp"
+  ],
+  "confidence": 0.9,
+  "verification_status": "Hand-Checked",
+  "slug": "linkedin-ads",
+  "primary_docs_url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication",
+  "rate_limit_note": "No specific rate limit details were found in the provided documentation.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

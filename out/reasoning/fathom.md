@@ -68,3 +68,43 @@ Fathom provides comprehensive developer documentation for its REST API, SDKs, an
   "main_blocker": "May be webhook/Zapier-only; unclear whether a fully public REST API exists — verify against docs, do not trust memory."
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current handcheck fold; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Fathom",
+  "category": "AI/Meeting-tools",
+  "one_liner": "Fathom provides a REST API, SDKs, and an official MCP server to access AI meeting transcripts and summaries.",
+  "auth_methods": [
+    "API Key",
+    "Bearer Token",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can register an OAuth app or generate API keys directly from their account settings."
+  },
+  "api_type": "REST",
+  "api_breadth": "Moderate",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://developers.fathom.ai/sdks/authentication",
+    "https://developers.fathom.ai/sdks/oauth",
+    "https://developers.fathom.ai/mcp-docs"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "fathom",
+  "primary_docs_url": "https://developers.fathom.ai/sdks/authentication",
+  "rate_limit_note": "Rate limits are mentioned in the documentation for OAuth and API usage, but specific thresholds are not detailed in the provided text.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

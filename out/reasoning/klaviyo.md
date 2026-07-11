@@ -61,3 +61,41 @@ The fetched documentation clearly outlines self-serve access, OAuth2 and API Key
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current handcheck fold; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Klaviyo",
+  "category": "Ads/Marketing",
+  "one_liner": "Klaviyo provides a comprehensive REST API and an official MCP server for managing marketing data, profiles, and...",
+  "auth_methods": [
+    "OAuth2",
+    "API Key"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can create a free test account to obtain API credentials and start building immediately."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None. The API is well-documented, self-serve, and an official MCP server is available.",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://developers.klaviyo.com/en/v2026-01-15/reference/api_overview",
+    "https://developers.klaviyo.com/en/docs/klaviyo_mcp_server"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "klaviyo",
+  "primary_docs_url": "https://developers.klaviyo.com/en/v2026-01-15/reference/api_overview",
+  "rate_limit_note": "Rate limits apply and are documented in the 'Rate limits, status codes, and errors' section, though specific limits depend on the endpoint.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

@@ -58,3 +58,43 @@ The evidence clearly indicates Datadog offers a REST API authenticated via API/A
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current handcheck fold; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Datadog",
+  "category": "DevInfra",
+  "one_liner": "Datadog provides a comprehensive observability and security platform with a REST API and an official MCP server.",
+  "auth_methods": [
+    "API Key",
+    "Personal Access Token",
+    "Service Account"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can sign up for a Datadog account to generate API and Application keys for integration access."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://docs.datadoghq.com/api/latest/authentication/",
+    "https://docs.datadoghq.com/account_management/api-app-keys/",
+    "https://docs.datadoghq.com/mcp_server/setup/"
+  ],
+  "confidence": 0.9,
+  "verification_status": "Hand-Checked",
+  "slug": "datadog",
+  "primary_docs_url": "https://docs.datadoghq.com/api/latest/authentication/",
+  "rate_limit_note": "Standard API rate limits apply based on the Datadog subscription plan, though specific limits are not detailed in the provided snippets.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

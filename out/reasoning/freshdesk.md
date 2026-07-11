@@ -58,3 +58,42 @@ Freshdesk offers a well-documented REST API accessible via an API key, which can
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current handcheck fold; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Freshdesk",
+  "category": "Support",
+  "one_liner": "Freshdesk provides a comprehensive REST API and an official MCP server for managing customer support tickets and...",
+  "auth_methods": [
+    "API Key",
+    "Basic Auth"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Freshdesk Free currently permits zero API calls; production API use requires a paid Growth, Pro, or Enterprise account."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Moderate",
+  "main_blocker": "Production API credentials require an existing paid Freshdesk customer account.",
+  "recommended_next_action": "Partner-Gated",
+  "evidence_urls": [
+    "https://developers.freshdesk.com/api/",
+    "https://partnersupport.freshworks.com/support/solutions/articles/225439-what-are-the-rate-limits-for-the-api-calls-to-freshdesk-",
+    "https://support.freshdesk.com/support/solutions/articles/50000012670-model-context-protocol-mcp-integration-in-freshdesk-eap-"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "freshdesk",
+  "primary_docs_url": "https://developers.freshdesk.com/api/",
+  "rate_limit_note": "Rate limits are enforced based on the number of API calls per hour, varying by subscription plan.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

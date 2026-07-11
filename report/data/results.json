@@ -99,7 +99,8 @@
     "one_liner": "Attio is an AI-native CRM platform offering a comprehensive REST API and an official hosted MCP server for AI agents.",
     "auth_methods": [
       "OAuth2",
-      "API Key"
+      "API Key",
+      "Basic Auth"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -114,14 +115,13 @@
     "recommended_next_action": "Build Now",
     "evidence_urls": [
       "https://docs.attio.com/rest-api/guides/authentication",
-      "https://docs.attio.com/rest-api/tutorials/connect-an-app-through-oauth",
       "https://docs.attio.com/mcp/overview",
-      "https://attio.com/engineering/blog/building-the-attio-mcp-server"
+      "https://docs.attio.com/share/the-publication-lifecycle"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "attio",
-    "primary_docs_url": "https://docs.attio.com/rest-api/tutorials/connect-an-app-through-oauth",
+    "primary_docs_url": "https://docs.attio.com/rest-api/guides/authentication",
     "rate_limit_note": "The documentation includes a section on 'Handling rate limits', though specific limits are not detailed in the provided snippets.",
     "last_verified": "2026-07-10"
   },
@@ -381,26 +381,27 @@
     "category": "Support",
     "one_liner": "Freshdesk provides a comprehensive REST API and an official MCP server for managing customer support tickets and...",
     "auth_methods": [
-      "API Key"
+      "API Key",
+      "Basic Auth"
     ],
     "access_model": {
-      "kind": "Self-Serve",
-      "note": "Developers can sign up for a free trial and access their API key directly from their profile settings."
+      "kind": "Gated",
+      "note": "Freshdesk Free currently permits zero API calls; production API use requires a paid Growth, Pro, or Enterprise account."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "Official",
     "composio_toolkit": "Yes",
-    "buildability": "Easy",
-    "main_blocker": "",
-    "recommended_next_action": "Build Now",
+    "buildability": "Moderate",
+    "main_blocker": "Production API credentials require an existing paid Freshdesk customer account.",
+    "recommended_next_action": "Partner-Gated",
     "evidence_urls": [
       "https://developers.freshdesk.com/api/",
-      "https://support.freshdesk.com/support/solutions/articles/215517-how-to-find-your-api-key",
+      "https://partnersupport.freshworks.com/support/solutions/articles/225439-what-are-the-rate-limits-for-the-api-calls-to-freshdesk-",
       "https://support.freshdesk.com/support/solutions/articles/50000012670-model-context-protocol-mcp-integration-in-freshdesk-eap-"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "freshdesk",
     "primary_docs_url": "https://developers.freshdesk.com/api/",
     "rate_limit_note": "Rate limits are enforced based on the number of API calls per hour, varying by subscription plan.",
@@ -415,25 +416,25 @@
       "OAuth2"
     ],
     "access_model": {
-      "kind": "Self-Serve",
-      "note": "API tokens and OAuth apps can be created directly in the Front settings by admins."
+      "kind": "Gated",
+      "note": "Front API access is included with paid plans; the self-serve trial is temporary and does not satisfy the production-access rubric."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "Official",
     "composio_toolkit": "Yes",
-    "buildability": "Easy",
-    "main_blocker": "",
-    "recommended_next_action": "Build Now",
+    "buildability": "Moderate",
+    "main_blocker": "Production API use requires an existing paid Front customer account.",
+    "recommended_next_action": "Partner-Gated",
     "evidence_urls": [
-      "https://dev.frontapp.com/docs/oauth",
-      "https://help.front.com/en/categories/326",
+      "https://dev.frontapp.com/docs/authentication",
+      "https://help.front.com/en/articles/2438",
       "https://dev.frontapp.com/docs/mcp-server"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "front",
-    "primary_docs_url": "https://dev.frontapp.com/docs/oauth",
+    "primary_docs_url": "https://dev.frontapp.com/docs/authentication",
     "rate_limit_note": "Front has two rate limits: global and burst.",
     "last_verified": "2026-07-10"
   },
@@ -820,8 +821,7 @@
     "category": "Comms",
     "one_liner": "Telegram provides a self-serve HTTP-based Bot API and a custom client API for building bots and messaging applications.",
     "auth_methods": [
-      "Bot Token",
-      "Other Token"
+      "Bot Token"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -835,15 +835,14 @@
     "main_blocker": "None",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://core.telegram.org/api/auth",
       "https://core.telegram.org/bots/api",
-      "https://core.telegram.org/",
+      "https://core.telegram.org/bots",
       "https://github.com/sparfenyuk/mcp-telegram"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "telegram",
-    "primary_docs_url": "https://core.telegram.org/api/auth",
+    "primary_docs_url": "https://core.telegram.org/bots/api",
     "rate_limit_note": "Not explicitly detailed in the fetched evidence.",
     "last_verified": "2026-07-10"
   },
@@ -996,13 +995,13 @@
     "main_blocker": "Marketing API is behind Meta app review and business verification.",
     "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
-      "https://developers.facebook.com/docs/marketing-api/get-started/authorization/",
+      "https://developers.facebook.com/documentation/ads-commerce/marketing-api/get-started/authorization",
       "https://www.augmentcode.com/mcp/meta-ads-mcp"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "meta-ads",
-    "primary_docs_url": "https://developers.facebook.com/docs/marketing-api/get-started/authorization/",
+    "primary_docs_url": "https://developers.facebook.com/documentation/ads-commerce/marketing-api/get-started/authorization",
     "rate_limit_note": "Rate limiting is applied dynamically based on the app and account tier.",
     "last_verified": "2026-07-10"
   },
@@ -1025,14 +1024,14 @@
     "main_blocker": "Production access requires manual approval for the Advertising API product from LinkedIn, which can take days and is not guaranteed.",
     "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
-      "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access",
-      "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access?view=li-lms-2026-05",
+      "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication",
+      "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access?view=li-lms-2026-06",
       "https://libraries.io/pypi/linkedin-ads-mcp"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "linkedin-ads",
-    "primary_docs_url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/getting-access",
+    "primary_docs_url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication",
     "rate_limit_note": "No specific rate limit details were found in the provided documentation.",
     "last_verified": "2026-07-10"
   },
@@ -1121,15 +1120,13 @@
     "main_blocker": "None. The API is well-documented, self-serve, and an official MCP server is available.",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://developers.klaviyo.com/en/docs/set_up_oauth",
-      "https://developers.klaviyo.com/en/docs/authenticate_",
-      "https://developers.klaviyo.com/en/docs/klaviyo_mcp_server",
-      "https://www.klaviyo.com/blog/introducing-mcp-server"
+      "https://developers.klaviyo.com/en/v2026-01-15/reference/api_overview",
+      "https://developers.klaviyo.com/en/docs/klaviyo_mcp_server"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "klaviyo",
-    "primary_docs_url": "https://developers.klaviyo.com/en/docs/set_up_oauth",
+    "primary_docs_url": "https://developers.klaviyo.com/en/v2026-01-15/reference/api_overview",
     "rate_limit_note": "Rate limits apply and are documented in the 'Rate limits, status codes, and errors' section, though specific limits depend on the endpoint.",
     "last_verified": "2026-07-10"
   },
@@ -1296,7 +1293,8 @@
     "category": "Commerce",
     "one_liner": "WooCommerce provides a comprehensive REST API and native MCP integration for managing store data and operations.",
     "auth_methods": [
-      "API Key"
+      "API Key",
+      "Basic Auth"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1310,14 +1308,13 @@
     "main_blocker": "None",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://developer.woocommerce.com/docs/apis/rest-api/",
       "https://developer.woocommerce.com/docs/apis/rest-api/authentication/",
       "https://developer.woocommerce.com/docs/features/mcp/"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "woocommerce",
-    "primary_docs_url": "https://developer.woocommerce.com/2015/08/07/api-settings-and-the-api-authentication-endpoint-in-2-4/",
+    "primary_docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/authentication/",
     "rate_limit_note": "Rate limits depend on the underlying WordPress hosting environment.",
     "last_verified": "2026-07-10"
   },
@@ -1519,21 +1516,20 @@
     },
     "api_type": "REST",
     "api_breadth": "Broad",
-    "existing_mcp": "Official",
+    "existing_mcp": "None",
     "composio_toolkit": "No",
     "buildability": "Hard",
     "main_blocker": "Developers must complete a gated identity verification and profile approval process before obtaining production credentials.",
     "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
-      "https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-gen-ai-selling-partner-api/integrating-sp-api.html",
-      "https://developer.amazonservices.com/register",
-      "https://developer-docs.amazon.com/sp-api",
-      "https://docs.aws.amazon.com/partner-central/latest/APIReference/partner-central-mcp-server.html"
+      "https://developer-docs.amazon.com/sp-api/docs/onboarding-overview",
+      "https://developer-docs.amazon.com/sp-api/lang-en_EN/docs/sp-api-registration-overview",
+      "https://developer-docs.amazon.com/sp-api/lang-US/docs/onboarding-step-8-call-the-sp-api-in-production"
     ],
     "confidence": 0.85,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "amazon-selling-partner",
-    "primary_docs_url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-gen-ai-selling-partner-api/integrating-sp-api.html",
+    "primary_docs_url": "https://developer-docs.amazon.com/sp-api/docs/onboarding-overview",
     "rate_limit_note": "Rate limits apply and vary by endpoint, such as specific limits for the Catalog Items and Customer Feedback APIs.",
     "last_verified": "2026-07-10"
   },
@@ -1921,15 +1917,14 @@
     "main_blocker": "None",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
+      "https://vercel.com/docs/rest-api",
       "https://vercel.com/docs/sign-in-with-vercel/authorization-server-api",
-      "https://vercel.com/kb/guide/how-do-i-use-a-vercel-api-access-token",
-      "https://vercel.com/docs/agent-resources/vercel-mcp",
-      "https://vercel.com/blog/introducing-vercel-mcp-connect-vercel-to-your-ai-tools"
+      "https://vercel.com/docs/agent-resources/vercel-mcp"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "vercel",
-    "primary_docs_url": "https://vercel.com/docs/sign-in-with-vercel/authorization-server-api",
+    "primary_docs_url": "https://vercel.com/docs/rest-api",
     "rate_limit_note": "Rate limits are not explicitly detailed in the provided snippets, but standard Vercel API limits apply.",
     "last_verified": "2026-07-10"
   },
@@ -2002,7 +1997,7 @@
     "category": "DevInfra",
     "one_liner": "Supabase provides a comprehensive REST Management API and an official remote MCP server for managing projects and...",
     "auth_methods": [
-      "Bearer Token",
+      "Personal Access Token",
       "OAuth2"
     ],
     "access_model": {
@@ -2017,14 +2012,13 @@
     "main_blocker": "None",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://supabase.com/docs/reference/api/introduction",
-      "https://supabase.com/docs/guides/ai-tools/mcp",
-      "https://supabase.com/blog/remote-mcp-server"
+      "https://supabase.com/docs/reference/api/v1-update-realtime-config",
+      "https://supabase.com/docs/guides/ai-tools/mcp"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "supabase",
-    "primary_docs_url": "https://supabase.com/docs/reference/api/introduction",
+    "primary_docs_url": "https://supabase.com/docs/reference/api/v1-update-realtime-config",
     "rate_limit_note": "Rate limits are mentioned in the documentation architecture but specific thresholds are not detailed in the fetched snippets.",
     "last_verified": "2026-07-10"
   },
@@ -2150,10 +2144,11 @@
     "recommended_next_action": "Build Now",
     "evidence_urls": [
       "https://docs.datadoghq.com/api/latest/authentication/",
-      "https://www.datadoghq.com/knowledge-center/mcp-server/"
+      "https://docs.datadoghq.com/account_management/api-app-keys/",
+      "https://docs.datadoghq.com/mcp_server/setup/"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "datadog",
     "primary_docs_url": "https://docs.datadoghq.com/api/latest/authentication/",
     "rate_limit_note": "Standard API rate limits apply based on the Datadog subscription plan, though specific limits are not detailed in the provided snippets.",
@@ -2370,14 +2365,13 @@
     "recommended_next_action": "Build Now",
     "evidence_urls": [
       "https://developer.monday.com/api-reference/docs/authentication",
-      "https://developer.monday.com/apps/docs/oauth",
-      "https://developer.monday.com/api-reference/docs/getting-started",
-      "https://developer.monday.com/apps/changelog/introducing-the-mondaycom-mcp-integration"
+      "https://developer.monday.com/api-reference/docs/basics",
+      "https://developer.monday.com/api-reference/docs/monday-mcp-overview"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "monday",
-    "primary_docs_url": "https://developer.monday.com/apps/docs/oauth",
+    "primary_docs_url": "https://developer.monday.com/api-reference/docs/authentication",
     "rate_limit_note": "Rate limits are enforced and documented in the API reference, though specific quotas depend on the account plan.",
     "last_verified": "2026-07-10"
   },
@@ -2559,14 +2553,14 @@
     "main_blocker": "Production access requires passing endpoint validation and requesting approval from Plaid.",
     "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
-      "https://plaid.com/docs/api/products/auth/",
-      "https://plaid.com/plaid-exchange/docs/authentication/",
+      "https://plaid.com/docs/api/",
+      "https://plaid.com/docs/link/oauth/",
       "https://plaid.com/docs/resources/mcp/"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "plaid",
-    "primary_docs_url": "https://plaid.com/docs/api/products/auth/",
+    "primary_docs_url": "https://plaid.com/docs/api/",
     "rate_limit_note": "Not explicitly detailed in the provided evidence.",
     "last_verified": "2026-07-10"
   },
@@ -2896,13 +2890,13 @@
     "recommended_next_action": "Build Now",
     "evidence_urls": [
       "https://developers.fathom.ai/sdks/authentication",
-      "https://developers.fathom.ai/oauth",
+      "https://developers.fathom.ai/sdks/oauth",
       "https://developers.fathom.ai/mcp-docs"
     ],
     "confidence": 0.95,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "fathom",
-    "primary_docs_url": "https://developers.fathom.ai/sdks/oauth",
+    "primary_docs_url": "https://developers.fathom.ai/sdks/authentication",
     "rate_limit_note": "Rate limits are mentioned in the documentation for OAuth and API usage, but specific thresholds are not detailed in the provided text.",
     "last_verified": "2026-07-10"
   },

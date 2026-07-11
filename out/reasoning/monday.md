@@ -61,3 +61,42 @@ The documentation clearly outlines a GraphQL API and an official MCP server. Aut
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current handcheck fold; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Monday.com",
+  "category": "Productivity/PM",
+  "one_liner": "Monday.com provides a GraphQL API and an official Model Context Protocol (MCP) server for integrating AI agents and...",
+  "auth_methods": [
+    "OAuth2",
+    "Personal Access Token"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can sign up for a free developer account to access the API and MCP without manual approval."
+  },
+  "api_type": "GraphQL",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://developer.monday.com/api-reference/docs/authentication",
+    "https://developer.monday.com/api-reference/docs/basics",
+    "https://developer.monday.com/api-reference/docs/monday-mcp-overview"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "monday",
+  "primary_docs_url": "https://developer.monday.com/api-reference/docs/authentication",
+  "rate_limit_note": "Rate limits are enforced and documented in the API reference, though specific quotas depend on the account plan.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

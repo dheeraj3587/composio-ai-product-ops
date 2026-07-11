@@ -69,3 +69,41 @@ The SP-API is a comprehensive REST API using Login with Amazon (OAuth 2.0). Acce
   "main_blocker": "Requires a paid Professional Seller account ($39.99/mo) plus a developer approval process (days to weeks)."
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current handcheck fold; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Amazon Selling Partner",
+  "category": "Commerce",
+  "one_liner": "The Amazon Selling Partner API (SP-API) provides programmatic access to Amazon Seller Central data for orders...",
+  "auth_methods": [
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Requires creating a Solution Provider Portal account, completing identity verification, and submitting a profile for approval."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "None",
+  "composio_toolkit": "No",
+  "buildability": "Hard",
+  "main_blocker": "Developers must complete a gated identity verification and profile approval process before obtaining production credentials.",
+  "recommended_next_action": "Needs Outreach",
+  "evidence_urls": [
+    "https://developer-docs.amazon.com/sp-api/docs/onboarding-overview",
+    "https://developer-docs.amazon.com/sp-api/lang-en_EN/docs/sp-api-registration-overview",
+    "https://developer-docs.amazon.com/sp-api/lang-US/docs/onboarding-step-8-call-the-sp-api-in-production"
+  ],
+  "confidence": 0.85,
+  "verification_status": "Hand-Checked",
+  "slug": "amazon-selling-partner",
+  "primary_docs_url": "https://developer-docs.amazon.com/sp-api/docs/onboarding-overview",
+  "rate_limit_note": "Rate limits apply and vary by endpoint, such as specific limits for the Catalog Items and Customer Feedback APIs.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

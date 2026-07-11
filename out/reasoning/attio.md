@@ -61,3 +61,43 @@ Attio provides clear, self-serve documentation for its REST API, supporting both
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current handcheck fold; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Attio",
+  "category": "CRM",
+  "one_liner": "Attio is an AI-native CRM platform offering a comprehensive REST API and an official hosted MCP server for AI agents.",
+  "auth_methods": [
+    "OAuth2",
+    "API Key",
+    "Basic Auth"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can create apps, configure OAuth 2.0, and generate single-workspace API keys directly from the developer dashboard."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None.",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://docs.attio.com/rest-api/guides/authentication",
+    "https://docs.attio.com/mcp/overview",
+    "https://docs.attio.com/share/the-publication-lifecycle"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "attio",
+  "primary_docs_url": "https://docs.attio.com/rest-api/guides/authentication",
+  "rate_limit_note": "The documentation includes a section on 'Handling rate limits', though specific limits are not detailed in the provided snippets.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

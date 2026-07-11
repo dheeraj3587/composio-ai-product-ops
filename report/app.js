@@ -542,10 +542,13 @@ function renderVerification() {
   const movement = metrics.accuracy_movement || {};
   const browserUse = metrics.browser_use || {};
   const misses = handcheck.misses || [];
-  const checkedPills = (handcheck.checked || []).map((item) => {
-    const missed = misses.some((miss) => miss.slug === item.slug);
-    return pill(`${item.app}${missed ? " · corrected" : ""}`, missed ? "Hard" : "Self-Serve");
-  }).join("");
+  const checked = handcheck.checked || [];
+  const correctedSlugs = new Set(misses.map((miss) => miss.slug));
+  const checkedPills = [
+    pill(`${checked.length} apps`, "Official"),
+    pill(`${checked.length - correctedSlugs.size} exact`, "Self-Serve"),
+    pill(`${correctedSlugs.size} corrected`, correctedSlugs.size ? "Hard" : "Self-Serve"),
+  ].join("");
 
   const cards = [
     {
@@ -557,7 +560,7 @@ function renderVerification() {
     {
       title: "Human ground truth",
       value: handcheck.n ? pct(handcheck.accuracy) : "Pending",
-      body: `${handcheck.n || 0} priority apps checked against official documentation. The score is the uncorrected first-pass result.`,
+      body: `${handcheck.n || 0} priority apps checked against official documentation. The score captures the catalog before this verification set was folded in.`,
       detail: checkedPills,
       misses,
     },

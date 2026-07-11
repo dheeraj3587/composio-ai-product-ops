@@ -59,3 +59,42 @@ Front provides comprehensive REST API documentation with self-serve API tokens a
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current handcheck fold; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Front",
+  "category": "Support",
+  "one_liner": "Front provides a Core API and an official MCP server for building custom workflows, messaging channels, and AI...",
+  "auth_methods": [
+    "Bearer Token",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Front API access is included with paid plans; the self-serve trial is temporary and does not satisfy the production-access rubric."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Moderate",
+  "main_blocker": "Production API use requires an existing paid Front customer account.",
+  "recommended_next_action": "Partner-Gated",
+  "evidence_urls": [
+    "https://dev.frontapp.com/docs/authentication",
+    "https://help.front.com/en/articles/2438",
+    "https://dev.frontapp.com/docs/mcp-server"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "front",
+  "primary_docs_url": "https://dev.frontapp.com/docs/authentication",
+  "rate_limit_note": "Front has two rate limits: global and burst.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

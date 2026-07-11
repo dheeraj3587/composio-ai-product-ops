@@ -61,3 +61,42 @@ The documentation clearly outlines the use of Personal Access Tokens and OAuth2 
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current handcheck fold; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Vercel",
+  "category": "DevInfra",
+  "one_liner": "Vercel provides a REST API and an official MCP server for managing deployments, projects, and infrastructure.",
+  "auth_methods": [
+    "OAuth2",
+    "Personal Access Token"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can generate Personal Access Tokens directly from their account settings or use OAuth2 for integrations."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://vercel.com/docs/rest-api",
+    "https://vercel.com/docs/sign-in-with-vercel/authorization-server-api",
+    "https://vercel.com/docs/agent-resources/vercel-mcp"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "vercel",
+  "primary_docs_url": "https://vercel.com/docs/rest-api",
+  "rate_limit_note": "Rate limits are not explicitly detailed in the provided snippets, but standard Vercel API limits apply.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

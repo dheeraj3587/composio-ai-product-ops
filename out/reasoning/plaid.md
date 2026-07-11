@@ -69,3 +69,42 @@ Plaid offers a comprehensive REST API authenticated via client_id and secret (AP
   "note": "Capture as 'self-serve trial, gated production', not a flat label."
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current handcheck fold; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Plaid",
+  "category": "Fintech",
+  "one_liner": "Plaid provides APIs for connecting financial accounts, verifying identity, and moving money, along with official MCP...",
+  "auth_methods": [
+    "API Key",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "Sandbox access is self-serve, but production access requires passing validation and a formal approval process from Plaid."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "No",
+  "buildability": "Moderate",
+  "main_blocker": "Production access requires passing endpoint validation and requesting approval from Plaid.",
+  "recommended_next_action": "Needs Outreach",
+  "evidence_urls": [
+    "https://plaid.com/docs/api/",
+    "https://plaid.com/docs/link/oauth/",
+    "https://plaid.com/docs/resources/mcp/"
+  ],
+  "confidence": 0.9,
+  "verification_status": "Hand-Checked",
+  "slug": "plaid",
+  "primary_docs_url": "https://plaid.com/docs/api/",
+  "rate_limit_note": "Not explicitly detailed in the provided evidence.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->

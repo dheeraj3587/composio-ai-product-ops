@@ -58,3 +58,41 @@ WooCommerce offers a well-documented REST API using Consumer Key/Secret (API Key
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by current handcheck fold; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "WooCommerce",
+  "category": "Commerce",
+  "one_liner": "WooCommerce provides a comprehensive REST API and native MCP integration for managing store data and operations.",
+  "auth_methods": [
+    "API Key",
+    "Basic Auth"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "API keys can be generated directly from the WooCommerce admin dashboard by any store owner."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "No",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://developer.woocommerce.com/docs/apis/rest-api/authentication/",
+    "https://developer.woocommerce.com/docs/features/mcp/"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Hand-Checked",
+  "slug": "woocommerce",
+  "primary_docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/authentication/",
+  "rate_limit_note": "Rate limits depend on the underlying WordPress hosting environment.",
+  "last_verified": "2026-07-10"
+}
+```
+<!-- final-state:end -->
