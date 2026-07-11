@@ -664,8 +664,7 @@
     "auth_methods": [
       "API Key",
       "Basic Auth",
-      "OAuth2",
-      "Other Token"
+      "OAuth2"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -679,6 +678,8 @@
     "main_blocker": "None.",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
+      "https://www.twilio.com/docs/iam/api-keys",
+      "https://www.twilio.com/docs/iam/oauth-apps/overview",
       "https://www.twilio.com/docs/iam/credentials/api",
       "https://www.twilio.com/docs/iam/access-tokens",
       "https://www.twilio.com/docs/ai/mcp",
@@ -687,9 +688,9 @@
     "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "twilio",
-    "primary_docs_url": "https://www.twilio.com/en-us/user-authentication-identity/verify",
+    "primary_docs_url": "https://www.twilio.com/docs/iam/api-keys",
     "rate_limit_note": "No specific rate limits were detailed in the provided evidence.",
-    "last_verified": "2026-07-10"
+    "last_verified": "2026-07-11"
   },
   {
     "app": "Zoho Cliq",
@@ -1329,17 +1330,19 @@
       "API Key"
     ],
     "access_model": {
-      "kind": "Self-Serve",
-      "note": "Developers can sign up for a free sandbox store to generate API credentials and build integrations."
+      "kind": "Gated",
+      "note": "A sandbox can be created for testing, but production API credentials require an active BigCommerce store or partner/customer relationship."
     },
     "api_type": "REST",
     "api_breadth": "Broad",
     "existing_mcp": "Official",
     "composio_toolkit": "No",
-    "buildability": "Easy",
-    "main_blocker": "None",
-    "recommended_next_action": "Build Now",
+    "buildability": "Moderate",
+    "main_blocker": "Production credentials require an active paid store or an existing BigCommerce partner/customer relationship.",
+    "recommended_next_action": "Partner-Gated",
     "evidence_urls": [
+      "https://docs.bigcommerce.com/developer/docs/overview/quick-start",
+      "https://docs.bigcommerce.com/developer/docs/overview/api-fundamentals/api-accounts",
       "https://docs.bigcommerce.com",
       "https://docs.bigcommerce.com/developer/api-reference/mcp/overview",
       "https://www.bigcommerce.com/blog/storefront-mcp/"
@@ -1347,9 +1350,9 @@
     "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "bigcommerce",
-    "primary_docs_url": "https://docs.bigcommerce.com/developer/docs/b2b-edition/getting-started/authentication",
+    "primary_docs_url": "https://docs.bigcommerce.com/developer/docs/overview/quick-start",
     "rate_limit_note": "Rate limits apply and are documented in the API Fundamentals section.",
-    "last_verified": "2026-07-10"
+    "last_verified": "2026-07-11"
   },
   {
     "app": "Salesforce Commerce Cloud",
@@ -1968,8 +1971,7 @@
     "one_liner": "Cloudflare provides a comprehensive API and official MCP servers for managing web infrastructure, security, and...",
     "auth_methods": [
       "Bearer Token",
-      "API Key",
-      "OAuth2"
+      "API Key"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -1983,16 +1985,17 @@
     "main_blocker": "None.",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
-      "https://developers.cloudflare.com/api/",
+      "https://developers.cloudflare.com/fundamentals/api/get-started/keys/",
       "https://developers.cloudflare.com/fundamentals/api/reference/permissions/",
+      "https://developers.cloudflare.com/api/",
       "https://developers.cloudflare.com/agents/model-context-protocol/cloudflare/servers-for-cloudflare/"
     ],
     "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "cloudflare",
-    "primary_docs_url": "https://developers.cloudflare.com/fundamentals/api/reference/permissions/",
+    "primary_docs_url": "https://developers.cloudflare.com/fundamentals/api/get-started/keys/",
     "rate_limit_note": "Standard API rate limits apply; specific limits depend on the endpoint and the user's account plan.",
-    "last_verified": "2026-07-10"
+    "last_verified": "2026-07-11"
   },
   {
     "app": "Supabase",
@@ -2096,7 +2099,8 @@
     "one_liner": "MongoDB Atlas provides a multi-cloud database platform with a REST Administration API and an official MCP server.",
     "auth_methods": [
       "OAuth2",
-      "API Key"
+      "API Key",
+      "Service Account"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2110,6 +2114,8 @@
     "main_blocker": "None",
     "recommended_next_action": "Build Now",
     "evidence_urls": [
+      "https://www.mongodb.com/docs/atlas/api/atlas-admin-api-ref/",
+      "https://www.mongodb.com/docs/atlas/api/api-authentication/",
       "https://www.mongodb.com/docs/atlas/architecture/current/auth/authentication/",
       "https://www.mongodb.com/docs/atlas/configure-api-access/",
       "https://www.mongodb.com/company/blog/announcing-mongodb-mcp-server",
@@ -2118,9 +2124,9 @@
     "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "mongodb-atlas",
-    "primary_docs_url": "https://www.mongodb.com/docs/atlas/architecture/current/auth/authentication/",
+    "primary_docs_url": "https://www.mongodb.com/docs/atlas/api/atlas-admin-api-ref/",
     "rate_limit_note": "Standard rate limits apply to the Atlas Administration API, though specific thresholds are not detailed in the provided snippets.",
-    "last_verified": "2026-07-10"
+    "last_verified": "2026-07-11"
   },
   {
     "app": "Datadog",
@@ -2316,7 +2322,8 @@
     "one_liner": "Asana provides a comprehensive REST API and an official MCP server to integrate applications and AI assistants with...",
     "auth_methods": [
       "Personal Access Token",
-      "OAuth2"
+      "OAuth2",
+      "Service Account"
     ],
     "access_model": {
       "kind": "Self-Serve",
@@ -2338,9 +2345,9 @@
     "confidence": 0.95,
     "verification_status": "Auto",
     "slug": "asana",
-    "primary_docs_url": "https://developers.asana.com/docs/oauth-scopes",
+    "primary_docs_url": "https://developers.asana.com/docs/authentication",
     "rate_limit_note": "Rate limits apply and are documented in the API reference, though specific limits are not detailed in the fetched snippets.",
-    "last_verified": "2026-07-10"
+    "last_verified": "2026-07-11"
   },
   {
     "app": "Monday.com",

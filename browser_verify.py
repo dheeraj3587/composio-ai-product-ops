@@ -5,11 +5,11 @@ An INDEPENDENT verification channel: a cloud browser agent NAVIGATES the live
 developer docs for a set of apps and re-derives whether a public API exists, its
 type, the auth method(s), and Self-Serve vs Gated access. Independent of the
 pipeline's static search+fetch pass (catches JS-rendered docs / marketing-homepage
-misses like copper/plain) and uses the cloud's OWN model (default Opus) — so it's
+misses like copper/plain) and uses the cloud's OWN browser model — so it's
 independent of the pipeline's ZenMux/OpenRouter/Gemini LLMs too.
 
-Quota-savvy: one browser agent can research MANY sites per task, so we batch
-`--batch-size` apps into a single cloud instance (Browser Use Cloud free = 10/mo).
+Quota-savvy: one browser agent can research many sites per task, so we batch
+`--batch-size` apps into a single cloud instance.
 
 Runs in the isolated .venv-browser. Reads out/results.json, writes
 out/browser_verification.json.
@@ -17,6 +17,7 @@ out/browser_verification.json.
 Usage (from repo root):
   .venv-browser/bin/python browser_verify.py --sample 12 --batch-size 6
   .venv-browser/bin/python browser_verify.py --slugs copper,plain,dealcloud --batch-size 15
+  .venv-browser/bin/python browser_verify.py --slugs copper,plain --recover-task-id TASK_ID
 Needs BROWSER_USE_API_KEY in .env.
 """
 from __future__ import annotations
@@ -39,9 +40,7 @@ load_dotenv()
 ROOT = Path(__file__).resolve().parent
 RESULTS = ROOT / "out" / "results.json"
 OUT = ROOT / "out" / "browser_verification.json"
-DEFAULT_LLM = "claude-opus-4-7"  # newest Opus-tier model Browser Use Cloud currently accepts
-                                  # (verified live against the tasks API; gpt-5.5 / opus-4.8
-                                  # are rejected with a 422 as of this writing — not yet onboarded)
+DEFAULT_LLM = "browser-use-2.0"
 
 
 class AppVerdict(BaseModel):
@@ -109,8 +108,6 @@ def _comparison(first_pass: dict, browser: dict) -> dict:
 def _to_dict(out) -> dict:
     if out is None:
         return {}
-    if hasattr(out, "model_dump"):
-        return out.model_dump()
     if isinstance(out, dict):
         return out
     if isinstance(out, str):
@@ -118,10 +115,14 @@ def _to_dict(out) -> dict:
             return json.loads(out)
         except Exception:
             return {"raw": out[:400]}
+    # SDK 3.x returns a TaskView whose `output` contains the structured JSON.
+    # Unwrap that before model_dump(), which would otherwise hide verdicts one level down.
     for attr in ("parsed", "output", "structured_output", "result", "data"):
         v = getattr(out, attr, None)
         if v is not None:
             return _to_dict(v)
+    if hasattr(out, "model_dump"):
+        return out.model_dump()
     return {"raw": str(out)[:400]}
 
 
@@ -130,8 +131,12 @@ def main() -> None:
     ap.add_argument("--sample", type=int, default=12, help="how many apps total")
     ap.add_argument("--slugs", help="comma-separated slugs to force (overrides --sample)")
     ap.add_argument("--batch-size", type=int, default=6, help="apps per cloud task/instance")
-    ap.add_argument("--llm", default=DEFAULT_LLM, help="cloud model (default Opus)")
+    ap.add_argument("--llm", default=DEFAULT_LLM, help=f"cloud model (default {DEFAULT_LLM})")
     ap.add_argument("--max-steps", type=int, default=60)
+    ap.add_argument(
+        "--recover-task-id",
+        help="parse an existing completed Browser Use task instead of spending a new task credit",
+    )
     args = ap.parse_args()
 
     key = os.getenv("BROWSER_USE_API_KEY")
@@ -163,8 +168,14 @@ def main() -> None:
         slugs = [r["slug"] for r in chunk]
         print(f"[task {ci}/{len(chunks)}] {slugs} ...")
         try:
-            out = client.run(task=build_batch_task(chunk), schema=BatchVerdict,
-                             llm=args.llm, max_steps=args.max_steps)
+            if args.recover_task_id:
+                if len(chunks) != 1:
+                    raise ValueError("--recover-task-id requires one batch")
+                print(f"   recovering completed task {args.recover_task_id}")
+                out = client.tasks.get(args.recover_task_id)
+            else:
+                out = client.run(task=build_batch_task(chunk), schema=BatchVerdict,
+                                 llm=args.llm, max_steps=args.max_steps)
             data = _to_dict(out)
             verdicts = data.get("verdicts", []) if isinstance(data, dict) else []
             expected = {r["slug"] for r in chunk}

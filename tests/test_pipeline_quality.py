@@ -522,6 +522,42 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual(summary["field_disagreements"], {"auth_methods": 1})
         self.assertEqual(summary["n_corrections_found"], 0)
 
+    def test_browser_sdk_task_view_output_is_unwrapped(self):
+        import browser_verify
+
+        class TaskView:
+            output = '{"verdicts":[{"slug":"acme"}]}'
+
+            def model_dump(self):
+                return {"output": self.output, "status": "finished"}
+
+        self.assertEqual(
+            browser_verify._to_dict(TaskView()),
+            {"verdicts": [{"slug": "acme"}]},
+        )
+
+    def test_metrics_rebuild_preserves_completed_audit_without_ignored_batch_state(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            results_path = root / "results.json"
+            metrics_path = root / "metrics.json"
+            results_path.write_text(json.dumps([valid_record()]), encoding="utf-8")
+            metrics_path.write_text(json.dumps({
+                "quality": {"source_audit_complete": True, "source_audited_rows": 1}
+            }), encoding="utf-8")
+            with (
+                mock.patch.object(config, "RESULTS_PATH", results_path),
+                mock.patch.object(config, "METRICS_PATH", metrics_path),
+                mock.patch.object(config, "OUT_DIR", root),
+                mock.patch.object(config, "BATCH_STATE_PATH", root / "batch_state.json"),
+                mock.patch.object(config, "FAILURE_STATE_PATH", root / "failure_state.json"),
+                mock.patch.object(config, "BROWSER_EVIDENCE_PATH", root / "browser_evidence.json"),
+                mock.patch.object(verify.pipeline, "load_preseed_map", return_value={}),
+            ):
+                rebuilt = verify.rebuild_metrics()
+        self.assertTrue(rebuilt["quality"]["source_audit_complete"])
+        self.assertEqual(rebuilt["quality"]["source_audited_rows"], 1)
+
 
 class FreshRunTests(unittest.TestCase):
     def test_build_report_bundles_reasoning_for_static_review(self):

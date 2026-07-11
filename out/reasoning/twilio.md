@@ -63,3 +63,46 @@ Twilio offers a broad REST API with self-serve API keys and Basic Auth. They hav
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by official-doc adjudication of independent browser verification; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Twilio",
+  "category": "Comms",
+  "one_liner": "Twilio provides a comprehensive communications platform with APIs for messaging, voice, video, and authentication.",
+  "auth_methods": [
+    "API Key",
+    "Basic Auth",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can sign up and generate API keys or access tokens directly from the Twilio Console for production use."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "No",
+  "buildability": "Easy",
+  "main_blocker": "None.",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://www.twilio.com/docs/iam/api-keys",
+    "https://www.twilio.com/docs/iam/oauth-apps/overview",
+    "https://www.twilio.com/docs/iam/credentials/api",
+    "https://www.twilio.com/docs/iam/access-tokens",
+    "https://www.twilio.com/docs/ai/mcp",
+    "https://github.com/twilio-labs/mcp"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "twilio",
+  "primary_docs_url": "https://www.twilio.com/docs/iam/api-keys",
+  "rate_limit_note": "No specific rate limits were detailed in the provided evidence.",
+  "last_verified": "2026-07-11"
+}
+```
+<!-- final-state:end -->

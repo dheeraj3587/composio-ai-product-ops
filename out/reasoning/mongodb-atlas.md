@@ -61,3 +61,46 @@ The evidence clearly shows MongoDB Atlas offers a RESTful Administration API aut
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by official-doc adjudication of independent browser verification; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "MongoDB Atlas",
+  "category": "DevInfra",
+  "one_liner": "MongoDB Atlas provides a multi-cloud database platform with a REST Administration API and an official MCP server.",
+  "auth_methods": [
+    "OAuth2",
+    "API Key",
+    "Service Account"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can sign up for free and generate API keys or OAuth2 Service Accounts to access the Atlas Administration API."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "No",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://www.mongodb.com/docs/atlas/api/atlas-admin-api-ref/",
+    "https://www.mongodb.com/docs/atlas/api/api-authentication/",
+    "https://www.mongodb.com/docs/atlas/architecture/current/auth/authentication/",
+    "https://www.mongodb.com/docs/atlas/configure-api-access/",
+    "https://www.mongodb.com/company/blog/announcing-mongodb-mcp-server",
+    "https://mcpatlas.dev/server/mcp-mongodb"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "mongodb-atlas",
+  "primary_docs_url": "https://www.mongodb.com/docs/atlas/api/atlas-admin-api-ref/",
+  "rate_limit_note": "Standard rate limits apply to the Atlas Administration API, though specific thresholds are not detailed in the provided snippets.",
+  "last_verified": "2026-07-11"
+}
+```
+<!-- final-state:end -->

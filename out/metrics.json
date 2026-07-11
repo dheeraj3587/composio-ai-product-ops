@@ -3,19 +3,19 @@
     "n": 100,
     "buildability": {
       "Hard": 18,
-      "Easy": 74,
-      "Moderate": 6,
+      "Easy": 73,
+      "Moderate": 7,
       "Blocked": 2
     },
     "recommended_next_action": {
-      "Partner-Gated": 5,
-      "Build Now": 74,
+      "Partner-Gated": 6,
+      "Build Now": 73,
       "Needs Outreach": 19,
       "Blocked": 2
     },
     "access_model": {
-      "Gated": 24,
-      "Self-Serve": 76
+      "Gated": 25,
+      "Self-Serve": 75
     },
     "api_type": {
       "REST": 94,
@@ -34,7 +34,7 @@
     "auth_methods_top": [
       [
         "OAuth2",
-        75
+        74
       ],
       [
         "API Key",
@@ -53,12 +53,12 @@
         10
       ],
       [
-        "Other Token",
+        "Service Account",
         5
       ],
       [
-        "Service Account",
-        3
+        "Other Token",
+        4
       ],
       [
         "Bot Token",
@@ -83,8 +83,8 @@
         "Self-Serve": 5
       },
       "Commerce": {
-        "Self-Serve": 7,
-        "Gated": 3
+        "Self-Serve": 6,
+        "Gated": 4
       },
       "Research/Scraping": {
         "Self-Serve": 8,
@@ -109,7 +109,7 @@
     "top_blockers": [
       [
         "None",
-        47
+        46
       ],
       [
         "None.",
@@ -132,8 +132,8 @@
         1
       ]
     ],
-    "build_now": 74,
-    "partner_gated": 5,
+    "build_now": 73,
+    "partner_gated": 6,
     "avg_confidence": 0.912
   },
   "n_results": 100,
@@ -414,5 +414,38 @@
       }
     ],
     "generated": "2026-07-11"
+  },
+  "browser_use": {
+    "method": "A cloud browser agent independently navigated live developer docs and re-derived API type, canonical auth, and production access. Disagreements require human adjudication.",
+    "n_checked": 15,
+    "n_disagreements": 6,
+    "disagreed_apps": [
+      "twilio",
+      "bigcommerce",
+      "cloudflare",
+      "mongodb-atlas",
+      "linear",
+      "asana"
+    ],
+    "field_disagreements": {
+      "auth_methods": 5,
+      "access_model": 1
+    },
+    "n_adjudicated_corrections": 5,
+    "adjudicated_correction_apps": [
+      "twilio",
+      "bigcommerce",
+      "cloudflare",
+      "mongodb-atlas",
+      "asana"
+    ],
+    "n_corrections_found": 5,
+    "corrected_apps": [
+      "twilio",
+      "bigcommerce",
+      "cloudflare",
+      "mongodb-atlas",
+      "asana"
+    ]
   }
 }

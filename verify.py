@@ -411,6 +411,11 @@ def rebuild_metrics() -> dict:
         and not batch_state.get("validation_failures")
         and completed_slugs == result_slugs
     )
+    # The bulky batch checkpoint is intentionally gitignored after a completed run.
+    # Preserve an already-published full audit when rebuilding derived metrics without it.
+    prior_quality = metrics.get("quality") or {}
+    if not batch_state and prior_quality.get("source_audit_complete"):
+        source_audit_complete = prior_quality.get("source_audited_rows") == len(results)
     browser_evidence = config.load_json(config.BROWSER_EVIDENCE_PATH, default={}) or {}
     browser_entries = [
         entry

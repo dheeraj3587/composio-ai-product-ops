@@ -1,0 +1,679 @@
+[
+  {
+    "slug": "pipedrive",
+    "app": "Pipedrive",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "API Key"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.95
+    },
+    "browser": {
+      "slug": "pipedrive",
+      "app": "Pipedrive",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "API Key"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://pipedrive.readme.io/docs/how-to-find-the-api-token",
+      "notes": "Supports OAuth2 for apps and API tokens for personal use. Anyone can sign up for a trial/account and get tokens instantly."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": true,
+        "access_model": true
+      },
+      "disagreed_fields": []
+    },
+    "adjudication": {
+      "status": "Not Needed",
+      "notes": "",
+      "evidence_urls": [],
+      "applied_to_results": false
+    },
+    "browser_model": "browser-use-2.0",
+    "generated": "2026-07-11"
+  },
+  {
+    "slug": "zendesk",
+    "app": "Zendesk",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "API Key",
+        "Basic Auth"
+      ],
+      "access_model": "Gated",
+      "recommended_next_action": "Needs Outreach",
+      "confidence": 0.9
+    },
+    "browser": {
+      "slug": "zendesk",
+      "app": "Zendesk",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "API Key",
+        "Basic Auth"
+      ],
+      "access_model": "Gated",
+      "evidence_url": "https://developer.zendesk.com/api-reference/introduction/security-and-authentication/",
+      "notes": "API access requires an active Zendesk account. API tokens are used with Basic Auth (email/token)."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": true,
+        "access_model": true
+      },
+      "disagreed_fields": []
+    },
+    "adjudication": {
+      "status": "Not Needed",
+      "notes": "",
+      "evidence_urls": [],
+      "applied_to_results": false
+    },
+    "browser_model": "browser-use-2.0",
+    "generated": "2026-07-11"
+  },
+  {
+    "slug": "intercom",
+    "app": "Intercom",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "Personal Access Token"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.95
+    },
+    "browser": {
+      "slug": "intercom",
+      "app": "Intercom",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "Personal Access Token"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://developers.intercom.com/docs/build-an-integration/learn-more/authentication",
+      "notes": "Access tokens (PATs) can be generated in the Developer Hub immediately upon app creation."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": true,
+        "access_model": true
+      },
+      "disagreed_fields": []
+    },
+    "adjudication": {
+      "status": "Not Needed",
+      "notes": "",
+      "evidence_urls": [],
+      "applied_to_results": false
+    },
+    "browser_model": "browser-use-2.0",
+    "generated": "2026-07-11"
+  },
+  {
+    "slug": "twilio",
+    "app": "Twilio",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "API Key",
+        "Basic Auth",
+        "OAuth2",
+        "Other Token"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.95
+    },
+    "browser": {
+      "slug": "twilio",
+      "app": "Twilio",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "API Key",
+        "Basic Auth"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://www.twilio.com/docs/usage/api",
+      "notes": "Uses Account SID and Auth Token (Basic Auth) or API Keys. Anyone can sign up and get production-ready credentials."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": false,
+        "access_model": true
+      },
+      "disagreed_fields": [
+        "auth_methods"
+      ]
+    },
+    "adjudication": {
+      "status": "Accepted Correction",
+      "notes": "Official docs confirm API keys, Basic Auth, and OAuth 2.0. The generic Other Token label was removed; the browser result correctly exposed the overcount but omitted valid OAuth 2.0.",
+      "evidence_urls": [
+        "https://www.twilio.com/docs/iam/api-keys",
+        "https://www.twilio.com/docs/iam/oauth-apps/overview"
+      ],
+      "applied_to_results": true
+    },
+    "browser_model": "browser-use-2.0",
+    "generated": "2026-07-11"
+  },
+  {
+    "slug": "discord",
+    "app": "Discord",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "Bot Token"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.95
+    },
+    "browser": {
+      "slug": "discord",
+      "app": "Discord",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "Bot Token"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://docs.discord.com/developers/topics/oauth2",
+      "notes": "Developers can create applications and bot tokens instantly through the portal."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": true,
+        "access_model": true
+      },
+      "disagreed_fields": []
+    },
+    "adjudication": {
+      "status": "Not Needed",
+      "notes": "",
+      "evidence_urls": [],
+      "applied_to_results": false
+    },
+    "browser_model": "browser-use-2.0",
+    "generated": "2026-07-11"
+  },
+  {
+    "slug": "mailchimp",
+    "app": "Mailchimp",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "API Key"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.95
+    },
+    "browser": {
+      "slug": "mailchimp",
+      "app": "Mailchimp",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "API Key"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://mailchimp.com/developer/marketing/guides/access-user-data-oauth-2/",
+      "notes": "Supports both API keys and OAuth2. Self-serve for any account holder."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": true,
+        "access_model": true
+      },
+      "disagreed_fields": []
+    },
+    "adjudication": {
+      "status": "Not Needed",
+      "notes": "",
+      "evidence_urls": [],
+      "applied_to_results": false
+    },
+    "browser_model": "browser-use-2.0",
+    "generated": "2026-07-11"
+  },
+  {
+    "slug": "bigcommerce",
+    "app": "BigCommerce",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "API Key"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.95
+    },
+    "browser": {
+      "slug": "bigcommerce",
+      "app": "BigCommerce",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "API Key"
+      ],
+      "access_model": "Gated",
+      "evidence_url": "https://docs.bigcommerce.com/developer/docs/b2b-edition/getting-started/authentication",
+      "notes": "Requires an active store or partner account to generate API credentials for production."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": true,
+        "access_model": false
+      },
+      "disagreed_fields": [
+        "access_model"
+      ]
+    },
+    "adjudication": {
+      "status": "Accepted Correction",
+      "notes": "A free sandbox supports testing, but production credentials require an active store or partner/customer relationship. Production access is therefore gated under the assignment rubric.",
+      "evidence_urls": [
+        "https://docs.bigcommerce.com/developer/docs/overview/quick-start",
+        "https://docs.bigcommerce.com/developer/docs/overview/api-fundamentals/api-accounts"
+      ],
+      "applied_to_results": true
+    },
+    "browser_model": "browser-use-2.0",
+    "generated": "2026-07-11"
+  },
+  {
+    "slug": "cloudflare",
+    "app": "Cloudflare",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "Bearer Token",
+        "API Key",
+        "OAuth2"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.95
+    },
+    "browser": {
+      "slug": "cloudflare",
+      "app": "Cloudflare",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "API Key",
+        "Bearer Token"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://developers.cloudflare.com/fundamentals/api/reference/permissions/",
+      "notes": "API Tokens (Bearer) and Global API Keys are available to all users immediately."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": false,
+        "access_model": true
+      },
+      "disagreed_fields": [
+        "auth_methods"
+      ]
+    },
+    "adjudication": {
+      "status": "Accepted Correction",
+      "notes": "Cloudflare documents API Tokens (Bearer) and Global API Keys for API authentication; OAuth 2.0 was removed from this API-auth inventory.",
+      "evidence_urls": [
+        "https://developers.cloudflare.com/fundamentals/api/get-started/keys/"
+      ],
+      "applied_to_results": true
+    },
+    "browser_model": "browser-use-2.0",
+    "generated": "2026-07-11"
+  },
+  {
+    "slug": "mongodb-atlas",
+    "app": "MongoDB Atlas",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "API Key"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.95
+    },
+    "browser": {
+      "slug": "mongodb-atlas",
+      "app": "MongoDB Atlas",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "API Key",
+        "Service Account"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://www.mongodb.com/docs/atlas/architecture/current/auth/authentication/",
+      "notes": "Users can create Programmatic API keys for the Administration API without approval."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": false,
+        "access_model": true
+      },
+      "disagreed_fields": [
+        "auth_methods"
+      ]
+    },
+    "adjudication": {
+      "status": "Accepted Correction",
+      "notes": "Atlas supports API keys and service accounts; service-account access tokens use OAuth 2.0 client credentials. Service Account was added while retaining the OAuth2 scheme.",
+      "evidence_urls": [
+        "https://www.mongodb.com/docs/atlas/api/atlas-admin-api-ref/",
+        "https://www.mongodb.com/docs/atlas/api/api-authentication/"
+      ],
+      "applied_to_results": true
+    },
+    "browser_model": "browser-use-2.0",
+    "generated": "2026-07-11"
+  },
+  {
+    "slug": "airtable",
+    "app": "Airtable",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "Personal Access Token",
+        "OAuth2",
+        "Service Account"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.95
+    },
+    "browser": {
+      "slug": "airtable",
+      "app": "Airtable",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "Personal Access Token",
+        "Service Account"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://community.airtable.com/announcements-6/new-beta-new-api-authentication-methods-endpoints-and-public-api-docs-1442",
+      "notes": "Supports PATs, OAuth2, and recently added Service Accounts for all users."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": true,
+        "access_model": true
+      },
+      "disagreed_fields": []
+    },
+    "adjudication": {
+      "status": "Not Needed",
+      "notes": "",
+      "evidence_urls": [],
+      "applied_to_results": false
+    },
+    "browser_model": "browser-use-2.0",
+    "generated": "2026-07-11"
+  },
+  {
+    "slug": "linear",
+    "app": "Linear",
+    "first_pass": {
+      "api_type": "GraphQL",
+      "auth_methods": [
+        "OAuth2",
+        "API Key"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.95
+    },
+    "browser": {
+      "slug": "linear",
+      "app": "Linear",
+      "has_public_api": true,
+      "api_type": "GraphQL",
+      "auth_methods": [
+        "OAuth2",
+        "Personal Access Token"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://linear.app/developers/oauth-2-0-authentication",
+      "notes": "GraphQL API accessible via PATs or OAuth2 applications created by any user."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": false,
+        "access_model": true
+      },
+      "disagreed_fields": [
+        "auth_methods"
+      ]
+    },
+    "adjudication": {
+      "status": "Rejected",
+      "notes": "Linear calls the user credential a personal API key, so the existing API Key label is canonical; OAuth 2.0 is also supported.",
+      "evidence_urls": [
+        "https://linear.app/developers",
+        "https://linear.app/developers/oauth-2-0-authentication"
+      ],
+      "applied_to_results": false
+    },
+    "browser_model": "browser-use-2.0",
+    "generated": "2026-07-11"
+  },
+  {
+    "slug": "asana",
+    "app": "Asana",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "Personal Access Token",
+        "OAuth2"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.95
+    },
+    "browser": {
+      "slug": "asana",
+      "app": "Asana",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "Personal Access Token",
+        "Service Account"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://developers.asana.com/docs/oauth-scopes",
+      "notes": "Provides PATs and OAuth2 for all users to build and deploy integrations."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": false,
+        "access_model": true
+      },
+      "disagreed_fields": [
+        "auth_methods"
+      ]
+    },
+    "adjudication": {
+      "status": "Accepted Correction",
+      "notes": "Asana officially lists PAT, OAuth, and Enterprise service accounts. Service Account was added; self-serve access remains because PAT and OAuth are available without enterprise approval.",
+      "evidence_urls": [
+        "https://developers.asana.com/docs/authentication"
+      ],
+      "applied_to_results": true
+    },
+    "browser_model": "browser-use-2.0",
+    "generated": "2026-07-11"
+  },
+  {
+    "slug": "clickup",
+    "app": "ClickUp",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "Personal Access Token",
+        "OAuth2"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.95
+    },
+    "browser": {
+      "slug": "clickup",
+      "app": "ClickUp",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2",
+        "Personal Access Token"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://developer.clickup.com/reference/authorization",
+      "notes": "Personal access tokens can be generated in settings immediately."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": true,
+        "access_model": true
+      },
+      "disagreed_fields": []
+    },
+    "adjudication": {
+      "status": "Not Needed",
+      "notes": "",
+      "evidence_urls": [],
+      "applied_to_results": false
+    },
+    "browser_model": "browser-use-2.0",
+    "generated": "2026-07-11"
+  },
+  {
+    "slug": "quickbooks",
+    "app": "QuickBooks",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.85
+    },
+    "browser": {
+      "slug": "quickbooks",
+      "app": "QuickBooks",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/faq",
+      "notes": "Uses OAuth 2.0. Developers can create apps and get production keys (after completing a profile/survey, but generally self-serve)."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": true,
+        "access_model": true
+      },
+      "disagreed_fields": []
+    },
+    "adjudication": {
+      "status": "Not Needed",
+      "notes": "",
+      "evidence_urls": [],
+      "applied_to_results": false
+    },
+    "browser_model": "browser-use-2.0",
+    "generated": "2026-07-11"
+  },
+  {
+    "slug": "xero",
+    "app": "Xero",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2"
+      ],
+      "access_model": "Self-Serve",
+      "recommended_next_action": "Build Now",
+      "confidence": 0.95
+    },
+    "browser": {
+      "slug": "xero",
+      "app": "Xero",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2"
+      ],
+      "access_model": "Self-Serve",
+      "evidence_url": "https://developer.xero.com/documentation/api/accounting/overview",
+      "notes": "OAuth 2.0 is the primary auth method. Standard apps can be created and connected to up to 25 tenants without approval."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": true,
+        "access_model": true
+      },
+      "disagreed_fields": []
+    },
+    "adjudication": {
+      "status": "Not Needed",
+      "notes": "",
+      "evidence_urls": [],
+      "applied_to_results": false
+    },
+    "browser_model": "browser-use-2.0",
+    "generated": "2026-07-11"
+  }
+]

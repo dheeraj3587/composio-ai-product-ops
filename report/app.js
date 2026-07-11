@@ -570,12 +570,12 @@ function renderVerification() {
       detail: `<span class="pill green">${(movement.improved_apps || []).length} improved</span><span class="pill gray">${(movement.regressed_apps || []).length} regressed</span>`,
     },
     {
-      title: "Browser-read evidence",
-      value: quality.browser_evidence_pages || browserUse.n_checked || 0,
-      body: quality.browser_evidence_pages
-        ? `${quality.browser_evidence_pages} official pages across ${quality.browser_evidence_apps || 0} difficult apps were read in-browser when direct fetching was incomplete.`
-        : "No browser-assisted evidence was required for this run.",
-      detail: "<span class=\"pill blue\">Evidence acquisition</span>",
+      title: "Cloud browser verification",
+      value: browserUse.n_checked || 0,
+      body: browserUse.n_checked
+        ? `${browserUse.n_checked} additional apps were independently re-researched in a live browser. ${browserUse.n_disagreements || 0} disagreements were reviewed against official docs; ${browserUse.n_adjudicated_corrections || 0} corrections were applied.`
+        : "No independent cloud browser verification is available for this run.",
+      detail: `<span class="pill blue">Independent re-search</span><span class="pill green">${browserUse.n_adjudicated_corrections || 0} applied</span>`,
     },
   ];
 

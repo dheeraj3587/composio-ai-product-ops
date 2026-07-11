@@ -61,3 +61,44 @@ Asana provides comprehensive developer documentation, self-serve access via PATs
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by official-doc adjudication of independent browser verification; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "Asana",
+  "category": "Productivity/PM",
+  "one_liner": "Asana provides a comprehensive REST API and an official MCP server to integrate applications and AI assistants with...",
+  "auth_methods": [
+    "Personal Access Token",
+    "OAuth2",
+    "Service Account"
+  ],
+  "access_model": {
+    "kind": "Self-Serve",
+    "note": "Developers can quickly generate a Personal Access Token (PAT) or set up an OAuth app via the developer console without manual approval."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "Yes",
+  "buildability": "Easy",
+  "main_blocker": "None",
+  "recommended_next_action": "Build Now",
+  "evidence_urls": [
+    "https://developers.asana.com/docs/authentication",
+    "https://developers.asana.com/docs/oauth",
+    "https://developers.asana.com/docs/mcp-server",
+    "https://developers.asana.com/docs/using-asanas-mcp-server"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "asana",
+  "primary_docs_url": "https://developers.asana.com/docs/authentication",
+  "rate_limit_note": "Rate limits apply and are documented in the API reference, though specific limits are not detailed in the fetched snippets.",
+  "last_verified": "2026-07-11"
+}
+```
+<!-- final-state:end -->

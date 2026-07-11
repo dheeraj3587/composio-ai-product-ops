@@ -59,3 +59,44 @@ BigCommerce offers extensive REST and GraphQL APIs with self-serve sandbox acces
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-11 by official-doc adjudication of independent browser verification; this supersedes earlier key decisions._
+
+```json
+{
+  "app": "BigCommerce",
+  "category": "Commerce",
+  "one_liner": "BigCommerce provides comprehensive REST and GraphQL APIs, along with an official MCP server, for e-commerce management.",
+  "auth_methods": [
+    "OAuth2",
+    "API Key"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "A sandbox can be created for testing, but production API credentials require an active BigCommerce store or partner/customer relationship."
+  },
+  "api_type": "REST",
+  "api_breadth": "Broad",
+  "existing_mcp": "Official",
+  "composio_toolkit": "No",
+  "buildability": "Moderate",
+  "main_blocker": "Production credentials require an active paid store or an existing BigCommerce partner/customer relationship.",
+  "recommended_next_action": "Partner-Gated",
+  "evidence_urls": [
+    "https://docs.bigcommerce.com/developer/docs/overview/quick-start",
+    "https://docs.bigcommerce.com/developer/docs/overview/api-fundamentals/api-accounts",
+    "https://docs.bigcommerce.com",
+    "https://docs.bigcommerce.com/developer/api-reference/mcp/overview",
+    "https://www.bigcommerce.com/blog/storefront-mcp/"
+  ],
+  "confidence": 0.95,
+  "verification_status": "Auto",
+  "slug": "bigcommerce",
+  "primary_docs_url": "https://docs.bigcommerce.com/developer/docs/overview/quick-start",
+  "rate_limit_note": "Rate limits apply and are documented in the API Fundamentals section.",
+  "last_verified": "2026-07-11"
+}
+```
+<!-- final-state:end -->
