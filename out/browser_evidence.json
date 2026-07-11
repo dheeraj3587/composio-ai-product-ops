@@ -1,6 +1,6 @@
 {
   "generated": "2026-07-10",
-  "method": "Codex in-app browser DOM verification of official vendor pages blocked to direct HTTP fetching.",
+  "method": "Codex in-app browser DOM verification of official vendor pages requiring live reading or claim adjudication.",
   "entries": [
     {
       "slug": "salesforce-commerce-cloud",
@@ -65,6 +65,14 @@
       "method": "in-app browser DOM snapshot",
       "analyst_summary": true,
       "text": "Plain provides a GraphQL API. A workspace user can generate an API key from Settings, send it as a Bearer credential, and use Plain's API explorer after setting up a workspace."
+    },
+    {
+      "slug": "otter-ai",
+      "url": "https://help.otter.ai/hc/en-us/articles/36130822688279-Otter-ai-Public-API",
+      "captured_at": "2026-07-12",
+      "method": "in-app browser DOM snapshot",
+      "analyst_summary": true,
+      "text": "Otter's Public API is available to Enterprise workspaces after account-manager enablement. API requests use a user-created API key in the Authorization Bearer header and are limited to 10 requests per second. Otter's official MCP server separately uses OAuth authentication."
     }
   ]
 }

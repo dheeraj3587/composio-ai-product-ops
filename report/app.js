@@ -179,13 +179,17 @@ function renderMetrics() {
   const access = patterns.access_model || {};
   const toolkit = patterns.composio_toolkit || {};
   const actions = patterns.recommended_next_action || {};
-  const handcheck = metrics.handcheck || {};
+  const movement = metrics.accuracy_movement || {};
   const cards = [
     [access["Self-Serve"] || 0, "Self-serve paths", "Credentials available without manual production approval"],
     [patterns.build_now || actions["Build Now"] || 0, "Ready to build", "Usable API surface and a clear implementation path"],
     [actions["Needs Outreach"] || 0, "Needs outreach", "Customer, vendor, or account access is the next move"],
     [toolkit.No || 0, "Toolkit gaps", "Requested apps not currently covered by Composio"],
-    [handcheck.n ? pct(handcheck.accuracy) : "—", "First-pass accuracy", `${handcheck.n || 0} priority apps checked against official docs`],
+    [
+      movement.first_pass_accuracy != null ? pct(movement.first_pass_accuracy) : "—",
+      "Archived first pass",
+      `${movement.n || 0} priority apps scored against the final verified truth set`,
+    ],
   ];
 
   $("metrics").innerHTML = cards.map(([value, label, note], index) => `
@@ -420,17 +424,26 @@ function traceMarkup(trace) {
 
 function verificationMarkup(record) {
   const { checked, misses } = handcheckFor(record);
+  const checkedCount = metrics.handcheck?.n || 0;
+  const browserCorrected = (metrics.browser_use?.adjudicated_correction_apps || []).includes(record.slug);
+  if (!checked && browserCorrected) {
+    return `
+      <div class="verification-note missed">
+        <p><b>Browser-adjudicated.</b> An independent live-browser review found a disagreement, and the final record was corrected against official docs.</p>
+      </div>
+    `;
+  }
   if (!checked) {
     return `
       <div class="verification-note">
-        <p><b>Source-audited, not hand-checked.</b> This row passed schema, citation, identity, and claim-coverage checks but was not part of the 10-app human ground-truth sample.</p>
+        <p><b>Source-audited, not manually adjudicated.</b> This row passed schema, citation, identity, and claim-coverage checks but was not part of the ${checkedCount}-app official-doc sample.</p>
       </div>
     `;
   }
   if (!misses.length) {
     return `
       <div class="verification-note">
-        <p><b>Matched official docs.</b> API type, canonical auth set, production access, and MCP ownership all matched the human adjudication.</p>
+        <p><b>Matched official docs.</b> API type, canonical auth set, production access, and MCP ownership all matched the recorded adjudication.</p>
       </div>
     `;
   }
@@ -454,6 +467,7 @@ function openReasoning(slug, updateUrl = true) {
   const meta = stripMarkdown(metaLine.replace(/^_+|_+$/g, ""));
   const confidence = Math.round(Number(record.confidence || 0) * 100);
   const adjudication = handcheckFor(record);
+  const browserCorrected = (metrics.browser_use?.adjudicated_correction_apps || []).includes(record.slug);
   const dialog = $("reasoning-dialog");
 
   $("reasoning-title").textContent = record.app;
@@ -467,8 +481,13 @@ function openReasoning(slug, updateUrl = true) {
 
     ${adjudication.misses.length ? `
       <div class="adjudication-alert">
-        <b>Human correction applied</b>
+        <b>Official-doc correction applied</b>
         <p>${adjudication.misses.length} first-pass field${adjudication.misses.length === 1 ? " was" : "s were"} corrected against official docs. The model paragraph below is preserved verbatim; the decision details are the final adjudicated record.</p>
+      </div>
+    ` : browserCorrected ? `
+      <div class="adjudication-alert">
+        <b>Independent browser correction applied</b>
+        <p>A live-browser review disagreed with the model and was adjudicated against official documentation. The model paragraph below is preserved verbatim; the decision details are the final record.</p>
       </div>
     ` : ""}
 
@@ -546,8 +565,8 @@ function renderVerification() {
   const correctedSlugs = new Set(misses.map((miss) => miss.slug));
   const checkedPills = [
     pill(`${checked.length} apps`, "Official"),
-    pill(`${checked.length - correctedSlugs.size} exact`, "Self-Serve"),
-    pill(`${correctedSlugs.size} corrected`, correctedSlugs.size ? "Hard" : "Self-Serve"),
+    pill(`${checked.length - correctedSlugs.size} matched at stage`, "Self-Serve"),
+    pill(`${correctedSlugs.size} corrected this stage`, correctedSlugs.size ? "Hard" : "Self-Serve"),
   ].join("");
 
   const cards = [
@@ -558,9 +577,9 @@ function renderVerification() {
       detail: `<span class="pill green">${quality.source_audit_complete ? "Complete" : "Incomplete"}</span>`,
     },
     {
-      title: "Human ground truth",
+      title: "Latest staged agreement",
       value: handcheck.n ? pct(handcheck.accuracy) : "Pending",
-      body: `${handcheck.n || 0} priority apps checked against official documentation. The score captures the catalog before this verification set was folded in.`,
+      body: `${handcheck.n || 0} cumulative priority-app checks. Earlier batches were corrected before later batches were added, so this is the final stage's pre-fold agreement, not a blind first-pass estimate across all checked apps.`,
       detail: checkedPills,
       misses,
     },
@@ -573,7 +592,7 @@ function renderVerification() {
       detail: `<span class="pill green">${(movement.improved_apps || []).length} improved</span><span class="pill gray">${(movement.regressed_apps || []).length} regressed</span>`,
     },
     {
-      title: "Cloud browser verification",
+      title: "Independent browser check",
       value: browserUse.n_checked || 0,
       body: browserUse.n_checked
         ? `${browserUse.n_checked} additional apps were independently re-researched in a live browser. ${browserUse.n_disagreements || 0} disagreements were reviewed against official docs; ${browserUse.n_adjudicated_corrections || 0} corrections were applied.`

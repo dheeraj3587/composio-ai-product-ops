@@ -2839,6 +2839,7 @@
     "category": "AI/Meeting-tools",
     "one_liner": "Otter AI provides a REST API and an official MCP server for meeting transcripts, gated behind Enterprise plans.",
     "auth_methods": [
+      "API Key",
       "OAuth2"
     ],
     "access_model": {
@@ -2853,16 +2854,16 @@
     "main_blocker": "Access requires an Enterprise plan and manual approval from an account manager.",
     "recommended_next_action": "Needs Outreach",
     "evidence_urls": [
+      "https://help.otter.ai/hc/en-us/articles/36130822688279-Otter-ai-Public-API",
       "https://help.otter.ai/hc/en-us/articles/4412365535895-Does-Otter-offer-an-open-API",
-      "https://otter.ai/blog/otter-for-enterprise-connect-ai-to-ai-with-otters-mcp",
-      "https://otter.ai/software-services-agreement"
+      "https://help.otter.ai/hc/en-us/articles/35287607569687-Otter-MCP-Server"
     ],
     "confidence": 0.9,
-    "verification_status": "Auto",
+    "verification_status": "Hand-Checked",
     "slug": "otter-ai",
-    "primary_docs_url": "https://otter.ai/terms-of-service",
-    "rate_limit_note": "Not explicitly documented in the provided public sources.",
-    "last_verified": "2026-07-10"
+    "primary_docs_url": "https://help.otter.ai/hc/en-us/articles/36130822688279-Otter-ai-Public-API",
+    "rate_limit_note": "Enterprise Public API access is currently limited to 10 requests per second.",
+    "last_verified": "2026-07-12"
   },
   {
     "app": "Fathom",

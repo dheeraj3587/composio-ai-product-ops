@@ -38,7 +38,7 @@
       ],
       [
         "API Key",
-        46
+        47
       ],
       [
         "Personal Access Token",
@@ -142,7 +142,7 @@
     "hand_checked_accuracy": {
       "value": 0.917,
       "n": 45,
-      "label": "Current hand-checked accuracy (ground truth)"
+      "label": "Latest staged official-doc agreement"
     },
     "automated_agreement": {
       "value": null,
@@ -152,16 +152,16 @@
   },
   "repo_url": "https://github.com/dheeraj3587/composio-ai-product-ops",
   "live_url": "https://composio-ai-product-ops.vercel.app",
-  "generated": "2026-07-11",
+  "generated": "2026-07-12",
   "quality": {
     "source_audit_complete": true,
     "source_audited_rows": 100,
-    "browser_evidence_pages": 8,
-    "browser_evidence_apps": 6
+    "browser_evidence_pages": 9,
+    "browser_evidence_apps": 7
   },
   "handcheck": {
-    "metric_scope": "Current results at fold time",
-    "method": "Human comparison against official docs for api_type, exact canonical auth set, production access, and MCP ownership. No historical agent values are substituted.",
+    "metric_scope": "Staged cumulative official-doc check at fold time",
+    "method": "Analyst adjudication against official docs for api_type, exact canonical auth set, production access, and MCP ownership. No historical agent values are substituted.",
     "access_rubric": "Self-Serve only when a new developer can obtain credentials usable in production without manual approval, partnership, business verification, or already being a paying customer. A sandbox or trial alone is not production Self-Serve; otherwise use Gated.",
     "selection": "Forty-five reviewer-priority apps across every catalog category; each new batch excludes all prior human and cloud-browser verification sets.",
     "n": 45,
@@ -702,7 +702,7 @@
       }
     ],
     "generated": "2026-07-11",
-    "note": "This is a current score. Earlier published/as-measured snapshots are stored separately."
+    "note": "This is the latest staged pre-fold agreement. Earlier checked batches may already have been corrected before later batches are added; it is not a blind first-pass estimate."
   },
   "accuracy_movement": {
     "method": "Field-level accuracy against one hand-verified truth set, comparing the archived first pass to current results. Auth uses exact canonical-set equality.",
@@ -970,36 +970,39 @@
     "generated": "2026-07-11"
   },
   "browser_use": {
-    "method": "A cloud browser agent independently navigated live developer docs and re-derived API type, canonical auth, and production access. Disagreements require human adjudication.",
-    "n_checked": 15,
-    "n_disagreements": 6,
+    "method": "Independent browser reviews navigated live developer docs and re-derived API type, canonical auth, and production access. Disagreements require official-doc adjudication.",
+    "n_checked": 16,
+    "n_disagreements": 7,
     "disagreed_apps": [
       "twilio",
       "bigcommerce",
       "cloudflare",
       "mongodb-atlas",
       "linear",
-      "asana"
+      "asana",
+      "otter-ai"
     ],
     "field_disagreements": {
-      "auth_methods": 5,
+      "auth_methods": 6,
       "access_model": 1
     },
-    "n_adjudicated_corrections": 5,
+    "n_adjudicated_corrections": 6,
     "adjudicated_correction_apps": [
       "twilio",
       "bigcommerce",
       "cloudflare",
       "mongodb-atlas",
-      "asana"
+      "asana",
+      "otter-ai"
     ],
-    "n_corrections_found": 5,
+    "n_corrections_found": 6,
     "corrected_apps": [
       "twilio",
       "bigcommerce",
       "cloudflare",
       "mongodb-atlas",
-      "asana"
+      "asana",
+      "otter-ai"
     ]
   },
   "handcheck_historical": {

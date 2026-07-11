@@ -58,3 +58,42 @@ Otter's help center explicitly states that the public API is only available for 
   "last_verified": "2026-07-10"
 }
 ```
+
+<!-- final-state:start -->
+## Final pipeline state
+_Updated 2026-07-12 by the final official-doc browser audit; this supersedes the earlier auth decision._
+
+```json
+{
+  "app": "Otter AI",
+  "category": "AI/Meeting-tools",
+  "one_liner": "Otter AI provides a REST API and an official MCP server for meeting transcripts, gated behind Enterprise plans.",
+  "auth_methods": [
+    "API Key",
+    "OAuth2"
+  ],
+  "access_model": {
+    "kind": "Gated",
+    "note": "API and MCP access is restricted to Enterprise customers and requires contacting an account manager to enable."
+  },
+  "api_type": "REST",
+  "api_breadth": "Moderate",
+  "existing_mcp": "Official",
+  "composio_toolkit": "No",
+  "buildability": "Hard",
+  "main_blocker": "Access requires an Enterprise plan and manual approval from an account manager.",
+  "recommended_next_action": "Needs Outreach",
+  "evidence_urls": [
+    "https://help.otter.ai/hc/en-us/articles/36130822688279-Otter-ai-Public-API",
+    "https://help.otter.ai/hc/en-us/articles/4412365535895-Does-Otter-offer-an-open-API",
+    "https://help.otter.ai/hc/en-us/articles/35287607569687-Otter-MCP-Server"
+  ],
+  "confidence": 0.9,
+  "verification_status": "Hand-Checked",
+  "slug": "otter-ai",
+  "primary_docs_url": "https://help.otter.ai/hc/en-us/articles/36130822688279-Otter-ai-Public-API",
+  "rate_limit_note": "Enterprise Public API access is currently limited to 10 requests per second.",
+  "last_verified": "2026-07-12"
+}
+```
+<!-- final-state:end -->

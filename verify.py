@@ -403,8 +403,8 @@ def _browser_use_summary() -> dict:
 
     return {
         "method": (
-            "A cloud browser agent independently navigated live developer docs and re-derived API "
-            "type, canonical auth, and production access. Disagreements require human adjudication."
+            "Independent browser reviews navigated live developer docs and re-derived API type, "
+            "canonical auth, and production access. Disagreements require official-doc adjudication."
         ),
         "n_checked": n_valid,
         "n_disagreements": len(disagreed_apps),
@@ -464,7 +464,7 @@ def rebuild_metrics() -> dict:
         "hand_checked_accuracy": {
             "value": handcheck.get("accuracy"),
             "n": handcheck.get("n"),
-            "label": "Current hand-checked accuracy (ground truth)",
+            "label": "Latest staged official-doc agreement",
         },
         "automated_agreement": {
             "value": verification.get("overall_agreement_rate"),

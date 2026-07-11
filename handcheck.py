@@ -191,9 +191,9 @@ def fold() -> dict:
 
     total = 2 * n + api_n + mcp_n
     handcheck = {
-        "metric_scope": "Current results at fold time",
+        "metric_scope": "Staged cumulative official-doc check at fold time",
         "method": (
-            "Human comparison against official docs for api_type, exact canonical auth set, "
+            "Analyst adjudication against official docs for api_type, exact canonical auth set, "
             "production access, and MCP ownership. No historical agent values are substituted."
         ),
         "access_rubric": payload.get("access_rubric") or ACCESS_RUBRIC,
@@ -207,7 +207,10 @@ def fold() -> dict:
         "misses": misses,
         "checked": checked,
         "generated": dt.date.today().isoformat(),
-        "note": "This is a current score. Earlier published/as-measured snapshots are stored separately.",
+        "note": (
+            "This is the latest staged pre-fold agreement. Earlier checked batches may already "
+            "have been corrected before later batches are added; it is not a blind first-pass estimate."
+        ),
     }
     metrics = config.load_json(config.METRICS_PATH, default={}) or {}
     previous = metrics.get("handcheck")

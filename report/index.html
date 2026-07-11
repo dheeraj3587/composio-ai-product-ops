@@ -156,7 +156,7 @@
           <li><span>02</span><b>Docs research</b><p>Official API, authentication, access, and MCP pages are collected.</p><code>docs_research.py</code></li>
           <li><span>03</span><b>Schema synthesis</b><p>The model returns a locked 19-field record with cited URLs.</p><code>synthesis.py</code></li>
           <li><span>04</span><b>Source audit</b><p>Invalid labels, weak coverage, contradictions, and invented links fail closed.</p><code>batch_pipeline.py</code></li>
-          <li><span>05</span><b>Human check</b><p>Official docs adjudicate priority apps and preserve every first-pass miss.</p><code>handcheck.py</code></li>
+          <li><span>05</span><b>Official-doc check</b><p>Priority apps are adjudicated against vendor docs, with every recorded miss preserved.</p><code>handcheck.py</code></li>
         </ol>
       </div>
     </section>
@@ -168,7 +168,7 @@
             <p class="eyebrow">04 / Verification</p>
             <h2>What held up under review</h2>
           </div>
-          <p class="section-note">Source coverage, human ground truth, browser-read evidence, and corrected accuracy are reported separately.</p>
+          <p class="section-note">Source coverage, staged official-doc adjudication, browser-read evidence, and correction replay are reported separately.</p>
         </div>
         <div class="verification-grid" id="verification-grid"></div>
         <div id="verification-warning"></div>
@@ -218,8 +218,8 @@ python research.py --build-report</pre>
     </div>
   </dialog>
 
-  <script src="data.js?v=20260711-3"></script>
-  <script src="app.js?v=20260711-4"></script>
+  <script src="data.js?v=20260712-1"></script>
+  <script src="app.js?v=20260712-1"></script>
 </body>
 
 </html>

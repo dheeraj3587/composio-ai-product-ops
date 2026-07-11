@@ -15,8 +15,9 @@ The project researches 100 apps across 10 categories and scores whether each one
 - 49 apps have no Composio toolkit yet.
 - 63 apps are marked `Build Now`; 19 need outreach; 16 are partner-gated; 2 are blocked.
 - 69 apps have an official MCP server signal; 25 community; 6 none.
-- 45 reviewer-priority apps were hand-checked against official docs across all 10 categories.
-- The latest pre-fold hand-check measured 91.7% across API type, exact auth, production access, and MCP ownership.
+- 45 reviewer-priority apps were adjudicated against official docs across all 10 categories.
+- The latest staged pre-fold agreement measured 91.7% across API type, exact auth, production access, and MCP ownership. Earlier batches had already been corrected before later batches were added, so this is not a blind 45-app first-pass estimate.
+- The archived first pass scored 80% against the final 45-app truth set.
 - After applying the same verified truth set, the checked sample scores 100%.
 - All 15 pre-correction field misses across 12 apps remain disclosed in the report.
 
@@ -28,7 +29,7 @@ Each app is written to a locked 19-field schema:
 
 The important distinction is deliberate:
 
-- `handcheck.accuracy` is the human-verified accuracy score.
+- `handcheck.accuracy` is the latest staged pre-fold agreement, not the archived first-pass score or a population-wide accuracy estimate.
 - `accuracy_movement` compares the archived first pass against the corrected current dataset.
 - `confidence` is only a triage signal, not an accuracy claim.
 - Browser evidence is evidence acquisition, not a separate accuracy number.
@@ -68,20 +69,20 @@ The research task itself evaluates external app APIs, so Composio is used as the
 
 ## Verification Model
 
-The project separates automated checks from human judgment:
+The project separates automated checks from official-doc adjudication:
 
 1. Source audit validates schema shape, URL quality, app identity, and first-party coverage.
 2. Browser evidence stores official pages that needed live browser reading.
-3. Human handcheck verifies selected high-usage apps against official vendor docs.
+3. An analyst-reviewed check adjudicates selected high-usage apps against official vendor docs.
 4. Corrections are applied only after the handcheck score is preserved.
 
-Current human-check fields:
+Latest staged check fields:
 
 - API type: 100%
 - Auth methods: 84.4%
 - Production access: 82.2%
 - MCP ownership: 100%
-- Overall pre-fold snapshot: 91.7%
+- Overall latest-stage pre-fold agreement: 91.7%
 
 ## Run Locally
 

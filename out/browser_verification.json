@@ -675,5 +675,52 @@
     },
     "browser_model": "browser-use-2.0",
     "generated": "2026-07-11"
+  },
+  {
+    "slug": "otter-ai",
+    "app": "Otter AI",
+    "first_pass": {
+      "api_type": "REST",
+      "auth_methods": [
+        "OAuth2"
+      ],
+      "access_model": "Gated",
+      "recommended_next_action": "Needs Outreach",
+      "confidence": 0.9
+    },
+    "browser": {
+      "slug": "otter-ai",
+      "app": "Otter AI",
+      "has_public_api": true,
+      "api_type": "REST",
+      "auth_methods": [
+        "API Key",
+        "OAuth2"
+      ],
+      "access_model": "Gated",
+      "evidence_url": "https://help.otter.ai/hc/en-us/articles/36130822688279-Otter-ai-Public-API",
+      "notes": "The Enterprise REST API uses a user-created API key; the official MCP server uses OAuth. API enablement requires an Enterprise workspace and an account manager."
+    },
+    "comparison": {
+      "matches": {
+        "api_type": true,
+        "auth_methods": false,
+        "access_model": true
+      },
+      "disagreed_fields": [
+        "auth_methods"
+      ]
+    },
+    "adjudication": {
+      "status": "Accepted Correction",
+      "notes": "Official Otter documentation distinguishes API-key authentication for the Enterprise REST API from OAuth authentication for MCP.",
+      "evidence_urls": [
+        "https://help.otter.ai/hc/en-us/articles/36130822688279-Otter-ai-Public-API",
+        "https://help.otter.ai/hc/en-us/articles/35287607569687-Otter-MCP-Server"
+      ],
+      "applied_to_results": true
+    },
+    "browser_model": "codex-in-app-browser",
+    "generated": "2026-07-12"
   }
 ]

@@ -835,6 +835,35 @@ class VerificationTests(unittest.TestCase):
 
 
 class FreshRunTests(unittest.TestCase):
+    def test_report_copy_distinguishes_first_pass_from_staged_agreement(self):
+        root = Path(__file__).parents[1]
+        app_js = (root / "report" / "app.js").read_text(encoding="utf-8")
+        metrics = json.loads((root / "out" / "metrics.json").read_text(encoding="utf-8"))
+        self.assertIn('"Archived first pass"', app_js)
+        self.assertIn('title: "Latest staged agreement"', app_js)
+        self.assertIn("not a blind first-pass estimate", app_js)
+        self.assertIn('title: "Independent browser check"', app_js)
+        self.assertIn("Independent browser correction applied", app_js)
+        self.assertNotIn("10-app human ground-truth sample", app_js)
+        self.assertEqual(metrics["handcheck"]["n"], 45)
+        self.assertEqual(metrics["handcheck"]["metric_scope"], "Staged cumulative official-doc check at fold time")
+        self.assertIn("not a blind first-pass estimate", metrics["handcheck"]["note"])
+        self.assertEqual(
+            metrics["headline_accuracy"]["hand_checked_accuracy"]["label"],
+            "Latest staged official-doc agreement",
+        )
+
+    def test_reviewed_auth_regressions_stay_fixed(self):
+        rows = json.loads(config.RESULTS_PATH.read_text(encoding="utf-8"))
+        by_slug = {row["slug"]: row for row in rows}
+        self.assertEqual(by_slug["salesforce"]["auth_methods"], ["OAuth2"])
+        self.assertEqual(by_slug["otter-ai"]["auth_methods"], ["API Key", "OAuth2"])
+        self.assertEqual(by_slug["otter-ai"]["verification_status"], "Hand-Checked")
+        trace = (config.REASONING_DIR / "otter-ai.md").read_text(encoding="utf-8")
+        original, final = trace.split("<!-- final-state:start -->", 1)
+        self.assertIn('"verification_status": "Auto"', original)
+        self.assertIn('"verification_status": "Hand-Checked"', final)
+
     def test_build_report_bundles_reasoning_for_static_review(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
