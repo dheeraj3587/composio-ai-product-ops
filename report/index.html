@@ -4,883 +4,222 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Evidence-backed API integration readiness research across 100 requested apps." />
   <link rel="icon" href="data:," />
-  <title>API Integration Readiness — 100 Apps</title>
-  <style>
-    :root {
-      --bg: #050505;
-      --panel: #0b0b0b;
-      --panel-2: #111;
-      --panel-3: #171717;
-      --text: #f4f4f4;
-      --muted: #a5a5a5;
-      --faint: #747474;
-      --line: #292929;
-      --line-2: #3b3b3b;
-      --white: #fff;
-      --shadow: 0 22px 70px rgba(0, 0, 0, .34);
-      --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      --code: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-    }
-
-    * { box-sizing: border-box; }
-    html { background: var(--bg); }
-
-    body {
-      margin: 0;
-      background:
-        radial-gradient(circle at 16% -10%, rgba(255,255,255,.075), transparent 22rem),
-        linear-gradient(rgba(255,255,255,.023) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.023) 1px, transparent 1px),
-        var(--bg);
-      background-size: auto, 34px 34px, 34px 34px;
-      color: var(--text);
-      font: 14px/1.48 var(--sans);
-    }
-
-    a { color: var(--white); text-decoration: none; }
-    a:hover { text-decoration: underline; text-underline-offset: 3px; }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: rgba(5,5,5,.9);
-      border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(14px);
-    }
-
-    .topbar-inner,
-    .shell {
-      width: min(1220px, calc(100% - 32px));
-      margin: 0 auto;
-    }
-
-    .topbar-inner {
-      min-height: 58px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 650;
-      letter-spacing: -.01em;
-      white-space: nowrap;
-    }
-
-    .brand-mark {
-      width: 24px;
-      height: 24px;
-      display: grid;
-      place-items: center;
-      border: 1px solid var(--white);
-      border-radius: 6px;
-      font-size: 13px;
-      line-height: 1;
-    }
-
-    .nav {
-      display: flex;
-      gap: 4px;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-    }
-
-    .nav a {
-      color: var(--muted);
-      padding: 7px 10px;
-      border-radius: 7px;
-      font-size: 13px;
-    }
-
-    .nav a:hover {
-      color: var(--text);
-      background: var(--panel-2);
-      text-decoration: none;
-    }
-
-    .shell { padding: 16px 0 36px; }
-
-    .panel {
-      background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012)), var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      box-shadow: var(--shadow);
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 420px;
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .hero-main {
-      padding: 24px;
-      min-height: 300px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .label {
-      color: var(--faint);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .09em;
-      text-transform: uppercase;
-    }
-
-    h1, h2, h3, p { margin: 0; }
-
-    h1 {
-      max-width: 800px;
-      margin-top: 12px;
-      font-size: clamp(36px, 5vw, 62px);
-      line-height: .96;
-      letter-spacing: -.045em;
-      font-weight: 720;
-    }
-
-    .lead {
-      max-width: 680px;
-      margin-top: 16px;
-      color: var(--muted);
-      font-size: 15px;
-    }
-
-    .review-route {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin-top: 24px;
-    }
-
-    .route-step {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 10px;
-      background: rgba(255,255,255,.025);
-    }
-
-    .route-step b {
-      display: block;
-      font-size: 13px;
-      margin-bottom: 3px;
-    }
-
-    .route-step span {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .decision {
-      padding: 18px;
-      background: var(--panel-2);
-    }
-
-    .decision h2 {
-      margin-top: 8px;
-      font-size: 20px;
-      line-height: 1.2;
-      letter-spacing: -.02em;
-    }
-
-    .decision-list { margin-top: 18px; }
-
-    .decision-row {
-      display: grid;
-      grid-template-columns: 96px minmax(0, 1fr) 44px;
-      align-items: center;
-      gap: 10px;
-      padding: 11px 0;
-      border-top: 1px solid var(--line);
-    }
-
-    .decision-row:first-child { border-top: 0; }
-
-    .decision-row span:first-child {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .meter {
-      height: 8px;
-      background: #1d1d1d;
-      border-radius: 99px;
-      overflow: hidden;
-    }
-
-    .meter-fill {
-      height: 100%;
-      background: var(--white);
-      border-radius: 99px;
-    }
-
-    .decision-row b {
-      text-align: right;
-      font-size: 13px;
-    }
-
-    .status-block {
-      margin-top: 16px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .status-line {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      padding: 11px 12px;
-      border-top: 1px solid var(--line);
-      font-size: 13px;
-    }
-
-    .status-line:first-child { border-top: 0; }
-    .status-line b { font-weight: 600; }
-    .status-line span:last-child { color: var(--muted); text-align: right; }
-
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .metric {
-      min-height: 104px;
-      padding: 16px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: rgba(255,255,255,.025);
-    }
-
-    .metric .value {
-      font-size: 34px;
-      line-height: 1;
-      font-weight: 720;
-      letter-spacing: -.04em;
-    }
-
-    .metric .label {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    section.panel {
-      margin-top: 12px;
-      padding: 18px;
-    }
-
-    .section-head {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 14px;
-    }
-
-    h2 {
-      margin-top: 5px;
-      font-size: 24px;
-      line-height: 1.12;
-      letter-spacing: -.03em;
-    }
-
-    .note {
-      max-width: 520px;
-      color: var(--muted);
-      font-size: 13px;
-      text-align: right;
-    }
-
-    .insights {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-    }
-
-    .flow-steps {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .flow-step {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--panel-2);
-      padding: 14px;
-    }
-
-    .flow-step .step-no {
-      color: var(--faint);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-
-    .flow-step b {
-      display: block;
-      margin-top: 6px;
-      font-size: 14px;
-      letter-spacing: -.01em;
-    }
-
-    .flow-step p {
-      margin-top: 7px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .human-list {
-      list-style: none;
-      margin: 10px 0 0;
-      padding: 0;
-    }
-
-    .human-list li {
-      padding: 9px 0;
-      border-top: 1px solid rgba(255,255,255,.055);
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .human-list li:first-child { border-top: 0; }
-    .human-list b { color: var(--text); font-weight: 600; }
-
-    .insight {
-      padding: 16px;
-      min-height: 132px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--panel-2);
-    }
-
-    .insight h3 {
-      font-size: 15px;
-      letter-spacing: -.01em;
-    }
-
-    .insight p {
-      margin-top: 9px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .queue {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .queue-card {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #080808;
-      overflow: hidden;
-    }
-
-    .queue-card h3 {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--line);
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      color: var(--muted);
-    }
-
-    .queue-card ol {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .queue-card li {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      padding: 11px 14px;
-      border-top: 1px solid rgba(255,255,255,.055);
-      font-size: 13px;
-    }
-
-    .queue-card li:first-child { border-top: 0; }
-    .queue-card small { color: var(--muted); }
-
-    .controls {
-      display: grid;
-      grid-template-columns: minmax(220px, 1.55fr) repeat(3, minmax(150px, .7fr));
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    input, select {
-      min-height: 40px;
-      width: 100%;
-      background: #050505;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      color: var(--text);
-      font: 13px var(--sans);
-      padding: 8px 10px;
-      outline: none;
-    }
-
-    input:focus,
-    select:focus {
-      border-color: rgba(255,255,255,.68);
-      box-shadow: 0 0 0 3px rgba(255,255,255,.08);
-    }
-
-    .table-shell {
-      max-height: 650px;
-      overflow: auto;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #050505;
-    }
-
-    table {
-      width: 100%;
-      min-width: 1150px;
-      border-collapse: collapse;
-      font-size: 12px;
-    }
-
-    code {
-      font: 11.5px var(--code);
-      background: rgba(255,255,255,.07);
-      border: 1px solid rgba(255,255,255,.09);
-      border-radius: 5px;
-      padding: 1px 5px;
-    }
-
-    th {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      background: #0f0f0f;
-      border-bottom: 1px solid var(--line-2);
-      color: var(--faint);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      text-align: left;
-      padding: 10px;
-      white-space: nowrap;
-    }
-
-    td {
-      padding: 10px;
-      border-bottom: 1px solid rgba(255,255,255,.055);
-      vertical-align: top;
-    }
-
-    tbody tr:hover { background: rgba(255,255,255,.045); }
-
-    .app-name { font-weight: 700; }
-    .subtle { color: var(--muted); font-size: 12px; }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      min-height: 21px;
-      border: 1px solid rgba(255,255,255,.18);
-      border-radius: 999px;
-      padding: 2px 8px;
-      background: rgba(255,255,255,.08);
-      color: #dfdfdf;
-      font-size: 11px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .pill.green { color: var(--white); background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.32); }
-    .pill.blue { background: rgba(255,255,255,.11); }
-    .pill.amber { background: rgba(255,255,255,.08); color: #cfcfcf; }
-    .pill.red { background: rgba(255,255,255,.055); color: #bababa; }
-    .pill.violet { background: rgba(255,255,255,.13); }
-    .pill.gray { background: rgba(255,255,255,.045); color: var(--muted); }
-
-    .bars-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .chart-card {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--panel-2);
-      padding: 16px;
-    }
-
-    .chart-title {
-      color: var(--faint);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-
-    .bar {
-      display: grid;
-      grid-template-columns: 132px minmax(80px, 1fr) 44px;
-      gap: 10px;
-      align-items: center;
-      margin: 8px 0;
-      font-size: 12px;
-    }
-
-    .bar-name {
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .track {
-      height: 8px;
-      background: #1c1c1c;
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .fill {
-      height: 100%;
-      background: var(--white);
-      border-radius: 999px;
-    }
-
-    .fill.blue,
-    .fill.violet { background: #cfcfcf; }
-    .fill.amber { background: #9c9c9c; }
-    .fill.red { background: #737373; }
-
-    .bar-value {
-      color: var(--text);
-      font-size: 12px;
-      text-align: right;
-    }
-
-    .proof-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .proof {
-      padding: 16px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--panel-2);
-    }
-
-    .proof h3 { font-size: 15px; }
-
-    .proof p {
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    pre {
-      margin: 12px 0 0;
-      padding: 12px;
-      overflow: auto;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #050505;
-      color: #eee;
-      font: 12px/1.5 var(--code);
-      white-space: pre-wrap;
-    }
-
-    .warning {
-      margin-top: 8px;
-      padding: 12px 14px;
-      border: 1px solid rgba(255,255,255,.22);
-      border-radius: 10px;
-      background: rgba(255,255,255,.06);
-      color: #ddd;
-      font-size: 13px;
-    }
-
-    .footer {
-      margin-top: 12px;
-      padding: 16px;
-      color: var(--faint);
-      font-size: 12px;
-    }
-
-    @media (max-width: 980px) {
-      .hero,
-      .bars-grid,
-      .proof-grid { grid-template-columns: 1fr; }
-      .metrics { grid-template-columns: repeat(3, 1fr); }
-      .insights,
-      .queue,
-      .flow-steps { grid-template-columns: 1fr; }
-      .note { text-align: left; }
-    }
-
-    @media (max-width: 680px) {
-      .topbar-inner {
-        align-items: flex-start;
-        flex-direction: column;
-        padding: 12px 0;
-      }
-
-      .shell { width: min(100% - 24px, 1220px); }
-      .hero { margin-top: 10px; }
-      .hero-main { min-height: 0; }
-      .review-route,
-      .metrics,
-      .controls { grid-template-columns: 1fr; }
-      .decision-row { grid-template-columns: 86px minmax(0, 1fr) 38px; }
-      h1 { font-size: 34px; }
-    }
-  </style>
-  <link rel="stylesheet" href="theme.css?v=20260711-2" />
-<script type="text/javascript">
+  <title>Composio Integration Intelligence</title>
+  <link rel="stylesheet" href="theme.css?v=20260711-3" />
+  <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "xjr2tym4a8");
-</script>
+  </script>
 </head>
 
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand"><span class="brand-mark">C</span> Integration research</div>
-      <nav class="nav" aria-label="Page sections">
-        <a href="#findings">Priorities</a>
-        <a href="#matrix">Matrix</a>
-        <a href="#agent">Method</a>
-        <a href="#verification">Checks</a>
-        <a href="#proof">Run</a>
+  <header class="app-header">
+    <div class="container header-inner">
+      <a class="brand" href="#overview" aria-label="Composio Integration Intelligence home">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="brand-copy"><b>Composio</b><small>Integration intelligence</small></span>
+      </a>
+      <nav class="nav" aria-label="Report sections">
+        <a href="#priorities">Priorities</a>
+        <a href="#catalog">Catalog</a>
+        <a href="#method">Method</a>
+        <a href="#verification">Verification</a>
       </nav>
+      <a class="header-action" id="repo-link" href="#" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span></a>
     </div>
   </header>
 
-  <main class="shell">
-    <div class="hero">
-      <section class="panel hero-main" aria-labelledby="page-title">
-        <div>
-          <p class="label">API integration readiness</p>
-          <h1 id="page-title">Build the self-serve gaps first.</h1>
-          <p class="lead" id="hero-copy">
-            100 requested apps ranked by API surface, authentication, access, and buildability.
-          </p>
+  <main id="overview">
+    <section class="container intro" aria-labelledby="page-title">
+      <div class="intro-copy">
+        <p class="eyebrow">AI Product Ops research / 100-app catalog</p>
+        <h1 id="page-title">100 apps.<br />One integration queue.</h1>
+        <p class="intro-lead" id="hero-copy">API surface, authentication, production access, and MCP coverage distilled into the next engineering move.</p>
+        <div class="snapshot-line" aria-label="Research status">
+          <span class="live-dot" aria-hidden="true"></span>
+          <span id="snapshot-copy">Current research snapshot</span>
+          <span class="snapshot-separator" aria-hidden="true"></span>
+          <span id="generated-note">Generated July 2026</span>
         </div>
-        <div class="hero-facts" id="hero-facts" aria-label="Research coverage">
-          <span><b>100</b> apps researched</span>
-          <span><b>100</b> source-audited rows</span>
-          <span><b>19</b> fields per app</span>
-        </div>
-      </section>
+      </div>
 
-      <aside class="panel decision" aria-label="Decision summary">
-        <p class="label">Recommended action</p>
-        <h2 id="decision-title">Start with the buildable apps Composio does not cover yet.</h2>
-        <p class="decision-copy" id="decision-summary">Separate buildable gaps from access work before allocating engineering time.</p>
-        <div class="decision-list" id="decision-list"></div>
-        <div class="status-block" id="status-lines"></div>
+      <aside class="pulse-card" aria-labelledby="pulse-title">
+        <div class="pulse-head">
+          <div>
+            <p class="card-kicker">Decision pulse</p>
+            <h2 id="pulse-title">Coverage at a glance</h2>
+          </div>
+          <span class="quality-badge" id="quality-badge">Audited</span>
+        </div>
+        <p class="pulse-statement" id="decision-title">Loading the current integration queue...</p>
+        <div class="pulse-chart" id="pulse-chart" aria-label="Recommended action distribution"></div>
+        <div class="pulse-legend" id="pulse-legend"></div>
+        <div class="pulse-footer">
+          <p id="decision-summary">Buildable gaps are separated from access and partnership work.</p>
+          <a class="dark-action" href="#catalog">Review the catalog <span aria-hidden="true">→</span></a>
+        </div>
       </aside>
-    </div>
-
-    <div class="metrics" id="metrics" aria-label="Headline metrics"></div>
-
-    <section class="panel" id="findings">
-      <div class="section-head">
-        <div>
-          <p class="label">01 / Priorities</p>
-          <h2>Turn the scan into a build queue</h2>
-        </div>
-        <p class="note" id="generated-note"></p>
-      </div>
-      <div class="insights" id="insights"></div>
-      <div class="queue" id="priority-queue"></div>
     </section>
 
-    <section class="panel" id="matrix">
-      <div class="section-head">
-        <div>
-          <p class="label">02 / Matrix</p>
-          <h2>All apps, one decision model</h2>
+    <section class="container metric-grid" id="metrics" aria-label="Headline metrics"></section>
+
+    <section class="section-band band-tint" id="priorities">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">01 / Priority</p>
+            <h2>Where engineering should start</h2>
+          </div>
+          <p class="section-note">Ranked by coverage gap, production access, buildability, and source confidence.</p>
         </div>
-        <p class="note" id="matrix-count"></p>
-      </div>
-      <div class="controls">
-        <input id="q" type="search" placeholder="Search app, auth, blocker" />
-        <select id="f-cat"><option value="">All categories</option></select>
-        <select id="f-next"><option value="">All actions</option></select>
-        <select id="f-build"><option value="">All buildability</option></select>
-      </div>
-      <div class="table-shell">
-        <table>
-          <thead>
-            <tr>
-              <th>App</th>
-              <th>Category</th>
-              <th>Auth</th>
-              <th>Access</th>
-              <th>API</th>
-              <th>MCP</th>
-              <th>Composio</th>
-              <th>Build</th>
-              <th>Action</th>
-              <th>Conf.</th>
-              <th>Evidence</th>
-            </tr>
-          </thead>
-          <tbody id="matrix-body"></tbody>
-        </table>
+        <div class="insight-strip" id="insights"></div>
+        <div class="queue-grid" id="priority-queue"></div>
       </div>
     </section>
 
-    <section class="panel" id="agent">
-      <div class="section-head">
-        <div>
-          <p class="label">03 / Method</p>
-          <h2>Research system and review boundaries</h2>
+    <section class="section-band" id="catalog">
+      <div class="container">
+        <div class="section-heading catalog-heading">
+          <div>
+            <p class="eyebrow">02 / Catalog</p>
+            <h2>Inspect every decision</h2>
+          </div>
+          <div class="reasoning-coverage">
+            <span class="reasoning-count" id="reasoning-count">0</span>
+            <span>reasoning traces available</span>
+          </div>
         </div>
-        <p class="note">Offline CLI, locked 19-field schema, evidence URLs, and explicit review checkpoints.</p>
-      </div>
-      <div class="flow-steps" aria-label="Pipeline stages">
-        <div class="flow-step">
-          <span class="step-no">Stage 1 · composio_lookup.py</span>
-          <b>Composio coverage</b>
-          <p>SDK or catalog lookup sets toolkit coverage. The LLM does not decide this field.</p>
+
+        <div class="catalog-toolbar">
+          <label class="search-field" for="q">
+            <span class="search-icon" aria-hidden="true"></span>
+            <span class="sr-only">Search catalog</span>
+            <input id="q" type="search" placeholder="Search app, auth, or blocker" autocomplete="off" />
+          </label>
+          <label>
+            <span class="sr-only">Filter by category</span>
+            <select id="f-cat"><option value="">All categories</option></select>
+          </label>
+          <label>
+            <span class="sr-only">Filter by action</span>
+            <select id="f-next"><option value="">All actions</option></select>
+          </label>
+          <label>
+            <span class="sr-only">Filter by buildability</span>
+            <select id="f-build"><option value="">All buildability</option></select>
+          </label>
         </div>
-        <div class="flow-step">
-          <span class="step-no">Stage 2 · docs_research.py</span>
-          <b>Evidence collection</b>
-          <p>Ranked official-doc searches reserve fetch slots for auth and production-access evidence.</p>
+
+        <div class="catalog-meta">
+          <p id="matrix-count">Loading apps...</p>
+          <p>Open any row to inspect its full reasoning and sources.</p>
         </div>
-        <div class="flow-step">
-          <span class="step-no">Stage 3 · synthesis.py</span>
-          <b>Schema synthesis</b>
-          <p>The LLM cites fetched URLs. Code rejects invalid labels, invented links, and contradictory decisions.</p>
-        </div>
-        <div class="flow-step">
-          <span class="step-no">Stage 4 · batch_pipeline.py</span>
-          <b>Deterministic source audit</b>
-          <p>Rows fail closed when citations miss API, auth, access, app identity, or first-party coverage.</p>
-        </div>
-        <div class="flow-step">
-          <span class="step-no">Stage 5 · handcheck.py</span>
-          <b>Human adjudication</b>
-          <p>Official docs decide disputed fields; current accuracy stays separate from historical snapshots.</p>
-        </div>
-      </div>
-      <div class="proof-grid">
-        <div class="proof">
-          <h3>Review boundaries</h3>
-          <ul class="human-list">
-            <li><b>Preseed:</b> a hypothesis narrows the search; current evidence wins.</li>
-            <li><b>Fresh run:</b> all 100 rows passed schema, citation, identity, and source-quality checks.</li>
-            <li><b>Human accuracy:</b> 10 high-usage apps checked against official docs; all seven pre-correction misses remain visible.</li>
-            <li><b>MCP audit:</b> first-party MCP pages are checked separately from normal API documentation.</li>
-          </ul>
-        </div>
-        <div class="proof">
-          <h3>Known limits</h3>
-          <ul class="human-list">
-            <li><b>Accuracy:</b> 82.5% before corrections and 100% after applying the same verified truth set.</li>
-            <li><b>Dynamic access:</b> partner rules, paid tiers, and approval requirements can change after this snapshot.</li>
-            <li><b>Browser evidence:</b> analyst summaries are stored only for official pages that direct HTTP could not read cleanly.</li>
-            <li><b>Coverage source:</b> Composio SDK/catalog lookup owns the toolkit-overlap field.</li>
-          </ul>
+
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th>App</th>
+                <th>Auth</th>
+                <th>Access</th>
+                <th>API</th>
+                <th>MCP</th>
+                <th>Composio</th>
+                <th>Build</th>
+                <th>Action</th>
+                <th>Confidence</th>
+                <th><span class="sr-only">Review reasoning</span></th>
+              </tr>
+            </thead>
+            <tbody id="matrix-body"></tbody>
+          </table>
         </div>
       </div>
     </section>
 
-    <section class="panel" id="patterns">
-      <div class="section-head">
-        <div>
-          <p class="label">04 / Distribution</p>
-          <h2>Where access becomes the blocker</h2>
+    <section class="section-band band-ink" id="method">
+      <div class="container">
+        <div class="section-heading inverse-heading">
+          <div>
+            <p class="eyebrow">03 / Method</p>
+            <h2>Evidence first. Decisions second.</h2>
+          </div>
+          <p class="section-note">The LLM synthesizes fetched evidence; deterministic checks own schema, citations, and catalog overlap.</p>
         </div>
-        <p class="note">Category splits and API coverage behind the priority queue.</p>
-      </div>
-      <div class="bars-grid">
-        <div class="chart-card">
-          <p class="chart-title">Self-serve / gated by category</p>
-          <div id="category-bars"></div>
-        </div>
-        <div class="chart-card">
-          <p class="chart-title">Build priority and API type</p>
-          <div id="action-bars"></div>
-        </div>
+        <ol class="method-grid" aria-label="Research pipeline">
+          <li><span>01</span><b>Coverage lookup</b><p>Composio SDK/catalog lookup sets existing toolkit coverage.</p><code>composio_lookup.py</code></li>
+          <li><span>02</span><b>Docs research</b><p>Official API, authentication, access, and MCP pages are collected.</p><code>docs_research.py</code></li>
+          <li><span>03</span><b>Schema synthesis</b><p>The model returns a locked 19-field record with cited URLs.</p><code>synthesis.py</code></li>
+          <li><span>04</span><b>Source audit</b><p>Invalid labels, weak coverage, contradictions, and invented links fail closed.</p><code>batch_pipeline.py</code></li>
+          <li><span>05</span><b>Human check</b><p>Official docs adjudicate priority apps and preserve every first-pass miss.</p><code>handcheck.py</code></li>
+        </ol>
       </div>
     </section>
 
-    <section class="panel" id="verification">
-      <div class="section-head">
-        <div>
-          <p class="label">05 / Checks</p>
-          <h2>What was verified and what changed</h2>
+    <section class="section-band" id="verification">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">04 / Verification</p>
+            <h2>What held up under review</h2>
+          </div>
+          <p class="section-note">Source coverage, ground-truth accuracy, and reproducibility are reported as separate measurements.</p>
         </div>
-        <p class="note">Human accuracy, independent agreement, and live-doc checks are deliberately separate.</p>
+        <div class="verification-grid" id="verification-grid"></div>
+        <div id="verification-warning"></div>
       </div>
-      <div class="proof-grid" id="verification-grid"></div>
-      <div id="verification-warning"></div>
     </section>
 
-    <section class="panel" id="proof">
-      <div class="section-head">
+    <section class="section-band band-tint" id="run">
+      <div class="container run-layout">
         <div>
-          <p class="label">06 / Run</p>
-          <h2>Reproduce the pipeline</h2>
+          <p class="eyebrow">05 / Reproduce</p>
+          <h2>Run the same pipeline</h2>
+          <p class="run-copy">The report is a static build artifact from the audited JSON output and packaged reasoning traces.</p>
         </div>
-        <p class="note">The smallest useful commands for a reviewer.</p>
-      </div>
-      <div class="proof-grid">
-        <div class="proof">
-          <h3>Research</h3>
-          <p>Submit the evidence-backed batch, collect it, audit it, then bake the static report.</p>
-          <pre>python research.py --app stripe
-python research.py --batch-submit --fresh-run
+        <div class="command-card">
+          <div class="command-tabs" role="tablist" aria-label="Run commands">
+            <button class="command-tab active" type="button" data-command="research" role="tab" aria-selected="true">Research</button>
+            <button class="command-tab" type="button" data-command="verify" role="tab" aria-selected="false">Verify</button>
+          </div>
+          <pre id="command-output">python research.py --batch-submit --fresh-run
 python research.py --batch-status
 python research.py --batch-collect
 python research.py --batch-audit-sources
 python research.py --metrics
 python research.py --build-report</pre>
         </div>
-        <div class="proof">
-          <h3>Verification</h3>
-          <p>Expand the hand-check and run live-doc verification.</p>
-          <pre>python research.py --handcheck-template 18
-python research.py --fold-handcheck
-python research.py --apply-handcheck
-python research.py --accuracy-movement
-.venv-browser/bin/python browser_verify.py --sample 12</pre>
-        </div>
       </div>
     </section>
-
-    <footer class="panel footer" id="footer"></footer>
   </main>
 
-  <script src="data.js?v=20260711-2"></script>
-  <script src="app.js?v=20260711-2"></script>
+  <footer class="footer">
+    <div class="container footer-inner" id="footer"></div>
+  </footer>
+
+  <dialog class="reasoning-dialog" id="reasoning-dialog" aria-labelledby="reasoning-title">
+    <div class="drawer-shell">
+      <header class="drawer-header">
+        <div>
+          <p class="eyebrow">Decision record</p>
+          <h2 id="reasoning-title">App reasoning</h2>
+          <p id="reasoning-subtitle"></p>
+        </div>
+        <form method="dialog">
+          <button class="icon-button" type="submit" aria-label="Close reasoning" title="Close reasoning">×</button>
+        </form>
+      </header>
+      <div class="drawer-body" id="reasoning-content"></div>
+    </div>
+  </dialog>
+
+  <script src="data.js?v=20260711-3"></script>
+  <script src="app.js?v=20260711-3"></script>
 </body>
 
 </html>

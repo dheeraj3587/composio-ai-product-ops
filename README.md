@@ -34,6 +34,7 @@ The important distinction is deliberate:
 - `accuracy_movement` compares the archived first pass against the corrected current dataset.
 - `confidence` is only a triage signal, not an accuracy claim.
 - Browser evidence is evidence acquisition, not a separate accuracy number.
+- Every app keeps its original research trace, model rationale, source fetches, and final decision record. The dashboard exposes these through the per-app `Reasoning` drawer.
 
 ## Architecture
 
@@ -46,7 +47,8 @@ research.py
     -> schema.py            validates enums, required fields, and semantic dependencies
     -> verify.py            rebuilds metrics and source-quality checks
     -> handcheck.py         scores and applies official-doc human checks
-    -> report/data.js       bakes the final dataset into the static dashboard
+    -> out/reasoning/*.md   preserves the per-app research and synthesis trace
+    -> report/data.js       bakes results, metrics, and reasoning into the static dashboard
 ```
 
 The production report is static: no backend, no live headless browser, and no runtime model calls.
@@ -163,6 +165,7 @@ composio/
 │   ├── app.js
 │   ├── theme.css
 │   ├── data.js
+│   ├── data/reasoning.json
 │   └── vercel.json
 ├── tests/
 ├── demo/

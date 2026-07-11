@@ -218,17 +218,28 @@ def cmd_build_report() -> None:
     dst.mkdir(parents=True, exist_ok=True)
     results = config.load_json(config.RESULTS_PATH, default=[]) or []
     metrics = config.load_json(config.METRICS_PATH, default={}) or {}
+    reasoning = {}
+    for record in results:
+        slug = record.get("slug")
+        path = config.REASONING_DIR / f"{slug}.md"
+        if slug and path.exists():
+            reasoning[slug] = path.read_text(encoding="utf-8")
     for src in (config.RESULTS_PATH, config.METRICS_PATH):
         if src.exists():
             shutil.copy(src, dst / src.name)
             print(f"copied {src.name} -> report/data/")
         else:
             print(f"WARN: {src} missing (run --all first)")
+    config.save_json(dst / "reasoning.json", reasoning)
     # data.js sets globals so the static page works from file://, http.server, or Vercel.
     with open(config.REPORT_DIR / "data.js", "w", encoding="utf-8") as fh:
         fh.write("window.RESULTS = " + json.dumps(results, ensure_ascii=False) + ";\n")
         fh.write("window.METRICS = " + json.dumps(metrics, ensure_ascii=False) + ";\n")
-    print(f"wrote {len(results)} records + metrics -> report/data.js")
+        fh.write("window.REASONING = " + json.dumps(reasoning, ensure_ascii=False) + ";\n")
+    print(
+        f"wrote {len(results)} records + metrics + {len(reasoning)} reasoning traces "
+        "-> report/data.js"
+    )
 
 
 def cmd_snapshot_first_pass() -> None:

@@ -5,7 +5,8 @@ const esc = (value) => String(value == null ? "" : value)
   .replace(/&/g, "&amp;")
   .replace(/</g, "&lt;")
   .replace(/>/g, "&gt;")
-  .replace(/"/g, "&quot;");
+  .replace(/"/g, "&quot;")
+  .replace(/'/g, "&#039;");
 
 const tone = {
   "Self-Serve": "green",
@@ -26,258 +27,258 @@ const tone = {
   No: "gray",
 };
 
-const pct = (n) => (Number.isFinite(n) ? `${Math.round(n * 100)}%` : "Pending");
-const num = (value, fallback = "0") => value == null ? fallback : String(value);
-const pill = (text, kind) => `<span class="pill ${tone[kind || text] || "gray"}">${esc(text || "—")}</span>`;
-// zero stays zero — a 3% sliver for a 0-count bar would misreport the data
-const width = (value, max) => `${value > 0 && max > 0 ? Math.max(3, Math.round((value / max) * 100)) : 0}%`;
-const docsHints = ["docs", "developer", "api", "reference", "learn", "help", "github", "postman"];
-const weakerHints = ["blog", "moldstud", "apitracker", "aeroleads", "vohrtech", "grokipedia"];
+const commandSets = {
+  research: [
+    "python research.py --batch-submit --fresh-run",
+    "python research.py --batch-status",
+    "python research.py --batch-collect",
+    "python research.py --batch-audit-sources",
+    "python research.py --metrics",
+    "python research.py --build-report",
+  ].join("\n"),
+  verify: [
+    "python research.py --handcheck-template 18",
+    "python research.py --fold-handcheck",
+    "python research.py --apply-handcheck",
+    "python research.py --accuracy-movement",
+    ".venv-browser/bin/python browser_verify.py --sample 12",
+  ].join("\n"),
+};
 
 let rows = [];
 let metrics = {};
+let reasoning = {};
+
+const pct = (value) => Number.isFinite(Number(value))
+  ? `${Math.round(Number(value) * 100)}%`
+  : "Pending";
+
+const pill = (text, kind) => (
+  `<span class="pill ${tone[kind || text] || "gray"}">${esc(text || "—")}</span>`
+);
+
+function safeUrl(value) {
+  try {
+    const url = new URL(String(value || ""));
+    return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
+function compactHost(value) {
+  try {
+    return new URL(value).hostname.replace(/^www\./, "");
+  } catch {
+    return "Official docs";
+  }
+}
+
+function sourcePath(value) {
+  try {
+    const url = new URL(value);
+    return `${url.pathname}${url.search}` || "/";
+  } catch {
+    return value;
+  }
+}
+
+function initials(name) {
+  const parts = String(name || "")
+    .replace(/[^a-zA-Z0-9 ]/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (!parts.length) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2);
+  return `${parts[0][0]}${parts[1][0]}`;
+}
+
+function formatDate(value) {
+  if (!value) return "date unavailable";
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
 
 async function loadData() {
   if (Array.isArray(window.RESULTS) && window.RESULTS.length) {
-    return { rows: window.RESULTS, metrics: window.METRICS || {} };
+    return {
+      rows: window.RESULTS,
+      metrics: window.METRICS || {},
+      reasoning: window.REASONING || {},
+    };
   }
+
   try {
-    const [resultData, metricData] = await Promise.all([
-      fetch("data/results.json").then((res) => res.json()),
-      fetch("data/metrics.json").then((res) => res.json()).catch(() => ({})),
+    const [resultData, metricData, reasoningData] = await Promise.all([
+      fetch("data/results.json").then((response) => response.json()),
+      fetch("data/metrics.json").then((response) => response.json()).catch(() => ({})),
+      fetch("data/reasoning.json").then((response) => response.json()).catch(() => ({})),
     ]);
-    return { rows: resultData || [], metrics: metricData || {} };
+    return {
+      rows: resultData || [],
+      metrics: metricData || {},
+      reasoning: reasoningData || {},
+    };
   } catch {
-    return { rows: [], metrics: {} };
+    return { rows: [], metrics: {}, reasoning: {} };
   }
 }
 
-function renderStatus() {
-  const p = metrics.patterns || {};
-  const h = metrics.handcheck || {};
-  const q = metrics.quality || {};
-  const lines = [
-    ["Source audit", q.source_audit_complete ? `${q.source_audited_rows} / ${p.n || rows.length}` : "Incomplete"],
-    ["Human checked", h.n ? `${h.n} apps` : "Pending"],
-    ["Accuracy", h.n ? pct(h.accuracy) : "Pending"],
-  ];
-  $("status-lines").innerHTML = lines.map(([label, value]) => `
-    <div class="status-line"><b>${esc(label)}</b><span>${esc(value)}</span></div>
-  `).join("");
+function renderHeader() {
+  const repo = safeUrl(metrics.repo_url);
+  if (repo) {
+    $("repo-link").href = repo;
+  } else {
+    $("repo-link").hidden = true;
+  }
 }
 
-function renderHeroFacts() {
-  const p = metrics.patterns || {};
-  const h = metrics.handcheck || {};
-  const mcp = p.existing_mcp || {};
-  const q = metrics.quality || {};
-  const facts = [
-    [p.n || rows.length, "apps researched"],
-    [q.source_audited_rows || "-", "source-audited rows"],
-    [mcp.Official || 0, "vendor MCP servers"],
-  ];
-  $("hero-facts").innerHTML = facts.map(([value, label]) => `
-    <span><b>${esc(value)}</b>${esc(label)}</span>
-  `).join("");
-}
-
-function renderDecisionBoard() {
-  const p = metrics.patterns || {};
-  const actions = p.recommended_next_action || {};
-  const total = p.n || rows.length || 1;
-  const buildQueue = rows.filter((row) =>
+function renderHero() {
+  const patterns = metrics.patterns || {};
+  const quality = metrics.quality || {};
+  const actions = patterns.recommended_next_action || {};
+  const toolkit = patterns.composio_toolkit || {};
+  const total = patterns.n || rows.length || 1;
+  const buildQueue = rows.filter((row) => (
     row.composio_toolkit === "No" && row.recommended_next_action === "Build Now"
-  );
-  const decisionRows = [
-    ["Build queue", buildQueue.length],
-    ["Needs Outreach", actions["Needs Outreach"] || 0],
-    ["Partner-Gated", actions["Partner-Gated"] || 0],
-    ["Blocked", actions.Blocked || 0],
+  ));
+  const reasoningCount = Object.keys(reasoning).length;
+
+  $("hero-copy").textContent = `${total} requested apps ranked by API surface, authentication, production access, MCP ownership, and buildability.`;
+  $("snapshot-copy").textContent = `${quality.source_audited_rows || 0}/${total} rows source-audited`;
+  $("generated-note").textContent = `${reasoningCount} reasoning traces · ${formatDate(metrics.generated)}`;
+  $("reasoning-count").textContent = `${reasoningCount}/${total}`;
+  $("quality-badge").textContent = quality.source_audit_complete ? "Source audit complete" : "Audit incomplete";
+  $("decision-title").textContent = `${buildQueue.length} uncovered integrations are ready to build now.`;
+  $("decision-summary").textContent = `${toolkit.No || 0} apps have no Composio toolkit. The rest of the queue is separated into access, partnership, and no-build work.`;
+
+  const actionOrder = [
+    ["Build Now", "build"],
+    ["Needs Outreach", "outreach"],
+    ["Partner-Gated", "partner"],
+    ["Blocked", "blocked"],
   ];
-  $("page-title").textContent = `${buildQueue.length} toolkit gaps are ready to build.`;
-  $("hero-copy").textContent = `${num(p.n || rows.length)} requested apps ranked by API surface, auth, access, and buildability. This queue excludes apps Composio already covers.`;
-  $("decision-title").textContent = `${buildQueue.length} buildable apps have no Composio toolkit yet.`;
-  $("decision-summary").textContent = "Build this queue first. Route the rest into outreach, partnership, or no-build decisions.";
-  $("decision-list").innerHTML = decisionRows.map(([label, value]) => `
-    <div class="decision-row">
-      <span>${esc(label)}</span>
-      <div class="meter"><div class="meter-fill" style="width:${width(value, total)}"></div></div>
-      <b>${esc(value)}</b>
-    </div>
-  `).join("");
-}
-
-function evidenceScore(url) {
-  const u = String(url || "").toLowerCase();
-  const docs = docsHints.some((hint) => u.includes(hint)) ? 1 : 0;
-  const exact = u.includes("/api") || u.includes("api.") || u.includes("developer") || u.includes("docs.") ? 1 : 0;
-  const auth = u.includes("auth") ? 1 : 0;
-  const officialish = weakerHints.some((hint) => u.includes(hint)) ? 0 : 1;
-  return docs * 1000 + exact * 200 + auth * 40 + officialish * 20 - Math.min(u.length, 220) / 220;
-}
-
-function bestEvidence(record) {
-  const urls = [];
-  for (const value of [...(record.evidence_urls || []), record.primary_docs_url]) {
-    if (typeof value === "string" && value.startsWith("http") && !urls.includes(value)) urls.push(value);
-  }
-  return urls.sort((a, b) => evidenceScore(b) - evidenceScore(a))[0] || "";
-}
-
-function compactHost(url) {
-  try {
-    const host = new URL(url).hostname.replace(/^www\./, "");
-    if (host.includes("github.com")) return "github";
-    if (host.includes("postman.com")) return "postman";
-    if (host.includes("developer")) return "developer docs";
-    if (host.includes("docs")) return "docs";
-    if (host.includes("api")) return "api docs";
-    return host.split(".").slice(0, 2).join(".");
-  } catch {
-    return "docs";
-  }
+  $("pulse-chart").innerHTML = actionOrder.map(([label, cssClass]) => {
+    const value = Number(actions[label] || 0);
+    const height = value ? Math.max(18, Math.round(22 + (value / total) * 55)) : 2;
+    return `<span class="pulse-segment ${cssClass}" style="flex:${Math.max(value, 1)};height:${height}px" title="${esc(label)}: ${value}"></span>`;
+  }).join("");
+  $("pulse-legend").innerHTML = actionOrder.map(([label, cssClass]) => (
+    `<span class="legend-item"><i class="${cssClass}"></i>${esc(label)} <b>${actions[label] || 0}</b></span>`
+  )).join("");
 }
 
 function renderMetrics() {
-  const p = metrics.patterns || {};
-  const access = p.access_model || {};
-  const toolkit = p.composio_toolkit || {};
-  const h = metrics.handcheck || {};
-  const actions = p.recommended_next_action || {};
-  const data = [
-    [access["Self-Serve"] || 0, "self-serve paths"],
-    [p.build_now || 0, "ready to build"],
-    [actions["Needs Outreach"] || 0, "needs outreach"],
-    [toolkit.No || 0, "Composio gaps"],
-    [h.n ? pct(h.accuracy) : "Pending", "human check"],
+  const patterns = metrics.patterns || {};
+  const access = patterns.access_model || {};
+  const toolkit = patterns.composio_toolkit || {};
+  const actions = patterns.recommended_next_action || {};
+  const handcheck = metrics.handcheck || {};
+  const cards = [
+    [access["Self-Serve"] || 0, "Self-serve paths", "Credentials available without manual production approval"],
+    [patterns.build_now || actions["Build Now"] || 0, "Ready to build", "Usable API surface and a clear implementation path"],
+    [actions["Needs Outreach"] || 0, "Needs outreach", "Customer, vendor, or account access is the next move"],
+    [toolkit.No || 0, "Toolkit gaps", "Requested apps not currently covered by Composio"],
+    [handcheck.n ? pct(handcheck.accuracy) : "—", "First-pass accuracy", `${handcheck.n || 0} priority apps checked against official docs`],
   ];
-  $("metrics").innerHTML = data.map(([value, label]) => `
-    <article class="metric">
-      <div class="value">${esc(value)}</div>
-      <div class="label">${esc(label)}</div>
+
+  $("metrics").innerHTML = cards.map(([value, label, note], index) => `
+    <article class="metric-card">
+      <div class="metric-top"><span class="metric-label">${esc(label)}</span><span class="metric-index">0${index + 1}</span></div>
+      <div>
+        <div class="metric-value">${esc(value)}</div>
+        <p class="metric-foot">${esc(note)}</p>
+      </div>
     </article>
   `).join("");
 }
 
 function renderInsights() {
-  const p = metrics.patterns || {};
-  const access = p.access_model || {};
-  const gatedApi = rows.filter((r) => r.api_type !== "None" && r.access_model?.kind === "Gated");
-  const noToolkit = rows.filter((r) => r.composio_toolkit === "No");
-  const whitespace = noToolkit.filter((r) => r.recommended_next_action === "Build Now");
-  const topAuth = (p.auth_methods_top || [])[0] || ["API Key / OAuth", 0];
-
+  const patterns = metrics.patterns || {};
+  const topAuth = (patterns.auth_methods_top || [])[0] || ["OAuth2", 0];
+  const uncovered = rows.filter((row) => row.composio_toolkit === "No");
+  const buildable = uncovered.filter((row) => row.recommended_next_action === "Build Now");
+  const gated = rows.filter((row) => row.api_type !== "None" && row.access_model?.kind === "Gated");
+  const officialMcp = rows.filter((row) => row.existing_mcp === "Official");
   const cards = [
-    [
-      "Immediate build queue",
-      `${whitespace.length} self-serve, Build Now apps have no Composio toolkit. Start here.`,
-    ],
-    [
-      "Access queue",
-      `${gatedApi.length} apps have usable APIs but need approval, verification, or customer access.`,
-    ],
-    [
-      "Standard connector patterns",
-      `${topAuth[0]} is the largest auth bucket (${topAuth[1]} apps). Most build work uses familiar credential flows.`,
-    ],
+    ["Immediate queue", `${buildable.length} build-ready apps have no Composio toolkit. These are the cleanest engineering opportunities.`],
+    ["Access is the real blocker", `${gated.length} apps expose a usable API but require payment, approval, verification, partnership, or an existing customer account.`],
+    ["MCP changes the build decision", `${officialMcp.length} vendors already publish an official MCP server. ${topAuth[0]} is the most common auth pattern across the catalog.`],
   ];
 
   $("insights").innerHTML = cards.map(([title, body]) => `
-    <article class="insight">
-      <h3>${esc(title)}</h3>
-      <p>${esc(body)}</p>
-    </article>
+    <article class="insight-item"><h3>${esc(title)}</h3><p>${esc(body)}</p></article>
   `).join("");
-  const conf = Number(p.avg_confidence);
-  $("generated-note").textContent = `Generated ${metrics.generated || "—"} · avg confidence ${Number.isFinite(conf) ? conf.toFixed(3) : "—"}`;
+}
+
+function queueItem(record) {
+  return `
+    <li class="queue-item">
+      <span class="app-avatar" aria-hidden="true">${esc(initials(record.app))}</span>
+      <span class="queue-name"><b>${esc(record.app)}</b><small>${esc(record.category)}</small></span>
+      <span class="queue-score">${Math.round(Number(record.confidence || 0) * 100)}%</span>
+    </li>
+  `;
 }
 
 function renderPriorityQueue() {
-  const confidence = (r) => Number(r.confidence || 0);
-  const short = (r) => `<li><span>${esc(r.app)}</span><small>${esc(r.category)}</small></li>`;
+  const confidence = (record) => Number(record.confidence || 0);
   const build = rows
-    .filter((r) => r.composio_toolkit === "No" && r.recommended_next_action === "Build Now")
+    .filter((row) => row.composio_toolkit === "No" && row.recommended_next_action === "Build Now")
     .sort((a, b) => confidence(b) - confidence(a) || a.app.localeCompare(b.app))
     .slice(0, 6);
-  const outreach = rows
-    .filter((r) => ["Needs Outreach", "Partner-Gated", "Blocked"].includes(r.recommended_next_action))
-    .sort((a, b) => {
-      const order = { "Needs Outreach": 0, "Partner-Gated": 1, Blocked: 2 };
-      return order[a.recommended_next_action] - order[b.recommended_next_action] || a.category.localeCompare(b.category);
-    })
+  const access = rows
+    .filter((row) => ["Needs Outreach", "Partner-Gated"].includes(row.recommended_next_action))
+    .sort((a, b) => confidence(b) - confidence(a) || a.app.localeCompare(b.app))
     .slice(0, 6);
   const mcp = rows
-    .filter((r) => r.existing_mcp === "Official")
-    .sort((a, b) => a.category.localeCompare(b.category) || a.app.localeCompare(b.app))
+    .filter((row) => row.existing_mcp === "Official")
+    .sort((a, b) => confidence(b) - confidence(a) || a.app.localeCompare(b.app))
     .slice(0, 6);
   const cards = [
-    ["Build next", build, "Self-serve gaps"],
-    ["Open access", outreach, "Approval or partner work"],
-    ["Existing MCP", mcp, "Vendor server available"],
+    ["Build next", "Uncovered and build-ready", build],
+    ["Open access", "Approval or customer access", access],
+    ["Use vendor MCP", "Official server already exists", mcp],
   ];
-  $("priority-queue").innerHTML = cards.map(([title, list, subtitle]) => `
+
+  $("priority-queue").innerHTML = cards.map(([title, subtitle, list]) => `
     <article class="queue-card">
-      <h3>${esc(title)} <span class="subtle" style="font-weight:400; letter-spacing:0; text-transform:none">· ${esc(subtitle)}</span></h3>
-      <ol>${list.map(short).join("") || "<li><span>None</span><small>—</small></li>"}</ol>
+      <header class="queue-card-head">
+        <div><h3>${esc(title)}</h3><p>${esc(subtitle)}</p></div>
+        <span>${list.length} shown</span>
+      </header>
+      <ol class="queue-list">${list.map(queueItem).join("")}</ol>
     </article>
   `).join("");
 }
 
-function bars(items, colorMap = {}) {
-  const entries = Object.entries(items || {}).sort((a, b) => b[1] - a[1]);
-  const max = Math.max(1, ...entries.map(([, value]) => value));
-  return entries.map(([name, value]) => `
-    <div class="bar">
-      <div class="bar-name" title="${esc(name)}">${esc(name)}</div>
-      <div class="track"><div class="fill ${colorMap[name] || "blue"}" style="width:${width(value, max)}"></div></div>
-      <div class="bar-value">${esc(value)}</div>
-    </div>
-  `).join("");
-}
-
-function renderCharts() {
-  const p = metrics.patterns || {};
-  const cat = p.access_by_category || {};
-  const categoryBars = Object.entries(cat).map(([name, counts]) => {
-    const self = counts["Self-Serve"] || 0;
-    const gated = counts.Gated || 0;
-    const total = Math.max(1, self + gated);
-    return `
-      <div class="bar">
-        <div class="bar-name" title="${esc(name)}">${esc(name)}</div>
-        <div class="track" aria-label="${esc(name)} access split">
-          <div class="fill green" style="width:${width(self, total)}; float:left"></div>
-          <div class="fill amber" style="width:${width(gated, total)}; float:left"></div>
-        </div>
-        <div class="bar-value">${self}/${gated}</div>
-      </div>
-    `;
-  }).join("");
-  $("category-bars").innerHTML = categoryBars || "<p class=\"subtle\">No category data yet.</p>";
-
-  $("action-bars").innerHTML = [
-    "<p class=\"chart-title\" style=\"margin-top:0\">Recommended next action</p>",
-    bars(p.recommended_next_action, {
-      "Build Now": "green",
-      "Needs Outreach": "blue",
-      "Partner-Gated": "violet",
-      Blocked: "red",
-    }),
-    "<p class=\"chart-title\" style=\"margin-top:22px\">API type</p>",
-    bars(p.api_type, { REST: "green", GraphQL: "blue", SDK: "violet", None: "red" }),
-  ].join("");
-}
-
 function initFilters() {
-  const cats = [...new Set(rows.map((r) => r.category))].sort();
-  const actions = [...new Set(rows.map((r) => r.recommended_next_action))].sort();
+  const categories = [...new Set(rows.map((row) => row.category).filter(Boolean))].sort();
+  const actions = [...new Set(rows.map((row) => row.recommended_next_action).filter(Boolean))].sort();
   const builds = ["Easy", "Moderate", "Hard", "Blocked"];
 
-  for (const value of cats) $("f-cat").insertAdjacentHTML("beforeend", `<option>${esc(value)}</option>`);
-  for (const value of actions) $("f-next").insertAdjacentHTML("beforeend", `<option>${esc(value)}</option>`);
-  for (const value of builds) $("f-build").insertAdjacentHTML("beforeend", `<option>${esc(value)}</option>`);
+  categories.forEach((value) => $("f-cat").insertAdjacentHTML(
+    "beforeend",
+    `<option value="${esc(value)}">${esc(value)}</option>`,
+  ));
+  actions.forEach((value) => $("f-next").insertAdjacentHTML(
+    "beforeend",
+    `<option value="${esc(value)}">${esc(value)}</option>`,
+  ));
+  builds.forEach((value) => $("f-build").insertAdjacentHTML(
+    "beforeend",
+    `<option value="${esc(value)}">${esc(value)}</option>`,
+  ));
 
-  ["q", "f-cat", "f-next", "f-build"].forEach((id) => $(id).addEventListener("input", renderTable));
+  ["q", "f-cat", "f-next", "f-build"].forEach((id) => {
+    $(id).addEventListener("input", renderTable);
+  });
 }
 
 function renderTable() {
@@ -285,159 +286,391 @@ function renderTable() {
   const category = $("f-cat").value;
   const action = $("f-next").value;
   const build = $("f-build").value;
+  const actionRank = { "Build Now": 0, "Needs Outreach": 1, "Partner-Gated": 2, Blocked: 3 };
 
-  let visible = rows.filter((r) => {
-    if (category && r.category !== category) return false;
-    if (action && r.recommended_next_action !== action) return false;
-    if (build && r.buildability !== build) return false;
+  const visible = rows.filter((row) => {
+    if (category && row.category !== category) return false;
+    if (action && row.recommended_next_action !== action) return false;
+    if (build && row.buildability !== build) return false;
     if (!query) return true;
     return [
-      r.app,
-      r.category,
-      r.one_liner,
-      (r.auth_methods || []).join(" "),
-      r.main_blocker,
-      r.recommended_next_action,
+      row.app,
+      row.category,
+      row.one_liner,
+      (row.auth_methods || []).join(" "),
+      row.main_blocker,
+      row.recommended_next_action,
     ].join(" ").toLowerCase().includes(query);
-  });
+  }).sort((a, b) => (
+    (actionRank[a.recommended_next_action] ?? 9) - (actionRank[b.recommended_next_action] ?? 9)
+    || Number(b.confidence || 0) - Number(a.confidence || 0)
+    || a.app.localeCompare(b.app)
+  ));
 
-  visible = visible.sort((a, b) => a.category.localeCompare(b.category) || a.app.localeCompare(b.app));
-  $("matrix-count").textContent = `${visible.length} of ${rows.length} shown`;
-  $("matrix-body").innerHTML = visible.map((r) => {
-    const evidence = bestEvidence(r);
-    const evidenceLink = evidence
-      ? `<a href="${esc(evidence)}" target="_blank" rel="noopener">${esc(compactHost(evidence))}</a><span class="subtle"> · ${(r.evidence_urls || []).length}</span>`
-      : "<span class=\"subtle\">missing</span>";
+  $("matrix-count").textContent = `${visible.length} of ${rows.length} apps`;
+  $("matrix-body").innerHTML = visible.map((record) => {
+    const confidence = Math.round(Number(record.confidence || 0) * 100);
+    const auth = (record.auth_methods || []).join(", ") || "—";
+    const hasReasoning = Boolean(reasoning[record.slug]);
     return `
-      <tr title="${esc(r.main_blocker || r.one_liner || "")}">
-        <td><div class="app-name">${esc(r.app)}</div><div class="subtle">${esc(r.one_liner || "")}</div></td>
-        <td>${esc(r.category)}</td>
-        <td>${esc((r.auth_methods || []).join(", ") || "—")}</td>
-        <td>${pill(r.access_model?.kind, r.access_model?.kind)}</td>
-        <td>${esc(r.api_type)} <span class="subtle">· ${esc(r.api_breadth)}</span></td>
-        <td>${pill(r.existing_mcp, r.existing_mcp)}</td>
-        <td>${pill(r.composio_toolkit, r.composio_toolkit)}</td>
-        <td>${pill(r.buildability, r.buildability)}</td>
-        <td>${pill(r.recommended_next_action, r.recommended_next_action)}</td>
-        <td>${esc(r.confidence)}</td>
-        <td>${evidenceLink}</td>
+      <tr>
+        <td>
+          <div class="app-cell">
+            <span class="app-avatar" aria-hidden="true">${esc(initials(record.app))}</span>
+            <span class="app-meta"><b>${esc(record.app)}</b><span>${esc(record.category)}</span></span>
+          </div>
+        </td>
+        <td><span class="truncate" title="${esc(auth)}">${esc(auth)}</span></td>
+        <td>${pill(record.access_model?.kind, record.access_model?.kind)}</td>
+        <td><span class="truncate" title="${esc(record.api_type)} · ${esc(record.api_breadth)}">${esc(record.api_type)} · ${esc(record.api_breadth)}</span></td>
+        <td>${pill(record.existing_mcp, record.existing_mcp)}</td>
+        <td>${pill(record.composio_toolkit, record.composio_toolkit)}</td>
+        <td>${pill(record.buildability, record.buildability)}</td>
+        <td>${pill(record.recommended_next_action, record.recommended_next_action)}</td>
+        <td>
+          <div class="confidence-cell" aria-label="${confidence}% confidence">
+            <span>${confidence}</span>
+            <span class="confidence-track"><span class="confidence-fill" style="width:${confidence}%"></span></span>
+          </div>
+        </td>
+        <td><button class="review-button" type="button" data-slug="${esc(record.slug)}" data-testid="reasoning-${esc(record.slug)}">${hasReasoning ? "Reasoning" : "Details"}</button></td>
       </tr>
     `;
   }).join("");
 }
 
-function renderVerification() {
-  const h = metrics.handcheck || {};
-  const v = metrics.verification || {};
-  const am = metrics.accuracy_movement || {};
-  const unresolved = metrics.unresolved_failures || [];
-  const q = metrics.quality || {};
-  const handText = h.n
-    ? `${h.n} official-doc checks: API ${pct(h.api_type_accuracy)}, auth ${pct(h.auth_accuracy)}, access ${pct(h.access_accuracy)}${h.mcp_accuracy != null ? `, MCP ${pct(h.mcp_accuracy)}` : ""}. Overall ${pct(h.accuracy)}; ${(h.misses || []).length} mismatches shown below.`
-    : "Independent human adjudication is pending for this fresh run. The legacy score was not carried forward because its access rubric was different.";
-  const blindText = v.n_verified
-    ? `${v.n_verified} fresh-source re-checks; agreement ${pct(v.overall_agreement_rate)}. This measures reproducibility, not accuracy.`
-    : "No blind re-search agreement has been recorded yet.";
-  const bu = metrics.browser_use || {};
-  const browserDisagreements = bu.n_disagreements != null
-    ? bu.n_disagreements
-    : bu.n_corrections_found;
-  const browserAccepted = bu.n_adjudicated_corrections;
-  const browserText = bu.n_checked
-    ? (browserAccepted != null
-      ? `${bu.n_checked} live-doc checks produced ${browserDisagreements} disagreements; ${browserAccepted} became accepted corrections after human adjudication.`
-      : `${bu.n_checked} live-doc checks produced ${browserDisagreements} disagreements. This legacy snapshot did not store field-level adjudication state.`)
-    : (q.browser_evidence_pages
-      ? `${q.browser_evidence_pages} official pages across ${q.browser_evidence_apps} difficult apps were read in-browser when direct fetching was incomplete. This is evidence acquisition, not an accuracy score.`
-      : "No browser-assisted evidence is recorded for this run.");
-  const moveText = (am.first_pass_accuracy != null)
-    ? `Measured sample: ${pct(am.first_pass_accuracy)} first pass to ${pct(am.post_verification_accuracy)} after review. ${(am.improved_apps || []).length} improved; ${(am.regressed_apps || []).length} regressed.`
-    : "";
+function markdownSection(raw, heading) {
+  const marker = `## ${heading}`;
+  const start = String(raw || "").indexOf(marker);
+  if (start < 0) return "";
+  const contentStart = start + marker.length;
+  const remainder = raw.slice(contentStart).replace(/^\s+/, "");
+  const next = remainder.search(/\n##\s+/);
+  return (next >= 0 ? remainder.slice(0, next) : remainder).trim();
+}
 
-  const missBy = {};
-  (h.misses || []).forEach((m) => {
-    const f = String(m.field || "").replace("_methods", "").replace("_model", "");
-    (missBy[m.slug] = missBy[m.slug] || []).push(f);
+function stripMarkdown(value) {
+  return String(value || "")
+    .replace(/\*\*/g, "")
+    .replace(/^[-*]\s+/gm, "")
+    .replace(/`([^`]+)`/g, "$1")
+    .trim();
+}
+
+function parseResearchTrace(raw) {
+  const section = markdownSection(raw, "Research trace");
+  const lines = section.split("\n").map((line) => line.trim()).filter(Boolean);
+  const queryLine = lines.find((line) => line.startsWith("- queries:")) || "";
+  const qualityLine = lines.find((line) => line.startsWith("- evidence quality:")) || "";
+  const sources = lines.map((line) => {
+    const match = line.match(/^- (https?:\/\/\S+) \| HTTP (\d+) \| ([^|]+) \| topics=(.+)$/);
+    if (!match) return null;
+    return { url: match[1], status: Number(match[2]), kind: match[3].trim(), topics: match[4].trim() };
+  }).filter(Boolean);
+  return {
+    queries: stripMarkdown(queryLine.replace("- queries:", "")),
+    quality: stripMarkdown(qualityLine.replace("- evidence quality:", "")) || "unknown",
+    sources,
+  };
+}
+
+function handcheckFor(record) {
+  const handcheck = metrics.handcheck || {};
+  const checked = (handcheck.checked || []).find((item) => item.slug === record.slug);
+  const misses = (handcheck.misses || []).filter((item) => item.slug === record.slug);
+  return { checked, misses };
+}
+
+function evidenceMarkup(record) {
+  const urls = [];
+  [...(record.evidence_urls || []), record.primary_docs_url].forEach((value) => {
+    const url = safeUrl(value);
+    if (url && !urls.includes(url)) urls.push(url);
   });
-  const missList = (h.misses || []).map((m) => {
-    const had = Array.isArray(m.current) ? m.current.join(", ") : (m.current == null ? "—" : m.current);
-    const should = Array.isArray(m.truth) ? m.truth.join(", ") : (m.truth == null ? "—" : m.truth);
-    return `<li><b>${esc(m.app)}</b> — ${esc(m.field)}: had '${esc(had)}', should be '${esc(should)}'</li>`;
-  }).join("");
-  const checkedList = (h.checked || []).map((c) => {
-    const miss = missBy[c.slug];
-    return `<span class="pill ${miss ? "amber" : "green"}">${esc(c.app)}${miss ? " · " + esc(miss.join("/")) : ""}</span>`;
-  }).join(" ");
-  const handCard = `<article class="proof"><h3>Hand-Checked Accuracy (ground truth)</h3><p>${esc(handText)}</p>`
-    + (missList ? `<p class="subtle" style="margin:10px 0 4px">The ${(h.misses || []).length} misses (shown, not hidden):</p><ul style="margin:0 0 6px 18px; padding:0">${missList}</ul>` : "")
-    + (checkedList ? `<p class="subtle" style="margin:10px 0 6px">All ${(h.checked || []).length} hand-checked apps (amber = a field we got wrong):</p><div style="display:flex; flex-wrap:wrap; gap:6px">${checkedList}</div>` : "")
-    + (h.note ? `<p class="subtle" style="margin:10px 0 0">${esc(h.note)}</p>` : "")
-    + `</article>`;
-  const cards = [
-    `<article class="proof"><h3>Source Quality Gate</h3><p>${q.source_audit_complete
-      ? `${q.source_audited_rows} of ${rows.length} rows passed schema, citation, app-identity, and first-party claim-coverage checks.`
-      : "The full source-quality audit is incomplete."}</p></article>`,
-    handCard,
-    `<article class="proof"><h3>Blind Re-Search Agreement</h3><p>${esc(blindText)}</p></article>`,
-    `<article class="proof"><h3>Browser-Use Verification (live docs)</h3><p>${esc(browserText)}</p></article>`,
-  ];
-  if (moveText) {
-    cards.push(`<article class="proof"><h3>Accuracy Movement</h3><p>${esc(moveText)}</p>`
-      + (am.note ? `<p class="subtle" style="margin:10px 0 0">${esc(am.note)}</p>` : "")
-      + `</article>`);
-  }
-  $("verification-grid").innerHTML = cards.join("");
+  if (!urls.length) return "<p>No valid evidence URL was retained for this record.</p>";
+  return `<ul class="evidence-list">${urls.map((url, index) => `
+    <li>
+      <a href="${esc(url)}" target="_blank" rel="noopener">
+        <span class="source-index">0${index + 1}</span>
+        <span class="source-copy"><b>${esc(compactHost(url))}</b><small>${esc(sourcePath(url))}</small></span>
+        <span class="source-arrow" aria-hidden="true">↗</span>
+      </a>
+    </li>
+  `).join("")}</ul>`;
+}
 
-  const warnings = [];
-  if (!h.n) {
-    warnings.push("Independent accuracy is still pending. The 100/100 source-audit pass must not be presented as a human accuracy score.");
-  } else if (!v.n_verified) {
-    warnings.push("Blind re-search agreement is pending; the human accuracy score above is the current ground-truth metric.");
+function traceMarkup(trace) {
+  if (!trace.sources.length && !trace.queries) {
+    return "<p>The original fetch trace is not available in this build.</p>";
   }
-  if (unresolved.length) {
-    warnings.push(`Unresolved pipeline failures: ${unresolved.map((f) => `${f.slug} (${f.phase})`).join(", ")}. These apps were not guessed.`);
-  }
-  if (warnings.length) {
-    $("verification-warning").innerHTML = `
-      <div class="warning">
-        ${esc(warnings.join(" "))}
+  const query = trace.queries
+    ? `<div class="trace-query">${esc(trace.queries)}</div>`
+    : "";
+  const sources = trace.sources.length
+    ? `<ul class="trace-list">${trace.sources.map((source) => `
+        <li class="trace-item">
+          <span class="trace-status ${source.status >= 400 ? "bad" : ""}">HTTP ${source.status}</span>
+          <span class="trace-url" title="${esc(source.url)}">${esc(source.url)}</span>
+          <span class="trace-kind">${esc(source.kind)}</span>
+        </li>
+      `).join("")}</ul>`
+    : "";
+  return `${query}${sources}`;
+}
+
+function verificationMarkup(record) {
+  const { checked, misses } = handcheckFor(record);
+  if (!checked) {
+    return `
+      <div class="verification-note">
+        <p><b>Source-audited, not hand-checked.</b> This row passed schema, citation, identity, and claim-coverage checks but was not part of the 10-app human ground-truth sample.</p>
       </div>
     `;
-  } else {
-    $("verification-warning").innerHTML = "";
+  }
+  if (!misses.length) {
+    return `
+      <div class="verification-note">
+        <p><b>Matched official docs.</b> API type, canonical auth set, production access, and MCP ownership all matched the human adjudication.</p>
+      </div>
+    `;
+  }
+  return `
+    <div class="verification-note missed">
+      <p><b>${misses.length} first-pass mismatch${misses.length === 1 ? "" : "es"}, corrected after review.</b></p>
+      <ul class="miss-list">${misses.map((miss) => `
+        <li><b>${esc(miss.field)}</b>: ${esc(miss.notes)}</li>
+      `).join("")}</ul>
+    </div>
+  `;
+}
+
+function openReasoning(slug, updateUrl = true) {
+  const record = rows.find((item) => item.slug === slug);
+  if (!record) return;
+  const raw = reasoning[slug] || "";
+  const modelReasoning = stripMarkdown(markdownSection(raw, "Model reasoning"));
+  const trace = parseResearchTrace(raw);
+  const metaLine = raw.split("\n").find((line) => line.startsWith("_generated ")) || "";
+  const meta = stripMarkdown(metaLine.replace(/^_+|_+$/g, ""));
+  const confidence = Math.round(Number(record.confidence || 0) * 100);
+  const adjudication = handcheckFor(record);
+  const dialog = $("reasoning-dialog");
+
+  $("reasoning-title").textContent = record.app;
+  $("reasoning-subtitle").textContent = `${record.category} · ${record.verification_status} · ${meta || `verified ${record.last_verified || "—"}`}`;
+  $("reasoning-content").innerHTML = `
+    <div class="drawer-summary">
+      <div class="drawer-stat"><span>Recommendation</span><b>${esc(record.recommended_next_action)}</b></div>
+      <div class="drawer-stat"><span>Production access</span><b>${esc(record.access_model?.kind || "—")}</b></div>
+      <div class="drawer-stat"><span>Confidence</span><b>${confidence}%</b></div>
+    </div>
+
+    ${adjudication.misses.length ? `
+      <div class="adjudication-alert">
+        <b>Human correction applied</b>
+        <p>${adjudication.misses.length} first-pass field${adjudication.misses.length === 1 ? " was" : "s were"} corrected against official docs. The model paragraph below is preserved verbatim; the decision details are the final adjudicated record.</p>
+      </div>
+    ` : ""}
+
+    <section class="drawer-section">
+      <div class="drawer-section-head"><h3>Model reasoning</h3><span class="pill blue">Verbatim trace</span></div>
+      ${modelReasoning
+        ? `<div class="model-note"><p>${esc(modelReasoning)}</p></div>`
+        : `<div class="empty-reasoning"><p>No model-reasoning paragraph was packaged for this record.</p></div>`}
+    </section>
+
+    <section class="drawer-section">
+      <div class="drawer-section-head"><h3>Decision details</h3></div>
+      <dl class="decision-list">
+        <div class="decision-row"><dt>Summary</dt><dd>${esc(record.one_liner)}</dd></div>
+        <div class="decision-row"><dt>Authentication</dt><dd>${esc((record.auth_methods || []).join(", ") || "—")}</dd></div>
+        <div class="decision-row"><dt>API surface</dt><dd>${esc(record.api_type)} · ${esc(record.api_breadth)}</dd></div>
+        <div class="decision-row"><dt>Access rule</dt><dd>${esc(record.access_model?.note || "—")}</dd></div>
+        <div class="decision-row"><dt>Existing MCP</dt><dd>${esc(record.existing_mcp)}</dd></div>
+        <div class="decision-row"><dt>Composio toolkit</dt><dd>${esc(record.composio_toolkit)}</dd></div>
+        <div class="decision-row"><dt>Buildability</dt><dd>${esc(record.buildability)}</dd></div>
+        <div class="decision-row"><dt>Main blocker</dt><dd>${esc(record.main_blocker || "None recorded")}</dd></div>
+        <div class="decision-row"><dt>Rate limits</dt><dd>${esc(record.rate_limit_note || "Not documented")}</dd></div>
+      </dl>
+    </section>
+
+    <section class="drawer-section">
+      <div class="drawer-section-head"><h3>Verification status</h3>${pill(record.verification_status, record.verification_status)}</div>
+      ${verificationMarkup(record)}
+    </section>
+
+    <section class="drawer-section">
+      <div class="drawer-section-head"><h3>Official evidence</h3><span class="pill gray">${(record.evidence_urls || []).length} cited</span></div>
+      ${evidenceMarkup(record)}
+    </section>
+
+    <section class="drawer-section">
+      <div class="drawer-section-head"><h3>Research trace</h3><span class="pill ${trace.quality === "adequate" ? "green" : "amber"}">${esc(trace.quality)}</span></div>
+      ${traceMarkup(trace)}
+    </section>
+  `;
+
+  if (!dialog.open) dialog.showModal();
+  document.body.classList.add("dialog-open");
+  if (updateUrl) {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("app", slug);
+      window.history.replaceState({}, "", url);
+    } catch {
+      // Local file previews can disallow history changes; the drawer still works.
+    }
   }
 }
 
+function closeReasoningUrl() {
+  document.body.classList.remove("dialog-open");
+  try {
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("app")) {
+      url.searchParams.delete("app");
+      window.history.replaceState({}, "", url);
+    }
+  } catch {
+    // See openReasoning: file:// history is browser-dependent.
+  }
+}
+
+function renderVerification() {
+  const quality = metrics.quality || {};
+  const handcheck = metrics.handcheck || {};
+  const movement = metrics.accuracy_movement || {};
+  const verification = metrics.verification || {};
+  const browserUse = metrics.browser_use || {};
+  const misses = handcheck.misses || [];
+  const checkedPills = (handcheck.checked || []).map((item) => {
+    const missed = misses.some((miss) => miss.slug === item.slug);
+    return pill(`${item.app}${missed ? " · corrected" : ""}`, missed ? "Hard" : "Self-Serve");
+  }).join("");
+
+  const cards = [
+    {
+      title: "Source quality gate",
+      value: quality.source_audit_complete ? `${quality.source_audited_rows}/${rows.length}` : "Open",
+      body: "Rows must pass schema, citation, app identity, claim coverage, and first-party source checks.",
+      detail: `<span class="pill green">${quality.source_audit_complete ? "Complete" : "Incomplete"}</span>`,
+    },
+    {
+      title: "Human ground truth",
+      value: handcheck.n ? pct(handcheck.accuracy) : "Pending",
+      body: `${handcheck.n || 0} priority apps checked against official documentation. The score is the uncorrected first-pass result.`,
+      detail: checkedPills,
+      misses,
+    },
+    {
+      title: "After adjudication",
+      value: movement.post_verification_accuracy != null ? pct(movement.post_verification_accuracy) : "Pending",
+      body: movement.first_pass_accuracy != null
+        ? `${pct(movement.first_pass_accuracy)} first pass to ${pct(movement.post_verification_accuracy)} after applying the same verified truth set. ${(movement.improved_apps || []).length} apps improved; ${(movement.regressed_apps || []).length} regressed.`
+        : "Accuracy movement has not been calculated for this run.",
+      detail: `<span class="pill green">${(movement.improved_apps || []).length} improved</span><span class="pill gray">${(movement.regressed_apps || []).length} regressed</span>`,
+    },
+    {
+      title: "Browser-read evidence",
+      value: quality.browser_evidence_pages || browserUse.n_checked || 0,
+      body: quality.browser_evidence_pages
+        ? `${quality.browser_evidence_pages} official pages across ${quality.browser_evidence_apps || 0} difficult apps were read in-browser when direct fetching was incomplete.`
+        : "No browser-assisted evidence was required for this run.",
+      detail: "<span class=\"pill blue\">Evidence acquisition</span>",
+    },
+    {
+      title: "Blind re-search agreement",
+      value: verification.n_verified ? pct(verification.overall_agreement_rate) : "Pending",
+      body: verification.n_verified
+        ? `${verification.n_verified} fresh-source re-checks measured reproducibility independently from human accuracy.`
+        : "A separate blind re-search sample has not been recorded for this fresh run. It is not substituted with the hand-check score.",
+      detail: `<span class="pill ${verification.n_verified ? "green" : "amber"}">${verification.n_verified ? `${verification.n_verified} checked` : "Open limitation"}</span>`,
+    },
+  ];
+
+  $("verification-grid").innerHTML = cards.map((card) => `
+    <article class="verification-card">
+      <div class="verification-card-head"><h3>${esc(card.title)}</h3><span class="verification-value">${esc(card.value)}</span></div>
+      <p>${esc(card.body)}</p>
+      <div class="verification-detail">${card.detail}</div>
+      ${card.misses?.length ? `
+        <details>
+          <summary>Inspect ${card.misses.length} first-pass mismatch${card.misses.length === 1 ? "" : "es"}</summary>
+          <ul class="miss-list">${card.misses.map((miss) => `<li><b>${esc(miss.app)} · ${esc(miss.field)}</b>: ${esc(miss.notes)}</li>`).join("")}</ul>
+        </details>
+      ` : ""}
+    </article>
+  `).join("");
+
+  const warnings = [];
+  if (!handcheck.n) warnings.push("Independent human accuracy is pending for this run.");
+  if (!verification.n_verified) warnings.push("Blind re-search agreement remains pending and is shown as an open limitation.");
+  $("verification-warning").innerHTML = warnings.length
+    ? `<div class="warning">${esc(warnings.join(" "))}</div>`
+    : "";
+}
+
 function renderFooter() {
-  const repo = metrics.repo_url;
-  const live = metrics.live_url;
+  const repo = safeUrl(metrics.repo_url);
+  const live = safeUrl(metrics.live_url);
   const links = [
-    repo ? `<a href="${esc(repo)}">source repo</a>` : "source repo pending",
-    live ? `<a href="${esc(live)}">live page</a>` : "live link pending",
-  ].join(" · ");
-  $("footer").innerHTML = `Locked 19-field schema · ${links} · generated ${esc(metrics.generated || "—")}.`;
+    repo ? `<a href="${esc(repo)}" target="_blank" rel="noopener">GitHub repository ↗</a>` : "",
+    live ? `<a href="${esc(live)}" target="_blank" rel="noopener">Live report ↗</a>` : "",
+  ].filter(Boolean).join("");
+  $("footer").innerHTML = `
+    <p>Locked 19-field schema · ${rows.length} apps · generated ${esc(formatDate(metrics.generated))}</p>
+    <div class="footer-links">${links}</div>
+  `;
+}
+
+function bindInteractions() {
+  $("matrix-body").addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-slug]");
+    if (button) openReasoning(button.dataset.slug);
+  });
+
+  $("reasoning-dialog").addEventListener("close", closeReasoningUrl);
+  $("reasoning-dialog").addEventListener("click", (event) => {
+    if (event.target === $("reasoning-dialog")) $("reasoning-dialog").close();
+  });
+
+  document.querySelectorAll(".command-tab").forEach((button) => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".command-tab").forEach((item) => {
+        const active = item === button;
+        item.classList.toggle("active", active);
+        item.setAttribute("aria-selected", String(active));
+      });
+      $("command-output").textContent = commandSets[button.dataset.command];
+    });
+  });
 }
 
 async function init() {
   const loaded = await loadData();
   rows = loaded.rows || [];
   metrics = loaded.metrics || {};
+  reasoning = loaded.reasoning || {};
 
   if (!rows.length) {
-    $("hero-copy").textContent = "No report data is baked yet. Run python research.py --build-report to populate the page.";
+    $("hero-copy").textContent = "No report data is packaged yet. Run python research.py --build-report.";
   }
 
-  renderStatus();
-  renderHeroFacts();
-  renderDecisionBoard();
+  renderHeader();
+  renderHero();
   renderMetrics();
   renderInsights();
   renderPriorityQueue();
-  renderCharts();
   initFilters();
   renderTable();
   renderVerification();
   renderFooter();
+  bindInteractions();
+
+  const requestedSlug = new URLSearchParams(window.location.search).get("app");
+  if (requestedSlug && rows.some((row) => row.slug === requestedSlug)) {
+    openReasoning(requestedSlug, false);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", init);

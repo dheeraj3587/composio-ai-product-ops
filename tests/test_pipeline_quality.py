@@ -524,6 +524,37 @@ class VerificationTests(unittest.TestCase):
 
 
 class FreshRunTests(unittest.TestCase):
+    def test_build_report_bundles_reasoning_for_static_review(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            out = root / "out"
+            report = root / "report"
+            reasoning_dir = out / "reasoning"
+            reasoning_dir.mkdir(parents=True)
+            results_path = out / "results.json"
+            metrics_path = out / "metrics.json"
+            results_path.write_text(json.dumps([valid_record()]), encoding="utf-8")
+            metrics_path.write_text(json.dumps({"generated": "2026-07-11"}), encoding="utf-8")
+            (reasoning_dir / "dealcloud.md").write_text(
+                "# DealCloud reasoning\n\n## Model reasoning\nOfficial docs support the decision.\n",
+                encoding="utf-8",
+            )
+
+            with (
+                mock.patch.object(config, "REPORT_DIR", report),
+                mock.patch.object(config, "REASONING_DIR", reasoning_dir),
+                mock.patch.object(config, "RESULTS_PATH", results_path),
+                mock.patch.object(config, "METRICS_PATH", metrics_path),
+                mock.patch("builtins.print"),
+            ):
+                research.cmd_build_report()
+
+            bundled = json.loads((report / "data" / "reasoning.json").read_text(encoding="utf-8"))
+            self.assertIn("Official docs support the decision.", bundled["dealcloud"])
+            data_js = (report / "data.js").read_text(encoding="utf-8")
+            self.assertIn("window.REASONING", data_js)
+            self.assertIn("DealCloud reasoning", data_js)
+
     def test_archive_clears_generated_state_but_preserves_report_and_handcheck(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
