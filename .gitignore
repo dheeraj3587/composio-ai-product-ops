@@ -14,6 +14,11 @@ venv/
 # Caches (regenerable) — but KEEP results.json/metrics.json/reasoning (deliverables/evidence)
 out/cache/
 out/archive/
+out/batch_state.json
+out/browser_tasks.json
+out/failures.json
+out/failures.log
+out/usage.json
 
 # OS / editor
 .DS_Store
@@ -25,5 +30,3 @@ node_modules/
 # Scratch / internal tooling (never push)
 _smoke*
 _e2e*
-out/browser_tasks.json
-out/batch_state.json
