@@ -36,8 +36,7 @@ def get_app(slug: str) -> dict:
 # --------------------------------------------------------------------------- #
 # single app
 # --------------------------------------------------------------------------- #
-def research_app(app: dict, model: str | None = None, log: bool = True,
-                 lead: str | None = None):
+def research_app(app: dict, model: str | None = None, log: bool = True):
     """app: a record from apps.json. Returns (AppRecord, info)."""
     meta = {"app": app["app"], "slug": app["slug"],
             "category": app["category"], "hint_url": app.get("hint_url") or ""}
@@ -45,8 +44,8 @@ def research_app(app: dict, model: str | None = None, log: bool = True,
     preseed = load_preseed_map().get(meta["slug"])
     evidence = docs_research.gather_evidence(
         meta["app"], meta["slug"], hint_url=meta["hint_url"], category=meta["category"])
-    rec, reasoning = synthesis.synthesize(
-        meta, evidence, composio_signal, preseed=preseed, model=model, write_log=log, lead=lead)
+    rec, _ = synthesis.synthesize(
+        meta, evidence, composio_signal, preseed=preseed, model=model, write_log=log)
     info = {
         "preseed_available": bool(preseed),
         "degraded": evidence["degraded"],
@@ -77,8 +76,7 @@ def _save(results_by_slug: dict) -> None:
 
 
 def run_batch(slugs: list[str] | None = None, workers: int = 2,
-              resume: bool = True, model: str | None = None,
-              shard: bool = True) -> list[dict]:
+              resume: bool = True, model: str | None = None) -> list[dict]:
     if workers < 1 or workers > config.GOOGLE_MAX_WORKERS:
         raise ValueError(
             f"workers must be between 1 and {config.GOOGLE_MAX_WORKERS} for the "
@@ -101,8 +99,8 @@ def run_batch(slugs: list[str] | None = None, workers: int = 2,
           f"(workers={workers}, {mode})")
 
     def work(a: dict):
-        rec, info = research_app(a, model=model, lead=None)
-        return a["slug"], rec.model_dump(mode="json"), info, None
+        rec, info = research_app(a, model=model)
+        return a["slug"], rec.model_dump(mode="json"), info
 
     consecutive_capacity_failures = 0
     todo_iter = iter(todo)
@@ -127,7 +125,7 @@ def run_batch(slugs: list[str] | None = None, workers: int = 2,
             for fut in sorted(done, key=lambda item: item.exception() is not None):
                 a = futs.pop(fut)
                 try:
-                    slug, rec, info, lead = fut.result()
+                    slug, rec, info = fut.result()
                     results[slug] = rec
                     with _write_lock:
                         _save(results)
@@ -135,9 +133,8 @@ def run_batch(slugs: list[str] | None = None, workers: int = 2,
                     if not info["degraded"]:
                         docs_research.resolve_failure(slug, "evidence")
                     flag = " [degraded]" if info["degraded"] else ""
-                    via = f" via {lead}" if lead else ""
                     print(f"[ok] {slug}: {rec['buildability']}/{rec['recommended_next_action']} "
-                          f"conf={rec['confidence']}{via}{flag}")
+                          f"conf={rec['confidence']}{flag}")
                     consecutive_capacity_failures = 0
                 except config.ProviderQuotaExhausted as e:
                     docs_research._log_failure(

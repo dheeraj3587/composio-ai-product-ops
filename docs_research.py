@@ -1003,15 +1003,3 @@ def resolve_failure(slug: str, phase: str) -> None:
         timestamp = dt.datetime.now(dt.timezone.utc).isoformat()
         with open(config.FAILURES_PATH, "a", encoding="utf-8") as fh:
             fh.write(f"{timestamp}\tRESOLVED\t{phase}\t{slug}\n")
-
-
-if __name__ == "__main__":  # live smoke (needs network)
-    import json
-    import sys
-
-    app = sys.argv[1] if len(sys.argv) > 1 else "Stripe"
-    slug = sys.argv[2] if len(sys.argv) > 2 else "stripe"
-    ev = gather_evidence(app, slug, hint_url="https://stripe.com/docs/api")
-    print(json.dumps({"query": ev["query"], "fetched_urls": ev["fetched_urls"],
-                      "degraded": ev["degraded"],
-                      "n_search": len(ev["search_results"])}, indent=2))

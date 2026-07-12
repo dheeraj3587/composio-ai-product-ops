@@ -143,11 +143,6 @@
       "value": 0.917,
       "n": 45,
       "label": "Latest staged official-doc agreement"
-    },
-    "automated_agreement": {
-      "value": null,
-      "n": null,
-      "label": "Automated blind re-search agreement (not accuracy)"
     }
   },
   "repo_url": "https://github.com/dheeraj3587/composio-ai-product-ops",
@@ -988,15 +983,6 @@
     },
     "n_adjudicated_corrections": 6,
     "adjudicated_correction_apps": [
-      "twilio",
-      "bigcommerce",
-      "cloudflare",
-      "mongodb-atlas",
-      "asana",
-      "otter-ai"
-    ],
-    "n_corrections_found": 6,
-    "corrected_apps": [
       "twilio",
       "bigcommerce",
       "cloudflare",

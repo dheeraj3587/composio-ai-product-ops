@@ -121,21 +121,3 @@ def auth_sets_overlap(left, right, *, strict: bool = False) -> bool:
     a = auth_set(left, strict=strict)
     b = auth_set(right, strict=strict)
     return (not a and not b) or bool(a & b)
-
-
-if __name__ == "__main__":
-    samples = [
-        "OAuth 2.0",
-        "API key",
-        "API token",
-        "Bearer token",
-        "Personal Access Tokens (PATs)",
-        "Service Account",
-        "Key-pair authentication",
-        "Bot token",
-        "LWA (Login with Amazon)",
-        "Basic Auth",
-        "None / Not Applicable",
-    ]
-    for sample in samples:
-        print(f"{sample!r:40} -> {normalize_auth(sample, strict=True)}")

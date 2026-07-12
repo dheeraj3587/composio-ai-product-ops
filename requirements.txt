@@ -12,7 +12,3 @@ tenacity>=8.2
 # adapters evolve together.
 composio>=0.17,<0.18; python_version >= "3.10"
 composio-google>=0.17,<0.18; python_version >= "3.10"
-
-# Optional: only needed if you enable the browser-use fallback for a handful of
-# apps whose docs cannot be fetched any other way (disclosed on the report).
-# browser-use>=0.1

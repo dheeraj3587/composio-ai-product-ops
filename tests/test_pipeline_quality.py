@@ -13,6 +13,7 @@ import handcheck
 import normalize
 import pipeline
 import research
+import schema
 import synthesis
 import verify
 
@@ -39,6 +40,12 @@ def valid_record(slug: str = "dealcloud") -> dict:
         "rate_limit_note": "Not documented.",
         "last_verified": "2026-07-10",
     }
+
+
+class SchemaTests(unittest.TestCase):
+    def test_app_record_contract_stays_locked_to_19_fields(self):
+        self.assertEqual(len(schema.AppRecord.model_fields), 19)
+        self.assertEqual(set(schema.AppRecord.model_fields), set(valid_record()))
 
 
 class NormalizeTests(unittest.TestCase):
@@ -795,7 +802,7 @@ class VerificationTests(unittest.TestCase):
                 summary = verify._browser_use_summary()
         self.assertEqual(summary["n_disagreements"], 1)
         self.assertEqual(summary["field_disagreements"], {"auth_methods": 1})
-        self.assertEqual(summary["n_corrections_found"], 0)
+        self.assertEqual(summary["n_adjudicated_corrections"], 0)
 
     def test_browser_sdk_task_view_output_is_unwrapped(self):
         import browser_verify
@@ -899,12 +906,10 @@ class FreshRunTests(unittest.TestCase):
             ):
                 research.cmd_build_report()
 
-            bundled = json.loads((report / "data" / "reasoning.json").read_text(encoding="utf-8"))
-            self.assertIn("Official docs support the decision.", bundled["dealcloud"])
             data_js = (report / "data.js").read_text(encoding="utf-8")
             self.assertIn("window.REASONING", data_js)
             self.assertIn("window.COMPOSIO_COVERAGE", data_js)
-            self.assertTrue((report / "data" / "composio_coverage.json").exists())
+            self.assertFalse((report / "data").exists())
             self.assertIn("DealCloud reasoning", data_js)
 
     def test_build_report_degrades_gracefully_without_coverage_sidecar(self):

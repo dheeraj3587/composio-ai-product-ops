@@ -9,7 +9,7 @@ python research.py --verify               # blind re-search verification -> metr
 python research.py --composio-audit       # authoritative toolkit depth audit
 python research.py --composio-agent SLUG  # read-only Composio Session research check
 python research.py --metrics              # rebuild metrics.json (patterns + verify + handcheck)
-python research.py --build-report         # copy results.json + metrics.json into report/data/
+python research.py --build-report         # generate the static report/data.js bundle
 """
 
 from __future__ import annotations
@@ -92,7 +92,7 @@ def _archive_current_run() -> None:
     print(f"archived prior run -> {archive} (published report files were not changed)")
 
 
-def cmd_batch(slugs, limit, workers, model, resume, shard, fresh_run=False) -> None:
+def cmd_batch(slugs, limit, workers, model, resume, fresh_run=False) -> None:
     _preflight_paid_runtime(workers)
     if fresh_run:
         _archive_current_run()
@@ -101,7 +101,7 @@ def cmd_batch(slugs, limit, workers, model, resume, shard, fresh_run=False) -> N
         slugs = [a["slug"] for a in pipeline.load_apps()[:limit]]
     try:
         results = pipeline.run_batch(
-            slugs=slugs, workers=workers, resume=resume, model=model, shard=shard
+            slugs=slugs, workers=workers, resume=resume, model=model
         )
     except (config.ProviderQuotaExhausted, config.ProviderCapacityUnavailable) as exc:
         raise SystemExit(
@@ -180,7 +180,7 @@ def cmd_recheck(slugs_csv, model) -> None:
     done = 0
     for s in slugs:
         try:
-            rec, info = pipeline.research_app(pipeline.get_app(s), model=model, lead=None)
+            rec, info = pipeline.research_app(pipeline.get_app(s), model=model)
         except Exception as e:  # rate limit / transient -> keep existing record, continue
             print(f"[recheck] {s}: FAILED ({type(e).__name__}) — kept existing record")
             continue
@@ -239,8 +239,7 @@ def cmd_composio_agent(slug: str, model: str | None) -> None:
 
 
 def cmd_build_report() -> None:
-    dst = config.REPORT_DIR / "data"
-    dst.mkdir(parents=True, exist_ok=True)
+    config.REPORT_DIR.mkdir(parents=True, exist_ok=True)
     results = config.load_json(config.RESULTS_PATH, default=[]) or []
     metrics = config.load_json(config.METRICS_PATH, default={}) or {}
     composio_coverage = config.load_json(config.COMPOSIO_COVERAGE_PATH, default={}) or {}
@@ -250,17 +249,6 @@ def cmd_build_report() -> None:
         path = config.REASONING_DIR / f"{slug}.md"
         if slug and path.exists():
             reasoning[slug] = path.read_text(encoding="utf-8")
-    for src in (
-        config.RESULTS_PATH,
-        config.METRICS_PATH,
-        config.COMPOSIO_COVERAGE_PATH,
-    ):
-        if src.exists():
-            shutil.copy(src, dst / src.name)
-            print(f"copied {src.name} -> report/data/")
-        else:
-            print(f"WARN: {src} missing (run --all first)")
-    config.save_json(dst / "reasoning.json", reasoning)
     # data.js sets globals so the static page works from file://, http.server, or Vercel.
     with open(config.REPORT_DIR / "data.js", "w", encoding="utf-8") as fh:
         fh.write("window.RESULTS = " + json.dumps(results, ensure_ascii=False) + ";\n")
@@ -337,10 +325,6 @@ def main() -> None:
         help="capture complete results as results_firstpass.json (refuses overwrite)"
     )
     p.add_argument(
-        "--no-shard", action="store_true",
-        help="compatibility flag; provider sharding is disabled"
-    )
-    p.add_argument(
         "--verify", action="store_true", help="run blind re-search verification"
     )
     p.add_argument(
@@ -379,7 +363,11 @@ def main() -> None:
         action="store_true",
         help="apply filled current-rubric truth after recording the hand-check score",
     )
-    p.add_argument("--build-report", action="store_true", help="copy data into report/")
+    p.add_argument(
+        "--build-report",
+        action="store_true",
+        help="build the static report data bundle",
+    )
     p.add_argument("--recheck", help="comma-separated slugs to re-research and MERGE into results.json")
     p.add_argument("--accuracy-movement", action="store_true",
                    help="score first-pass vs post-verification accuracy against hand truth")
@@ -387,11 +375,6 @@ def main() -> None:
 
     if args.fresh_run and not (args.all or args.batch_submit):
         p.error("--fresh-run must be used with --all or --batch-submit")
-    if args.fresh_run and len(config.configured_model_chain(args.model)) != 1:
-        p.error(
-            "--fresh-run requires the single native Google model policy."
-        )
-
     if args.batch_submit:
         cmd_batch_submit(args.model, args.workers, args.fresh_run)
     elif args.batch_recover:
@@ -412,7 +395,7 @@ def main() -> None:
         slugs = args.slugs.split(",") if args.slugs else None
         cmd_batch(
             slugs, args.limit, args.workers, args.model,
-            not args.no_resume, not args.no_shard, fresh_run=args.fresh_run,
+            not args.no_resume, fresh_run=args.fresh_run,
         )
     elif args.verify:
         cmd_verify(args.sample, args.model)

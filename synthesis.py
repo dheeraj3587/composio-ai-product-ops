@@ -617,7 +617,7 @@ def _record_from_parsed(app_meta: dict, evidence: dict, composio_signal: dict,
 
 def synthesize(app_meta: dict, evidence: dict, composio_signal: dict,
                preseed: dict | None = None, model: str | None = None,
-               write_log: bool = True, lead: str | None = None):
+               write_log: bool = True):
     """Synthesize one record and repair one invalid model response."""
     if not evidence.get("fetched_urls"):
         raise ValueError(
@@ -633,7 +633,6 @@ def synthesize(app_meta: dict, evidence: dict, composio_signal: dict,
         parsed, _ = config.llm_json(
             messages,
             model=model,
-            lead=lead,
             max_tokens=4096,
             response_schema=SynthesisOutput,
         )
@@ -650,7 +649,6 @@ def synthesize(app_meta: dict, evidence: dict, composio_signal: dict,
                 },
             ],
             model=model,
-            lead=lead,
             thinking_level="low",
             max_tokens=4096,
             response_schema=SynthesisOutput,
@@ -682,7 +680,6 @@ def synthesize(app_meta: dict, evidence: dict, composio_signal: dict,
             parsed, _ = config.llm_json(
                 repair_messages,
                 model=model,
-                lead=lead,
                 thinking_level="low",
                 max_tokens=4096,
                 response_schema=SynthesisOutput,

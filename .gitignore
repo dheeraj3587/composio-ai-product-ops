@@ -6,16 +6,16 @@
 # Python
 __pycache__/
 *.py[cod]
+.pytest_cache/
+.ruff_cache/
 .venv/
-.venv-browser/
 venv/
 *.egg-info/
 
-# Caches (regenerable) — but KEEP results.json/metrics.json/reasoning (deliverables/evidence)
+# Regenerable runtime state; committed evidence remains under out/
 out/cache/
 out/archive/
 out/batch_state.json
-out/browser_tasks.json
 out/failures.json
 out/failures.log
 out/usage.json
@@ -26,7 +26,3 @@ out/usage.json
 .idea/
 node_modules/
 .vercel
-
-# Scratch / internal tooling (never push)
-_smoke*
-_e2e*

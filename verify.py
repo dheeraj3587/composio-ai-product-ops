@@ -116,8 +116,7 @@ def _safe_auth_equal(left, right) -> bool:
         return False
 
 
-def _rederive(app: str, exclude_urls: set[str], model: str | None,
-              lead: str | None = None) -> dict | None:
+def _rederive(app: str, exclude_urls: set[str], model: str | None) -> dict | None:
     """Blindly re-derive two fields and retain the complete evidence trace."""
     queries = _blind_queries(app)
     search_results = docs_research._dedupe_search_results([
@@ -166,7 +165,6 @@ def _rederive(app: str, exclude_urls: set[str], model: str | None,
         parsed, _ = config.llm_json(
             messages,
             model=model,
-            lead=lead,
             max_tokens=3072,
             response_schema=VerificationOutput,
         )
@@ -180,7 +178,6 @@ def _rederive(app: str, exclude_urls: set[str], model: str | None,
                 },
             ],
             model=model,
-            lead=lead,
             thinking_level="low",
             max_tokens=3072,
             response_schema=VerificationOutput,
@@ -200,7 +197,6 @@ def _rederive(app: str, exclude_urls: set[str], model: str | None,
         repaired, _ = config.llm_json(
             repair_messages,
             model=model,
-            lead=lead,
             thinking_level="low",
             max_tokens=3072,
             response_schema=VerificationOutput,
@@ -260,7 +256,7 @@ def run_verification(sample_size: int | None = None, model: str | None = None) -
         if record.get("primary_docs_url"):
             excluded.add(record["primary_docs_url"])
         try:
-            derived = _rederive(record["app"], excluded, model, lead=None)
+            derived = _rederive(record["app"], excluded, model)
         except Exception as exc:
             docs_research._log_failure(
                 record["slug"], f"verify error: {type(exc).__name__}: {exc}", phase="verify"
@@ -412,10 +408,6 @@ def _browser_use_summary() -> dict:
         "field_disagreements": dict(field_counts),
         "n_adjudicated_corrections": len(accepted_apps),
         "adjudicated_correction_apps": accepted_apps,
-        # Compatibility keys for the current report renderer. Their meaning is
-        # now strictly "accepted correction", never raw model disagreement.
-        "n_corrections_found": len(accepted_apps),
-        "corrected_apps": accepted_apps,
     }
 
 
@@ -427,6 +419,8 @@ def rebuild_metrics() -> dict:
     ) or {}
     if composio_coverage.get("summary"):
         metrics["composio_sdk"] = composio_coverage["summary"]
+    else:
+        metrics.pop("composio_sdk", None)
     metrics["patterns"] = pipeline.compute_aggregates(results)
     metrics["n_results"] = len(results)
     failure_state = config.load_json(config.FAILURE_STATE_PATH, default={}) or {}
@@ -436,6 +430,8 @@ def rebuild_metrics() -> dict:
     browser_summary = _browser_use_summary()
     if browser_summary:
         metrics["browser_use"] = browser_summary
+    else:
+        metrics.pop("browser_use", None)
     batch_state = config.load_json(config.BATCH_STATE_PATH, default={}) or {}
     result_slugs = {record.get("slug") for record in results if record.get("slug")}
     completed_slugs = set(batch_state.get("completed_slugs") or [])
@@ -465,18 +461,20 @@ def rebuild_metrics() -> dict:
     }
     verification = metrics.get("verification", {})
     handcheck = metrics.get("handcheck", {})
-    metrics["headline_accuracy"] = {
+    headline_accuracy = {
         "hand_checked_accuracy": {
             "value": handcheck.get("accuracy"),
             "n": handcheck.get("n"),
             "label": "Latest staged official-doc agreement",
         },
-        "automated_agreement": {
+    }
+    if verification.get("overall_agreement_rate") is not None:
+        headline_accuracy["automated_agreement"] = {
             "value": verification.get("overall_agreement_rate"),
             "n": verification.get("n_verified"),
             "label": "Automated blind re-search agreement (not accuracy)",
-        },
-    }
+        }
+    metrics["headline_accuracy"] = headline_accuracy
     metrics["repo_url"] = os.getenv(
         "REPO_URL", "https://github.com/dheeraj3587/composio-ai-product-ops"
     )

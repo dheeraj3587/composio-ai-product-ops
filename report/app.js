@@ -44,7 +44,7 @@ const commandSets = {
     "python research.py --fold-handcheck",
     "python research.py --apply-handcheck",
     "python research.py --accuracy-movement",
-    ".venv-browser/bin/python browser_verify.py --sample 12",
+    "python browser_verify.py --sample 12",
   ].join("\n"),
   composio: [
     "python research.py --composio-audit",
@@ -114,32 +114,13 @@ function formatDate(value) {
   });
 }
 
-async function loadData() {
-  if (Array.isArray(window.RESULTS) && window.RESULTS.length) {
-    return {
-      rows: window.RESULTS,
-      metrics: window.METRICS || {},
-      reasoning: window.REASONING || {},
-      composioCoverage: window.COMPOSIO_COVERAGE || {},
-    };
-  }
-
-  try {
-    const [resultData, metricData, reasoningData, coverageData] = await Promise.all([
-      fetch("data/results.json").then((response) => response.json()),
-      fetch("data/metrics.json").then((response) => response.json()).catch(() => ({})),
-      fetch("data/reasoning.json").then((response) => response.json()).catch(() => ({})),
-      fetch("data/composio_coverage.json").then((response) => response.json()).catch(() => ({})),
-    ]);
-    return {
-      rows: resultData || [],
-      metrics: metricData || {},
-      reasoning: reasoningData || {},
-      composioCoverage: coverageData || {},
-    };
-  } catch {
-    return { rows: [], metrics: {}, reasoning: {}, composioCoverage: {} };
-  }
+function loadData() {
+  return {
+    rows: Array.isArray(window.RESULTS) ? window.RESULTS : [],
+    metrics: window.METRICS || {},
+    reasoning: window.REASONING || {},
+    composioCoverage: window.COMPOSIO_COVERAGE || {},
+  };
 }
 
 function coverageFor(record) {
@@ -764,8 +745,8 @@ function bindInteractions() {
   });
 }
 
-async function init() {
-  const loaded = await loadData();
+function init() {
+  const loaded = loadData();
   rows = loaded.rows || [];
   metrics = loaded.metrics || {};
   reasoning = loaded.reasoning || {};

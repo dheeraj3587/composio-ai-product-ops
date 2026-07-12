@@ -4,20 +4,19 @@
 An INDEPENDENT verification channel: a cloud browser agent NAVIGATES the live
 developer docs for a set of apps and re-derives whether a public API exists, its
 type, the auth method(s), and Self-Serve vs Gated access. Independent of the
-pipeline's static search+fetch pass (catches JS-rendered docs / marketing-homepage
-misses like copper/plain) and uses the cloud's OWN browser model — so it's
-independent of the pipeline's ZenMux/OpenRouter/Gemini LLMs too.
+pipeline's static search+fetch pass (catches JS-rendered docs and thin marketing
+pages) and uses Browser Use's own browser model, independent of the pipeline's
+native Google synthesis model.
 
 Quota-savvy: one browser agent can research many sites per task, so we batch
 `--batch-size` apps into a single cloud instance.
 
-Runs in the isolated .venv-browser. Reads out/results.json, writes
-out/browser_verification.json.
+Reads out/results.json and writes out/browser_verification.json.
 
 Usage (from repo root):
-  .venv-browser/bin/python browser_verify.py --sample 12 --batch-size 6
-  .venv-browser/bin/python browser_verify.py --slugs copper,plain,dealcloud --batch-size 15
-  .venv-browser/bin/python browser_verify.py --slugs copper,plain --recover-task-id TASK_ID
+  python browser_verify.py --sample 12 --batch-size 6
+  python browser_verify.py --slugs copper,plain,dealcloud --batch-size 15
+  python browser_verify.py --slugs copper,plain --recover-task-id TASK_ID
 Needs BROWSER_USE_API_KEY in .env.
 """
 from __future__ import annotations

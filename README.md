@@ -1,143 +1,124 @@
-# API Integration Readiness Research Agent
+# Composio API Integration Readiness
 
-Research pipeline and static report for the Composio AI Product Ops take-home.
+Reproducible research pipeline and static decision dashboard for the Composio AI Product Ops take-home. It evaluates 100 requested apps across API shape, authentication, production access, MCP ownership, Composio coverage, and implementation readiness.
 
-Live report: https://composio-ai-product-ops.vercel.app
+- Live report: https://composio-ai-product-ops.vercel.app
+- Repository: https://github.com/dheeraj3587/composio-ai-product-ops
 
-Repository: https://github.com/dheeraj3587/composio-ai-product-ops
+## Results
 
-The project researches 100 apps across 10 categories and scores whether each one is ready for an API/toolkit integration. The output is a locked 19-field dataset plus a reviewer-friendly dashboard.
+- 100 / 100 apps pass schema, citation, app-identity, and source-quality checks.
+- Composio SDK coverage: 50 active toolkits, 1 catalog-only entry (Front), and 49 missing apps.
+- The active catalog exposes 6,902 tools in total (median 97); 16 toolkits expose triggers.
+- Recommended action: 63 `Build Now`, 19 `Needs Outreach`, 16 `Partner-Gated`, and 2 `Blocked`.
+- The immediate uncovered queue contains 29 build-ready apps. Front is tracked separately as a toolkit-expansion opportunity.
+- 45 priority apps were adjudicated against official docs; 16 additional apps were independently checked in a live browser.
 
-## Current Snapshot
+## Reviewer Artifacts
 
-- 100 apps researched and rendered in the final report.
-- 100 / 100 rows pass schema, citation, app identity, and source-quality checks.
-- The authoritative SDK audit finds 50 active toolkits, 1 catalog-only entry (Front), and 49 missing apps.
-- Active catalog entries expose 6,902 executable tools in total (median 97); 16 toolkits expose triggers.
-- 63 apps are marked `Build Now`; 19 need outreach; 16 are partner-gated; 2 are blocked.
-- Of the missing apps, 29 are ready to build now. Front is a separate toolkit-expansion opportunity, not part of that queue.
-- 69 apps have an official MCP server signal; 25 community; 6 none.
-- 45 reviewer-priority apps were adjudicated against official docs across all 10 categories.
-- The latest staged pre-fold agreement measured 91.7% across API type, exact auth, production access, and MCP ownership. Earlier batches had already been corrected before later batches were added, so this is not a blind 45-app first-pass estimate.
-- The archived first pass scored 80% against the final 45-app truth set.
-- After applying the same verified truth set, the checked sample scores 100%.
-- All 15 pre-correction field misses across 12 apps remain disclosed in the report.
+Each committed artifact has one role:
 
-## What The Agent Produces
+| Artifact | Purpose |
+| --- | --- |
+| `out/results.json` | Canonical current 100-app dataset. |
+| `out/results_firstpass.json` | Immutable first-pass snapshot used for before/after accuracy. |
+| `out/metrics.json` | Derived patterns, verification summaries, and report metadata. |
+| `out/composio_coverage.json` | Authoritative SDK-only `Active` / `Catalog-only` / `Missing` audit. |
+| `out/reasoning/*.md` | Original evidence trace, model rationale, and final adjudicated state for each app. |
+| `handcheck/handcheck.json` | Analyst-reviewed official-doc truth and correction notes. |
+| `out/browser_evidence.json` | Browser-read pages added when direct fetching could not recover usable content. |
+| `out/browser_verification.json` | Independent Browser Use verdicts and adjudication status. |
+| `report/data.js` | Generated static bundle consumed by the reviewer dashboard. |
 
-Each app is written to a locked 19-field schema:
+`report/data.js` is the only publication copy. Canonical research remains in `out/`; the report does not keep a second JSON tree.
+
+## Data Contract
+
+Every app uses the same locked 19-field schema:
 
 `app · category · one_liner · auth_methods[] · access_model · api_type · api_breadth · existing_mcp · composio_toolkit · buildability · main_blocker · recommended_next_action · evidence_urls[] · confidence · verification_status · slug · primary_docs_url · rate_limit_note · last_verified`
 
-The important distinction is deliberate:
+Metric labels are intentionally narrow:
 
-- `handcheck.accuracy` is the latest staged pre-fold agreement, not the archived first-pass score or a population-wide accuracy estimate.
-- `accuracy_movement` compares the archived first pass against the corrected current dataset.
-- `confidence` is only a triage signal, not an accuracy claim.
-- Browser evidence is evidence acquisition, not a separate accuracy number.
-- Every app keeps its original research trace, model rationale, source fetches, and final decision record. The dashboard exposes these through the per-app `Reasoning` drawer.
+- `handcheck.accuracy` is the latest staged pre-fold agreement, not a population-wide accuracy estimate.
+- `accuracy_movement` compares the archived first pass with the corrected dataset against the same 45-app truth set.
+- The archived first pass scored 80%; replaying the verified corrections scores 100%.
+- The latest staged agreement is 91.7%. Earlier batches had already been corrected, so it is not a blind 45-app first-pass score.
+- `confidence` is a triage signal, not an accuracy claim.
 
 ## Architecture
 
 ```text
-research.py
-  data/apps.json
-  data/preseed.json       risk sampling only; hypotheses are withheld from the model
-    -> composio_lookup.py   checks Composio toolkit coverage
-    -> docs_research.py     fetches balanced auth + pricing/production evidence
-    -> synthesis.py         asks the pinned LLM for a strict, evidence-grounded record
-    -> schema.py            validates enums, required fields, and semantic dependencies
-    -> verify.py            rebuilds metrics and source-quality checks
-    -> handcheck.py         scores and applies official-doc human checks
-    -> out/reasoning/*.md   preserves the per-app research and synthesis trace
-    -> out/composio_coverage.json
-                            stores the independent SDK depth audit
-    -> report/data.js       bakes results, metrics, reasoning, and SDK coverage into the dashboard
+research.py                         one public CLI
+  -> composio_lookup.py             toolkit overlap during research
+  -> docs_research.py               official API/auth/access/MCP evidence
+  -> synthesis.py                   strict Gemini record synthesis
+  -> schema.py                      locked enums and semantic validation
+  -> pipeline.py                    synchronous resumable execution
+  -> batch_pipeline.py              asynchronous Gemini Batch execution
+  -> verify.py                      metrics and blind re-search checks
+  -> handcheck.py                   official-doc adjudication
+  -> out/                            canonical evidence and datasets
+  -> report/data.js                 generated static dashboard bundle
 
-composio_agent.py
-  -> Composio Session (sandbox disabled)
-  -> browser_tool           runs one bounded first-party docs investigation
-  -> 3 preloaded local tools
-  -> Gemini                 controls the capped function-call loop
-  -> structured comparison (terminal only; never mutates research artifacts)
+Independent checks
+  -> browser_verify.py              Browser Use Cloud verification
+  -> composio_agent.py              one-app read-only Composio Session diagnostic
 ```
 
-The production report is static: no backend, no live headless browser, and no runtime model calls.
+Fresh research fails closed when authentication or production-access evidence is incomplete. Historical preseeds only prioritize risky apps; their hypotheses are never shown to the synthesis model.
 
-Fresh research has a fail-closed evidence gate. It reserves fetch slots for auth,
-API shape, and plan/production entitlement; extracts conservative auth and access
-signals; follows official Markdown variants when an HTML docs shell advertises
-one; and rejects unresolved rows before a paid synthesis call. A signup or
-key-generation page alone cannot prove production access. Historical preseeds
-still prioritize risky apps for verification, but their values are never shown
-to the synthesis model.
+## Composio SDK Usage
 
-## Composio Usage
+`python research.py --composio-audit` queries all 100 apps through the Composio SDK only. It atomically writes `out/composio_coverage.json` and fails without replacing the previous snapshot if any SDK profile is incomplete.
 
-Composio is used in two explicit, testable paths:
+`python research.py --composio-agent otter-ai` creates a scoped Composio Session with Gemini, the no-auth `browser_tool`, and three preloaded local tools. It loads one current record, performs one bounded first-party documentation task, and compares the cached verdict deterministically. It is read-only: disagreements require human adjudication and never mutate published research.
 
-1. `python research.py --composio-audit` queries all 100 apps through the Composio Python SDK only. It fails closed if any SDK response is incomplete and atomically writes `out/composio_coverage.json`. Each app is classified as `Active` (one or more executable tools), `Catalog-only` (catalog identity but zero tools), or `Missing` (no identity-matched entry). The sidecar also records toolkit slug, tools, triggers, SDK auth metadata, managed auth, versions, categories, and catalog URL.
-2. `python research.py --composio-agent otter-ai` creates a scoped Composio Session with Gemini, the no-auth `browser_tool` toolkit, and three preloaded local tools. The agent loads one current record, runs one first-party documentation task through `ctx.execute()`, and deterministically compares canonical API/auth/access fields. It is diagnostic and read-only: disagreements require later human adjudication.
+The locked dataset's original `composio_toolkit` field is preserved. The SDK sidecar adds current executable depth without rewriting historical research.
 
-The locked 19-field dataset is intentionally unchanged. Its existing `composio_toolkit` field remains reproducible with the original research, while the SDK sidecar gives reviewers current executable depth. Ordinary one-app research retains a public-catalog fallback when the SDK is unavailable; the authoritative audit never does.
-
-## Verification Model
-
-The project separates automated checks from official-doc adjudication:
-
-1. Source audit validates schema shape, URL quality, app identity, and first-party coverage.
-2. Browser evidence stores official pages that needed live browser reading.
-3. An analyst-reviewed check adjudicates selected high-usage apps against official vendor docs.
-4. Corrections are applied only after the handcheck score is preserved.
-
-Latest staged check fields:
-
-- API type: 100%
-- Auth methods: 84.4%
-- Production access: 82.2%
-- MCP ownership: 100%
-- Overall latest-stage pre-fold agreement: 91.7%
-
-## Run Locally
+## Reproduce
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 cp .env.example .env
 ```
 
-Required keys for fresh research:
+Provider keys:
 
-| Key | Purpose |
+| Key | Used for |
 | --- | --- |
-| `PERPLEXITY_API_KEY` | Documentation search |
-| `GOOGLE_GENAI_API_KEY` | Synthesis, verification, and Session agent reasoning |
-| `COMPOSIO_API_KEY` | SDK coverage audit and Composio Session |
-| `BROWSER_USE_API_KEY` | Optional browser verification loop |
+| `PERPLEXITY_API_KEY` | Documentation search. |
+| `GOOGLE_GENAI_API_KEY` | Synthesis, blind verification, and Session reasoning. |
+| `COMPOSIO_API_KEY` | Toolkit audit and Composio Session. |
+| `BROWSER_USE_API_KEY` | Optional independent browser verification. |
 
-## Fresh Run
+Run a fresh paid pipeline:
 
 ```bash
-python research.py --app stripe
 python research.py --batch-submit --fresh-run --model gemini-3.1-pro-preview
 python research.py --batch-status
 python research.py --batch-collect
-python research.py --verify --sample 24
+python research.py --batch-audit-sources
+python research.py --metrics
+```
+
+Run independent checks and rebuild the report:
+
+```bash
+python browser_verify.py --sample 12
 python research.py --handcheck-template 24
-# Fill handcheck/handcheck.json from official docs.
+# Review official docs and fill handcheck/handcheck.json.
 python research.py --fold-handcheck
 python research.py --apply-handcheck
 python research.py --accuracy-movement
-python research.py --metrics
 python research.py --composio-audit
 python research.py --composio-agent otter-ai
 python research.py --build-report
 ```
 
-Generated runtime state such as provider usage ledgers, batch state, failures, cache files, and previous archives is ignored. The committed evidence is the final dataset, metrics, reasoning logs, browser evidence summary, and handcheck file.
-
-## View The Report
+## View And Test
 
 ```bash
 cd report
@@ -146,56 +127,39 @@ python -m http.server 8000
 
 Open http://localhost:8000.
 
-Deploy from `report/`:
-
 ```bash
-cd report
-vercel deploy --prod
-```
-
-## Tests
-
-```bash
-pip install -r requirements-dev.txt
 python -m unittest discover -s tests -v
-ruff check *.py tests demo
-python -m compileall -q *.py tests demo
+ruff check *.py tests
+python -m compileall -q *.py tests
 node --check report/app.js
+git diff --check
 ```
 
-## Repo Layout
+Deploy the static report with `cd report && vercel deploy --prod`.
+
+## Repository Layout
 
 ```text
 composio/
-├── research.py
-├── batch_pipeline.py
-├── composio_agent.py
-├── composio_lookup.py
-├── docs_research.py
-├── synthesis.py
-├── verify.py
-├── handcheck.py
-├── schema.py
-├── normalize.py
-├── data/
-├── handcheck/handcheck.json
-├── out/
-│   ├── results.json
-│   ├── results_firstpass.json
-│   ├── metrics.json
-│   ├── composio_coverage.json
-│   ├── browser_evidence.json
-│   └── reasoning/
-├── report/
-│   ├── index.html
-│   ├── app.js
-│   ├── theme.css
-│   ├── data.js
-│   ├── data/reasoning.json
-│   ├── data/composio_coverage.json
-│   └── vercel.json
-├── tests/
-├── demo/
+├── research.py                  CLI
+├── pipeline.py                  synchronous runner
+├── batch_pipeline.py            asynchronous batch runner
+├── docs_research.py             evidence acquisition
+├── synthesis.py                 structured model synthesis
+├── schema.py                    locked record contract
+├── normalize.py                 canonical auth labels
+├── verify.py                    automated verification and metrics
+├── handcheck.py                 human adjudication
+├── browser_verify.py            independent browser checks
+├── composio_lookup.py           toolkit lookup and coverage audit
+├── composio_agent.py            read-only Session diagnostic
+├── config.py                    environment and atomic JSON I/O
+├── usage_tracker.py             paid-provider budget ledger
+├── data/                         assignment catalog and risk preseeds
+├── handcheck/                    official-doc truth
+├── out/                          canonical results and evidence
+├── report/                       static reviewer dashboard
+├── tests/                        quality and regression suite
 ├── requirements.txt
 └── requirements-dev.txt
 ```

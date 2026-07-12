@@ -14,10 +14,8 @@ _ENV_ROOT = Path(__file__).resolve().parent
 load_dotenv(_ENV_ROOT / ".env")
 load_dotenv(_ENV_ROOT / ".env.providers", override=True)
 
-# Which (provider, model) actually answered the LAST llm_json() call on this
-# thread. Thread-local because the batch runner calls llm_json concurrently.
-# Used by synthesis to stamp reasoning logs with the model REALLY used instead
-# of the configured primary (which can differ when the chain falls back).
+# Actual model used by the latest llm_json() call on this thread. The batch
+# runner is concurrent, so this cannot be process-global.
 _last_llm = threading.local()
 
 
@@ -93,7 +91,6 @@ GOOGLE_API_KEY = (
     or os.getenv("GOOGLE_API_KEY")
     or os.getenv("GEMINI_API_KEY", "")
 )
-PRIMARY_PROVIDER = "google"
 PRIMARY_MODEL = os.getenv("GOOGLE_GENAI_MODEL", "gemini-3.1-pro-preview")
 GOOGLE_THINKING_LEVEL = os.getenv("GOOGLE_THINKING_LEVEL", "medium")
 GOOGLE_TOKEN_PRICES = {
@@ -110,10 +107,8 @@ def _google_token_prices(model: str) -> tuple[float, float]:
 
 
 @lru_cache(maxsize=1)
-def get_client(provider: str = "google"):
+def get_client():
     """Return the native Google Gen AI SDK client."""
-    if provider != "google":
-        raise RuntimeError(f"provider {provider!r} is disabled; only native Google Gen AI is allowed")
     if not GOOGLE_API_KEY:
         raise RuntimeError("GOOGLE_GENAI_API_KEY/GOOGLE_API_KEY is not set")
     from google import genai
@@ -126,22 +121,6 @@ def get_client(provider: str = "google"):
             retry_options=types.HttpRetryOptions(attempts=1),
         ),
     )
-
-
-def get_llm_client():
-    return get_client("google")
-
-
-def _model_chain(model: str | None, lead: str | None = None) -> list[tuple[str, str]]:
-    if lead not in (None, "google"):
-        raise RuntimeError(f"provider sharding is disabled; invalid lead={lead!r}")
-    return [("google", model or PRIMARY_MODEL)]
-
-
-def configured_model_chain(model: str | None = None) -> list[tuple[str, str]]:
-    """Public, read-only view used to validate reproducible fresh runs."""
-    return _model_chain(model, lead=None)
-
 
 def _extract_json_object(text: str) -> dict:
     """Best-effort parse of a JSON object from an LLM response.
@@ -232,7 +211,6 @@ def llm_json(
     model: str | None = None,
     temperature: float = 0.0,
     max_tokens: int = 2000,
-    lead: str | None = None,
     thinking_level: str | None = None,
     response_schema: Any | None = None,
 ) -> tuple[dict, str]:
@@ -241,7 +219,7 @@ def llm_json(
     from google.genai import types
     import usage_tracker
 
-    provider, selected_model = _model_chain(model, lead=lead)[0]
+    selected_model = model or PRIMARY_MODEL
     system, contents = _google_contents(messages)
     input_price, output_price = _google_token_prices(selected_model)
     input_estimate = sum(len(str(message.get("content", ""))) for message in messages) / 4
@@ -269,7 +247,7 @@ def llm_json(
         }
         if response_schema is not None:
             generation_config["response_schema"] = response_schema
-        return get_client(provider).models.generate_content(
+        return get_client().models.generate_content(
             model=selected_model,
             contents=contents,
             config=types.GenerateContentConfig(**generation_config),

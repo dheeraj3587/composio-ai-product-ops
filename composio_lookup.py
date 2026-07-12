@@ -333,11 +333,3 @@ def lookup(app: str, slug: str, use_cache: bool = True) -> dict:
     cache[slug] = out
     _save_cache()
     return out
-
-
-if __name__ == "__main__":  # live smoke (needs network; safe to fail offline)
-    import sys
-
-    app = sys.argv[1] if len(sys.argv) > 1 else "GitHub"
-    slug = sys.argv[2] if len(sys.argv) > 2 else "github"
-    print(lookup(app, slug, use_cache=False))
