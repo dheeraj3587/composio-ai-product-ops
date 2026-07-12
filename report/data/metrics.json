@@ -1194,5 +1194,15 @@
       "generated": "2026-07-11",
       "note": "This is a current score. Earlier published/as-measured snapshots are stored separately."
     }
+  },
+  "composio_sdk": {
+    "n_apps": 100,
+    "active": 50,
+    "catalog_only": 1,
+    "missing": 49,
+    "tools_total": 6902,
+    "tools_median": 97.0,
+    "trigger_enabled": 16,
+    "without_triggers": 35
   }
 }

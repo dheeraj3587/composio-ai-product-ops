@@ -23,6 +23,9 @@ const tone = {
   None: "gray",
   Auto: "gray",
   "Hand-Checked": "green",
+  Active: "green",
+  "Catalog-only": "amber",
+  Missing: "gray",
   Yes: "green",
   No: "gray",
 };
@@ -43,11 +46,17 @@ const commandSets = {
     "python research.py --accuracy-movement",
     ".venv-browser/bin/python browser_verify.py --sample 12",
   ].join("\n"),
+  composio: [
+    "python research.py --composio-audit",
+    "python research.py --composio-agent otter-ai",
+    "python research.py --build-report",
+  ].join("\n"),
 };
 
 let rows = [];
 let metrics = {};
 let reasoning = {};
+let composioCoverage = {};
 
 const pct = (value) => Number.isFinite(Number(value))
   ? `${Math.round(Number(value) * 1000) / 10}%`
@@ -111,23 +120,46 @@ async function loadData() {
       rows: window.RESULTS,
       metrics: window.METRICS || {},
       reasoning: window.REASONING || {},
+      composioCoverage: window.COMPOSIO_COVERAGE || {},
     };
   }
 
   try {
-    const [resultData, metricData, reasoningData] = await Promise.all([
+    const [resultData, metricData, reasoningData, coverageData] = await Promise.all([
       fetch("data/results.json").then((response) => response.json()),
       fetch("data/metrics.json").then((response) => response.json()).catch(() => ({})),
       fetch("data/reasoning.json").then((response) => response.json()).catch(() => ({})),
+      fetch("data/composio_coverage.json").then((response) => response.json()).catch(() => ({})),
     ]);
     return {
       rows: resultData || [],
       metrics: metricData || {},
       reasoning: reasoningData || {},
+      composioCoverage: coverageData || {},
     };
   } catch {
-    return { rows: [], metrics: {}, reasoning: {} };
+    return { rows: [], metrics: {}, reasoning: {}, composioCoverage: {} };
   }
+}
+
+function coverageFor(record) {
+  const profile = composioCoverage.apps?.[record.slug];
+  if (profile) return profile;
+  return {
+    app: record.app,
+    status: record.composio_toolkit === "Yes" ? "Active" : "Missing",
+    toolkit_slug: null,
+    tools_count: null,
+    triggers_count: null,
+    auth_schemes: [],
+    managed_auth_schemes: [],
+    categories: [],
+    inferred: true,
+  };
+}
+
+function coverageSummary() {
+  return composioCoverage.summary || metrics.composio_sdk || {};
 }
 
 function renderHeader() {
@@ -144,6 +176,7 @@ function renderHero() {
   const quality = metrics.quality || {};
   const actions = patterns.recommended_next_action || {};
   const toolkit = patterns.composio_toolkit || {};
+  const sdk = coverageSummary();
   const total = patterns.n || rows.length || 1;
   const buildQueue = rows.filter((row) => (
     row.composio_toolkit === "No" && row.recommended_next_action === "Build Now"
@@ -156,7 +189,9 @@ function renderHero() {
   $("reasoning-count").textContent = `${reasoningCount}/${total}`;
   $("quality-badge").textContent = quality.source_audit_complete ? "Source audit complete" : "Audit incomplete";
   $("decision-title").textContent = `${buildQueue.length} uncovered integrations are ready to build now.`;
-  $("decision-summary").textContent = `${toolkit.No || 0} apps have no Composio toolkit. The rest of the queue is separated into access, partnership, and no-build work.`;
+  $("decision-summary").textContent = sdk.n_apps
+    ? `${sdk.active || 0} active toolkits, ${sdk.catalog_only || 0} catalog-only entry, and ${sdk.missing || 0} missing. Front is tracked separately as a toolkit-expansion opportunity.`
+    : `${toolkit.No || 0} apps have no Composio toolkit. The rest of the queue is separated into access, partnership, and no-build work.`;
 
   const actionOrder = [
     ["Build Now", "build"],
@@ -178,13 +213,16 @@ function renderMetrics() {
   const patterns = metrics.patterns || {};
   const access = patterns.access_model || {};
   const toolkit = patterns.composio_toolkit || {};
+  const sdk = coverageSummary();
   const actions = patterns.recommended_next_action || {};
   const movement = metrics.accuracy_movement || {};
   const cards = [
     [access["Self-Serve"] || 0, "Self-serve paths", "Credentials available without manual production approval"],
     [patterns.build_now || actions["Build Now"] || 0, "Ready to build", "Usable API surface and a clear implementation path"],
     [actions["Needs Outreach"] || 0, "Needs outreach", "Customer, vendor, or account access is the next move"],
-    [toolkit.No || 0, "Toolkit gaps", "Requested apps not currently covered by Composio"],
+    [sdk.missing ?? toolkit.No ?? 0, "Toolkit gaps", sdk.catalog_only
+      ? `${sdk.catalog_only} additional catalog entry has no executable tools`
+      : "Requested apps not currently covered by Composio"],
     [
       movement.first_pass_accuracy != null ? pct(movement.first_pass_accuracy) : "—",
       "Archived first pass",
@@ -201,6 +239,30 @@ function renderMetrics() {
       </div>
     </article>
   `).join("");
+}
+
+function renderCoverageAudit() {
+  const target = $("sdk-audit-summary");
+  if (!target) return;
+  const sdk = coverageSummary();
+  if (!sdk.n_apps) {
+    target.innerHTML = `
+      <div><b>SDK depth unavailable</b><span>The catalog still uses the locked binary research field.</span></div>
+    `;
+    return;
+  }
+  target.innerHTML = `
+    <div class="sdk-audit-lead">
+      <span class="sdk-live-dot" aria-hidden="true"></span>
+      <span><b>Composio SDK audit</b><small>${esc(composioCoverage.sdk_version ? `v${composioCoverage.sdk_version}` : "current snapshot")}</small></span>
+    </div>
+    <div class="sdk-audit-counts" aria-label="Composio SDK coverage counts">
+      <span><b>${sdk.active || 0}</b> active</span>
+      <span><b>${sdk.catalog_only || 0}</b> catalog-only</span>
+      <span><b>${sdk.missing || 0}</b> missing</span>
+    </div>
+    <p>${Number(sdk.tools_total || 0).toLocaleString()} executable tools · median ${esc(sdk.tools_median ?? "—")} per catalog entry · ${sdk.trigger_enabled || 0} trigger-enabled toolkits</p>
+  `;
 }
 
 function renderInsights() {
@@ -297,6 +359,7 @@ function renderTable() {
     if (action && row.recommended_next_action !== action) return false;
     if (build && row.buildability !== build) return false;
     if (!query) return true;
+    const coverage = coverageFor(row);
     return [
       row.app,
       row.category,
@@ -304,6 +367,8 @@ function renderTable() {
       (row.auth_methods || []).join(" "),
       row.main_blocker,
       row.recommended_next_action,
+      coverage.status,
+      coverage.toolkit_slug,
     ].join(" ").toLowerCase().includes(query);
   }).sort((a, b) => (
     (actionRank[a.recommended_next_action] ?? 9) - (actionRank[b.recommended_next_action] ?? 9)
@@ -316,6 +381,7 @@ function renderTable() {
     const confidence = Math.round(Number(record.confidence || 0) * 100);
     const auth = (record.auth_methods || []).join(", ") || "—";
     const hasReasoning = Boolean(reasoning[record.slug]);
+    const coverage = coverageFor(record);
     return `
       <tr>
         <td>
@@ -328,7 +394,7 @@ function renderTable() {
         <td>${pill(record.access_model?.kind, record.access_model?.kind)}</td>
         <td><span class="truncate" title="${esc(record.api_type)} · ${esc(record.api_breadth)}">${esc(record.api_type)} · ${esc(record.api_breadth)}</span></td>
         <td>${pill(record.existing_mcp, record.existing_mcp)}</td>
-        <td>${pill(record.composio_toolkit, record.composio_toolkit)}</td>
+        <td>${pill(coverage.status, coverage.status)}</td>
         <td>${pill(record.buildability, record.buildability)}</td>
         <td>${pill(record.recommended_next_action, record.recommended_next_action)}</td>
         <td>
@@ -383,6 +449,41 @@ function handcheckFor(record) {
   const checked = (handcheck.checked || []).find((item) => item.slug === record.slug);
   const misses = (handcheck.misses || []).filter((item) => item.slug === record.slug);
   return { checked, misses };
+}
+
+function composioMarkup(record) {
+  const coverage = coverageFor(record);
+  if (coverage.inferred) {
+    return `
+      <div class="verification-note">
+        <p><b>${esc(coverage.status)} from the locked dataset.</b> The separate SDK depth audit was not packaged in this build.</p>
+      </div>
+    `;
+  }
+  if (coverage.status === "Missing") {
+    return `
+      <div class="composio-status-line"><span>No identity-matched Composio catalog entry was returned by the SDK.</span></div>
+    `;
+  }
+  const catalogUrl = safeUrl(coverage.catalog_url);
+  const auth = (coverage.auth_schemes || []).join(", ") || "None advertised";
+  const managed = (coverage.managed_auth_schemes || []).join(", ") || "None advertised";
+  const expansion = coverage.status === "Catalog-only"
+    ? `<p class="composio-expansion"><b>Toolkit-expansion opportunity.</b> Front exists in the catalog but currently exposes zero executable tools.</p>`
+    : "";
+  return `
+    <div class="composio-status-line"><span>${esc(coverage.toolkit_name || coverage.toolkit_slug || record.app)} · SDK catalog metadata</span></div>
+    ${expansion}
+    <dl class="decision-list composio-decision-list">
+      <div class="decision-row"><dt>Toolkit slug</dt><dd>${esc(coverage.toolkit_slug || "—")}</dd></div>
+      <div class="decision-row"><dt>Executable depth</dt><dd>${esc(coverage.tools_count ?? "—")} tools · ${esc(coverage.triggers_count ?? "—")} triggers</dd></div>
+      <div class="decision-row"><dt>SDK auth schemes</dt><dd>${esc(auth)}</dd></div>
+      <div class="decision-row"><dt>Managed auth</dt><dd>${esc(managed)}</dd></div>
+      <div class="decision-row"><dt>Version depth</dt><dd>${esc(coverage.latest_version || "Not advertised")} · ${esc(coverage.versions_count ?? 0)} versions</dd></div>
+      <div class="decision-row"><dt>Categories</dt><dd>${esc((coverage.categories || []).join(", ") || "Uncategorized")}</dd></div>
+      ${catalogUrl ? `<div class="decision-row"><dt>Catalog</dt><dd><a class="inline-link" href="${esc(catalogUrl)}" target="_blank" rel="noopener">Open Composio toolkit ↗</a></dd></div>` : ""}
+    </dl>
+  `;
 }
 
 function evidenceMarkup(record) {
@@ -506,11 +607,16 @@ function openReasoning(slug, updateUrl = true) {
         <div class="decision-row"><dt>API surface</dt><dd>${esc(record.api_type)} · ${esc(record.api_breadth)}</dd></div>
         <div class="decision-row"><dt>Access rule</dt><dd>${esc(record.access_model?.note || "—")}</dd></div>
         <div class="decision-row"><dt>Existing MCP</dt><dd>${esc(record.existing_mcp)}</dd></div>
-        <div class="decision-row"><dt>Composio toolkit</dt><dd>${esc(record.composio_toolkit)}</dd></div>
+        <div class="decision-row"><dt>Composio dataset field</dt><dd>${esc(record.composio_toolkit)} · preserved from the locked 19-field record</dd></div>
         <div class="decision-row"><dt>Buildability</dt><dd>${esc(record.buildability)}</dd></div>
         <div class="decision-row"><dt>Main blocker</dt><dd>${esc(record.main_blocker || "None recorded")}</dd></div>
         <div class="decision-row"><dt>Rate limits</dt><dd>${esc(record.rate_limit_note || "Not documented")}</dd></div>
       </dl>
+    </section>
+
+    <section class="drawer-section">
+      <div class="drawer-section-head"><h3>Composio SDK audit</h3>${pill(coverageFor(record).status, coverageFor(record).status)}</div>
+      ${composioMarkup(record)}
     </section>
 
     <section class="drawer-section">
@@ -663,6 +769,7 @@ async function init() {
   rows = loaded.rows || [];
   metrics = loaded.metrics || {};
   reasoning = loaded.reasoning || {};
+  composioCoverage = loaded.composioCoverage || {};
 
   if (!rows.length) {
     $("hero-copy").textContent = "No report data is packaged yet. Run python research.py --build-report.";
@@ -673,6 +780,7 @@ async function init() {
   renderMetrics();
   renderInsights();
   renderPriorityQueue();
+  renderCoverageAudit();
   initFilters();
   renderTable();
   renderVerification();

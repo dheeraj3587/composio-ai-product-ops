@@ -12,8 +12,10 @@ The project researches 100 apps across 10 categories and scores whether each one
 
 - 100 apps researched and rendered in the final report.
 - 100 / 100 rows pass schema, citation, app identity, and source-quality checks.
-- 49 apps have no Composio toolkit yet.
+- The authoritative SDK audit finds 50 active toolkits, 1 catalog-only entry (Front), and 49 missing apps.
+- Active catalog entries expose 6,902 executable tools in total (median 97); 16 toolkits expose triggers.
 - 63 apps are marked `Build Now`; 19 need outreach; 16 are partner-gated; 2 are blocked.
+- Of the missing apps, 29 are ready to build now. Front is a separate toolkit-expansion opportunity, not part of that queue.
 - 69 apps have an official MCP server signal; 25 community; 6 none.
 - 45 reviewer-priority apps were adjudicated against official docs across all 10 categories.
 - The latest staged pre-fold agreement measured 91.7% across API type, exact auth, production access, and MCP ownership. Earlier batches had already been corrected before later batches were added, so this is not a blind 45-app first-pass estimate.
@@ -48,7 +50,16 @@ research.py
     -> verify.py            rebuilds metrics and source-quality checks
     -> handcheck.py         scores and applies official-doc human checks
     -> out/reasoning/*.md   preserves the per-app research and synthesis trace
-    -> report/data.js       bakes results, metrics, and reasoning into the static dashboard
+    -> out/composio_coverage.json
+                            stores the independent SDK depth audit
+    -> report/data.js       bakes results, metrics, reasoning, and SDK coverage into the dashboard
+
+composio_agent.py
+  -> Composio Session (sandbox disabled)
+  -> browser_tool           runs one bounded first-party docs investigation
+  -> 3 preloaded local tools
+  -> Gemini                 controls the capped function-call loop
+  -> structured comparison (terminal only; never mutates research artifacts)
 ```
 
 The production report is static: no backend, no live headless browser, and no runtime model calls.
@@ -63,9 +74,12 @@ to the synthesis model.
 
 ## Composio Usage
 
-Composio is used for the `composio_toolkit` field. The pipeline checks whether Composio already has coverage for each app through the SDK when available, with a public-catalog fallback.
+Composio is used in two explicit, testable paths:
 
-The research task itself evaluates external app APIs, so Composio is used as the source of truth for toolkit overlap rather than as the LLM orchestration layer. A minimal read-only SDK demo lives at `demo/composio_demo.py`.
+1. `python research.py --composio-audit` queries all 100 apps through the Composio Python SDK only. It fails closed if any SDK response is incomplete and atomically writes `out/composio_coverage.json`. Each app is classified as `Active` (one or more executable tools), `Catalog-only` (catalog identity but zero tools), or `Missing` (no identity-matched entry). The sidecar also records toolkit slug, tools, triggers, SDK auth metadata, managed auth, versions, categories, and catalog URL.
+2. `python research.py --composio-agent otter-ai` creates a scoped Composio Session with Gemini, the no-auth `browser_tool` toolkit, and three preloaded local tools. The agent loads one current record, runs one first-party documentation task through `ctx.execute()`, and deterministically compares canonical API/auth/access fields. It is diagnostic and read-only: disagreements require later human adjudication.
+
+The locked 19-field dataset is intentionally unchanged. Its existing `composio_toolkit` field remains reproducible with the original research, while the SDK sidecar gives reviewers current executable depth. Ordinary one-app research retains a public-catalog fallback when the SDK is unavailable; the authoritative audit never does.
 
 ## Verification Model
 
@@ -98,8 +112,8 @@ Required keys for fresh research:
 | Key | Purpose |
 | --- | --- |
 | `PERPLEXITY_API_KEY` | Documentation search |
-| `GOOGLE_GENAI_API_KEY` | Synthesis and verification |
-| `COMPOSIO_API_KEY` | Composio toolkit lookup |
+| `GOOGLE_GENAI_API_KEY` | Synthesis, verification, and Session agent reasoning |
+| `COMPOSIO_API_KEY` | SDK coverage audit and Composio Session |
 | `BROWSER_USE_API_KEY` | Optional browser verification loop |
 
 ## Fresh Run
@@ -116,6 +130,8 @@ python research.py --fold-handcheck
 python research.py --apply-handcheck
 python research.py --accuracy-movement
 python research.py --metrics
+python research.py --composio-audit
+python research.py --composio-agent otter-ai
 python research.py --build-report
 ```
 
@@ -153,6 +169,7 @@ node --check report/app.js
 composio/
 ├── research.py
 ├── batch_pipeline.py
+├── composio_agent.py
 ├── composio_lookup.py
 ├── docs_research.py
 ├── synthesis.py
@@ -166,6 +183,7 @@ composio/
 │   ├── results.json
 │   ├── results_firstpass.json
 │   ├── metrics.json
+│   ├── composio_coverage.json
 │   ├── browser_evidence.json
 │   └── reasoning/
 ├── report/
@@ -174,6 +192,7 @@ composio/
 │   ├── theme.css
 │   ├── data.js
 │   ├── data/reasoning.json
+│   ├── data/composio_coverage.json
 │   └── vercel.json
 ├── tests/
 ├── demo/

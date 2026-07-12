@@ -782,6 +782,72 @@ h1 {
   font-weight: 680;
 }
 
+.sdk-audit-summary {
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: minmax(190px, .72fr) minmax(330px, 1.15fr) minmax(310px, 1.25fr);
+  align-items: center;
+  gap: 22px;
+  margin-bottom: 10px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--canvas-2);
+}
+
+.sdk-audit-summary > div:first-child,
+.sdk-audit-lead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sdk-audit-summary b {
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 740;
+}
+
+.sdk-audit-summary span,
+.sdk-audit-summary p,
+.sdk-audit-summary small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.sdk-audit-lead > span:last-child b,
+.sdk-audit-lead > span:last-child small {
+  display: block;
+}
+
+.sdk-audit-lead small {
+  margin-top: 1px;
+}
+
+.sdk-live-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 4px rgba(23, 132, 90, .1);
+}
+
+.sdk-audit-counts {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.sdk-audit-counts span {
+  white-space: nowrap;
+}
+
+.sdk-audit-counts b {
+  margin-right: 3px;
+  font-size: 14px;
+}
+
 .table-shell {
   max-height: 680px;
   overflow: auto;
@@ -980,7 +1046,7 @@ tbody tr:last-child td {
 
 .method-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   list-style: none;
   padding: 0;
   border-top: 1px solid #34363e;
@@ -993,10 +1059,18 @@ tbody tr:last-child td {
   flex-direction: column;
   padding: 24px 20px;
   border-left: 1px solid #34363e;
+  border-top: 1px solid #34363e;
+}
+
+.method-grid li:nth-child(3n + 1) {
+  border-left: 0;
+}
+
+.method-grid li:nth-child(-n + 3) {
+  border-top: 0;
 }
 
 .method-grid li:first-child {
-  border-left: 0;
   padding-left: 0;
 }
 
@@ -1429,6 +1503,35 @@ tbody tr:last-child td {
   font-weight: 630;
 }
 
+.composio-status-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.composio-expansion {
+  margin-top: 12px;
+  padding: 12px 13px;
+  border-left: 3px solid var(--amber);
+  border-radius: 0 6px 6px 0;
+  background: var(--yellow);
+  color: #69531d !important;
+  font-size: 11px !important;
+}
+
+.composio-decision-list {
+  margin-top: 12px;
+}
+
+.inline-link {
+  color: var(--purple-dark);
+  text-decoration: underline;
+  text-decoration-color: rgba(94, 61, 187, .28);
+  text-underline-offset: 3px;
+}
+
 .evidence-list {
   display: grid;
   gap: 8px;
@@ -1610,6 +1713,7 @@ tbody tr:last-child td {
     min-height: 210px;
     padding: 22px;
     border-top: 1px solid #34363e;
+    border-left: 1px solid #34363e;
   }
 
   .method-grid li:nth-child(odd) {
@@ -1672,6 +1776,14 @@ tbody tr:last-child td {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .sdk-audit-summary {
+    grid-template-columns: 1fr 1.35fr;
+  }
+
+  .sdk-audit-summary > p {
+    grid-column: 1 / -1;
+  }
+
   .search-field {
     grid-column: 1 / -1;
   }
@@ -1702,22 +1814,28 @@ tbody tr:last-child td {
   }
 
   .intro {
-    gap: 20px;
-    padding-top: 42px;
+    gap: 14px;
+    padding-top: 28px;
+  }
+
+  .intro-copy {
+    padding: 6px 0 10px;
   }
 
   h1 {
-    font-size: 46px;
+    font-size: 40px;
     line-height: .98;
   }
 
   .intro-lead {
-    margin-top: 20px;
-    font-size: 16px;
+    margin-top: 18px;
+    font-size: 14px;
   }
 
   .snapshot-line {
-    margin-top: 25px;
+    margin-top: 20px;
+    gap: 6px;
+    font-size: 10px;
   }
 
   .snapshot-separator {
@@ -1725,16 +1843,31 @@ tbody tr:last-child td {
   }
 
   .pulse-card {
-    min-height: 400px;
-    padding: 20px;
+    min-height: 320px;
+    padding: 18px;
   }
 
   .pulse-statement {
-    font-size: 27px;
+    margin-top: 20px;
+    font-size: 24px;
+  }
+
+  .pulse-chart {
+    display: none;
+  }
+
+  .pulse-legend {
+    gap: 5px 10px;
+    margin-top: 24px;
+  }
+
+  .legend-item {
+    gap: 5px;
+    font-size: 9px;
   }
 
   .pulse-footer {
-    grid-template-columns: 1fr;
+    display: none;
   }
 
   .dark-action {
@@ -1787,6 +1920,22 @@ tbody tr:last-child td {
     flex-direction: column;
     gap: 2px;
     padding: 10px 0;
+  }
+
+  .sdk-audit-summary {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .sdk-audit-summary > p {
+    grid-column: auto;
+    line-height: 1.5;
+  }
+
+  .sdk-audit-counts {
+    justify-content: space-between;
+    gap: 8px;
   }
 
   .method-grid {

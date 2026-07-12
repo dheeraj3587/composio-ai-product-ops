@@ -120,6 +120,10 @@
           <p>Open any row to inspect its full reasoning and sources.</p>
         </div>
 
+        <div class="sdk-audit-summary" id="sdk-audit-summary" aria-live="polite">
+          <div><b>Composio SDK audit</b><span>Loading executable toolkit depth...</span></div>
+        </div>
+
         <div class="table-shell">
           <table>
             <thead>
@@ -149,14 +153,15 @@
             <p class="eyebrow">03 / Method</p>
             <h2>Evidence first. Decisions second.</h2>
           </div>
-          <p class="section-note">The LLM synthesizes fetched evidence; deterministic checks own schema, citations, and catalog overlap.</p>
+          <p class="section-note">The LLM synthesizes fetched evidence; deterministic checks own schema, citations, catalog identity, and executable toolkit depth.</p>
         </div>
         <ol class="method-grid" aria-label="Research pipeline">
-          <li><span>01</span><b>Coverage lookup</b><p>Composio SDK/catalog lookup sets existing toolkit coverage.</p><code>composio_lookup.py</code></li>
+          <li><span>01</span><b>SDK coverage audit</b><p>The Composio SDK classifies every requested app as active, catalog-only, or missing and records tool depth.</p><code>--composio-audit</code></li>
           <li><span>02</span><b>Docs research</b><p>Official API, authentication, access, and MCP pages are collected.</p><code>docs_research.py</code></li>
           <li><span>03</span><b>Schema synthesis</b><p>The model returns a locked 19-field record with cited URLs.</p><code>synthesis.py</code></li>
           <li><span>04</span><b>Source audit</b><p>Invalid labels, weak coverage, contradictions, and invented links fail closed.</p><code>batch_pipeline.py</code></li>
           <li><span>05</span><b>Official-doc check</b><p>Priority apps are adjudicated against vendor docs, with every recorded miss preserved.</p><code>handcheck.py</code></li>
+          <li><span>06</span><b>Session diagnostic</b><p>A read-only Gemini Session can run one bounded Browser Tool investigation and deterministic comparison.</p><code>--composio-agent</code></li>
         </ol>
       </div>
     </section>
@@ -186,6 +191,7 @@
           <div class="command-tabs" role="tablist" aria-label="Run commands">
             <button class="command-tab active" type="button" data-command="research" role="tab" aria-selected="true">Research</button>
             <button class="command-tab" type="button" data-command="verify" role="tab" aria-selected="false">Verify</button>
+            <button class="command-tab" type="button" data-command="composio" role="tab" aria-selected="false">Composio SDK</button>
           </div>
           <pre id="command-output">python research.py --batch-submit --fresh-run
 python research.py --batch-status

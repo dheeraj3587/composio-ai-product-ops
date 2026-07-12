@@ -6,6 +6,8 @@ python research.py --all                  # research all 100 (concurrent + resum
 python research.py --slugs stripe,notion  # research a subset
 python research.py --limit 5              # research the first 5 apps (quick dry run)
 python research.py --verify               # blind re-search verification -> metrics.json
+python research.py --composio-audit       # authoritative toolkit depth audit
+python research.py --composio-agent SLUG  # read-only Composio Session research check
 python research.py --metrics              # rebuild metrics.json (patterns + verify + handcheck)
 python research.py --build-report         # copy results.json + metrics.json into report/data/
 """
@@ -21,6 +23,7 @@ import sys
 import time as _t
 
 import config
+import composio_lookup
 import docs_research
 import pipeline
 
@@ -68,6 +71,7 @@ def _archive_current_run() -> None:
         config.METRICS_PATH,
         config.OUT_DIR / "results_firstpass.json",
         config.OUT_DIR / "browser_verification.json",
+        config.COMPOSIO_COVERAGE_PATH,
         config.FAILURES_PATH,
         config.FAILURE_STATE_PATH,
         config.USAGE_PATH,
@@ -213,18 +217,44 @@ def cmd_apply_handcheck() -> None:
     handcheck.apply_corrections()
 
 
+def cmd_composio_audit() -> None:
+    import verify
+
+    payload = composio_lookup.write_catalog_audit(pipeline.load_apps())
+    verify.rebuild_metrics()
+    summary = payload["summary"]
+    print(
+        "Composio SDK audit: "
+        f"active={summary['active']} catalog-only={summary['catalog_only']} "
+        f"missing={summary['missing']} tools={summary['tools_total']} "
+        f"trigger-enabled={summary['trigger_enabled']}"
+    )
+
+
+def cmd_composio_agent(slug: str, model: str | None) -> None:
+    import composio_agent
+
+    result = composio_agent.run(slug, model=model)
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+
+
 def cmd_build_report() -> None:
     dst = config.REPORT_DIR / "data"
     dst.mkdir(parents=True, exist_ok=True)
     results = config.load_json(config.RESULTS_PATH, default=[]) or []
     metrics = config.load_json(config.METRICS_PATH, default={}) or {}
+    composio_coverage = config.load_json(config.COMPOSIO_COVERAGE_PATH, default={}) or {}
     reasoning = {}
     for record in results:
         slug = record.get("slug")
         path = config.REASONING_DIR / f"{slug}.md"
         if slug and path.exists():
             reasoning[slug] = path.read_text(encoding="utf-8")
-    for src in (config.RESULTS_PATH, config.METRICS_PATH):
+    for src in (
+        config.RESULTS_PATH,
+        config.METRICS_PATH,
+        config.COMPOSIO_COVERAGE_PATH,
+    ):
         if src.exists():
             shutil.copy(src, dst / src.name)
             print(f"copied {src.name} -> report/data/")
@@ -236,6 +266,11 @@ def cmd_build_report() -> None:
         fh.write("window.RESULTS = " + json.dumps(results, ensure_ascii=False) + ";\n")
         fh.write("window.METRICS = " + json.dumps(metrics, ensure_ascii=False) + ";\n")
         fh.write("window.REASONING = " + json.dumps(reasoning, ensure_ascii=False) + ";\n")
+        fh.write(
+            "window.COMPOSIO_COVERAGE = "
+            + json.dumps(composio_coverage, ensure_ascii=False)
+            + ";\n"
+        )
     print(
         f"wrote {len(results)} records + metrics + {len(reasoning)} reasoning traces "
         "-> report/data.js"
@@ -316,6 +351,16 @@ def main() -> None:
     )
     p.add_argument("--metrics", action="store_true", help="rebuild metrics.json")
     p.add_argument(
+        "--composio-audit",
+        action="store_true",
+        help="build an authoritative Composio SDK coverage-depth snapshot",
+    )
+    p.add_argument(
+        "--composio-agent",
+        metavar="SLUG",
+        help="run a read-only one-app Composio Session browser research check",
+    )
+    p.add_argument(
         "--handcheck-template",
         nargs="?",
         type=int,
@@ -381,6 +426,10 @@ def main() -> None:
         handcheck.fold()
     elif args.apply_handcheck:
         cmd_apply_handcheck()
+    elif args.composio_audit:
+        cmd_composio_audit()
+    elif args.composio_agent:
+        cmd_composio_agent(args.composio_agent, args.model)
     elif args.accuracy_movement:
         import handcheck
 

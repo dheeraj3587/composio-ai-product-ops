@@ -44,6 +44,7 @@ FAILURE_STATE_PATH = OUT_DIR / "failures.json"
 USAGE_PATH = OUT_DIR / "usage.json"
 BATCH_STATE_PATH = OUT_DIR / "batch_state.json"
 BROWSER_EVIDENCE_PATH = OUT_DIR / "browser_evidence.json"
+COMPOSIO_COVERAGE_PATH = OUT_DIR / "composio_coverage.json"
 HANDCHECK_PATH = HANDCHECK_DIR / "handcheck.json"
 
 

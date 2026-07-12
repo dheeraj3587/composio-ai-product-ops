@@ -422,6 +422,11 @@ def _browser_use_summary() -> dict:
 def rebuild_metrics() -> dict:
     results = config.load_json(config.RESULTS_PATH) or []
     metrics = config.load_json(config.METRICS_PATH, default={}) or {}
+    composio_coverage = config.load_json(
+        config.COMPOSIO_COVERAGE_PATH, default={}
+    ) or {}
+    if composio_coverage.get("summary"):
+        metrics["composio_sdk"] = composio_coverage["summary"]
     metrics["patterns"] = pipeline.compute_aggregates(results)
     metrics["n_results"] = len(results)
     failure_state = config.load_json(config.FAILURE_STATE_PATH, default={}) or {}
