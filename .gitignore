@@ -3,6 +3,10 @@
 .env.*
 !.env.example
 
+# Private prep (never commit)
+INTERVIEW_PREP.md
+interview2.md
+
 # Python
 __pycache__/
 *.py[cod]
